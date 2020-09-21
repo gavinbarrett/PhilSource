@@ -1,7 +1,12 @@
 import React from 'react';
 
 const FeatureCard = ({featname}) => {
-	return (<div className="featurecard">
+	
+	const handleCard = () => {
+		console.log(`${featname} card clicked!`);
+	}
+
+	return (<div className="featurecard" onClick={handleCard}>
 		{featname}
 	</div>);
 }

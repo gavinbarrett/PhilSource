@@ -1,27 +1,33 @@
 import React from 'react';
 
 const AppTitle = () => {
-	return (<div id="title">PhilSource</div>);
+	return (<div id="title">PhiloSource</div>);
 }
 
-const Links = () => {
+const Links = ({updateState}) => {
 	return (<div id="links">
-		<UploadLink/> | <SignInLink/>
+		<UploadLink updateState={updateState}/> | <SignInLink updateState={updateState}/>
 	</div>);
 }
 
-const UploadLink = () => {
-	return (<div id="uploadlink">Upload</div>);
+const UploadLink = ({updateState}) => {
+	// render upload page
+	const upload = () => { updateState(2); }
+
+	return (<div id="uploadlink" onClick={upload}>Upload</div>);
 }
 
-const SignInLink = () => {
-	return (<div id="signinlink">Sign In</div>);
+const SignInLink = ({updateState}) => {
+	// render sign in page
+	const signin = () => { updateState(1); }
+
+	return (<div id="signinlink" onClick={signin}>Sign In</div>);
 }
 
-const Heading = () => {
+const Heading = ({updateState}) => {
 	return (<div id="heading">
 		<AppTitle/>
-		<Links/>
+		<Links updateState={updateState}/>
 	</div>);
 }
 

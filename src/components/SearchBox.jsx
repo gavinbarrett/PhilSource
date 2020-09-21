@@ -1,8 +1,15 @@
 import React from 'react';
 
 const SearchInput = () => {
+
+	const filterSearch = (event) => {
+		//FIXME: pull texts from the database
+
+		console.log(event.target.value);
+	}
+
 	return (<div id="searchinput">
-		<input type="text" placeholder="search for texts here"/>
+		<input type="text" placeholder="search for titles and metadata tags of texts here" onChange={filterSearch}/>
 	</div>);
 }
 
