@@ -1,0 +1,105 @@
+html {
+	margin: 0;
+	padding: 0;
+	width: 100vw;
+	height: 100vh;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	width: 100vw;
+	height: 100vh;
+	background: yellow;
+}
+
+#root {
+	margin: 0;
+	padding: 0;
+	width: 100vw;
+	height: 100vh;
+}
+
+#heading {
+	height: 12vh;
+	width: 100vw;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	background: green;
+}
+
+#title {
+	font-family: 'Bebas Neue', cursive;
+	font-size: 4vw;
+	color: white;
+}
+
+#links {
+	display: flex;
+	flex-direction: row;
+	color: white;
+}
+
+#uploadlink {
+	
+}
+
+#uploadlink:hover {}
+
+#signinlink {
+
+}
+
+#signinlink:hover {
+
+}
+
+#searchwrapper {
+	height: 48vh;
+	width: 100vw;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-image: url("./phil.png");
+}
+
+#searchbox {
+	height: 50%;
+	width: 65vw;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 7px;
+	background: green;
+}
+
+input[type="text"] {
+	height: 5vh;
+	width: 60vw;
+	border: 0;
+	border-radius: 12px;
+	padding: 1%;
+	box-shadow: 0 0 15px 4px rgba(0,0,0,0.06);
+}
+
+#features {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	background: orange;
+}
+
+.featurecard {
+	width: 25vw;
+	height: 30vh;
+	background: pink;
+	margin: 3%;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+}
