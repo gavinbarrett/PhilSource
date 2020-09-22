@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Dropzone, {useDropzone} from 'react-dropzone';
 
-const UploadPage = ({updateState}) => {
+const UploadPage = ({updateState, updateDisplayFile}) => {
 	
 	const [file, updateFile] = useState(null);
 	const [tags, updateTags] = useState(null);
@@ -22,6 +22,10 @@ const UploadPage = ({updateState}) => {
 		// send the post request
 		const resp = await fetch('/upload', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(text)});
 		console.log(resp);
+
+		const blob = new Blob([file], {"type": "application/pdf"});
+		const url = URL.createObjectURL(blob);
+		await updateDisplayFile(url);
 		await updateState(3);
 	}
 

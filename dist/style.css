@@ -363,3 +363,48 @@ input[type="text"] {
 .signintext {
 
 }
+
+#pdfrendererwrapper {
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: #293241;
+}
+
+#pdfbox {
+	width: 60vw;
+	height: 80vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+	background: #e0fbfc;
+	border-radius: 10px;
+}
+
+#movebuttons {
+	width: 25vw;
+	display: flex;
+	justify-content: space-evenly;
+}
+
+#navbar {
+	width: 60vw;
+	display: flex;
+	justify-content: space-evenly;
+}
+
+.navbutton {
+	height: 5vh;
+	width: 10vw;
+	background: #3d5a80;
+	color: #e0fbfc;
+	border: 0;
+	border-radius: 8px;
+}
+
+.navbutton:hover {
+	background: #293241;
+}
