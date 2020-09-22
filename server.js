@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 const mysql = require('mysql');
 const express = require('express');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5555;
@@ -12,29 +14,133 @@ const database = mysql.createConnection({
 	database: 'philsource'
 });
 
+// serve from the dist directory
+app.use(express.static(__dirname + '/dist'));
 // allow json consumption
 app.use(express.json());
 
-// serve from the dist directory
-app.use(express.static(__dirname + '/dist'));
+
+const computeHash = async (pass) => {
+	const rounds = 10;
+	return await new Promise((resolve, reject) => {
+		bcrypt.genSalt(rounds, (err, salt) => {
+			if (err) reject(err);
+			bcrypt.hash(pass, salt, (err, hash) => {
+				if (err) reject(err);
+				resolve(hash);
+			});
+		});
+	});
+}
+
+
+const getHashedPass = async (user) => {
+	const CMD = `SELECT * FROM users WHERE User='${user}'`;
+	console.log(CMD);
+	return await new Promise((resolve, reject) => {
+		database.query(CMD, (err, rows) => {
+			console.log(rows);
+			if (err) reject(err);
+			(rows[0] == undefined) ? reject(new Error('User not found.')) : resolve(rows[0]['Pass']);
+		});
+	});
+}
+
+
+const checkHashes = async (pass, hashword) => {
+	return await new Promise((resolve, reject) => {
+		bcrypt.compare(pass, hashword, (err, hash) => {
+			if (err) reject(err);
+			resolve(hash);
+		});
+	});
+}
+
+
+const addUser = async (user, pass, email) => {
+	console.log('adding user');
+	// generate hashed password with bcrypt
+	const hash = await computeHash(pass);
+	// construct an SQL query to insert the user
+	const CMD = `INSERT INTO users (User, Pass, Email) VALUES ("${user}", "${hash}", "${email}");`;
+	// place the user and hash password in the database
+	database.query(CMD, (err, rows) => {
+		if (err) {
+			console.log("can't establish user");
+			return;
+		}
+		console.log(`New user established: ${user}`);
+	});
+}
+
+
+const checkForUser = async (user) => {
+	const CMD = `SELECT * FROM users WHERE user='${user}';`;
+	return await new Promise((resolve, reject) => {
+		database.query(CMD, (err, rows) => {
+			if (err) { 
+				console.log('resing to false');
+				resolve(false);
+			}
+			(rows[0] == undefined) ? resolve(false) : resolve(true);
+		});
+	});
+}
+
 
 // upload pdf file
-app.post('/upload', async (req, res) => {
-	//const textfile = req.body["text"];
+app.put('/upload', async (req, res) => {
 	const {textfile, tags} = req.body;
-	//const tags = req.body["tags"];
-	console.log(req.body);
-	//console.log(tags);
+
+	// insert blob (textfile) into the database with associated tags
+	// should we require a membership in order to upload? probably
+
 	res.send(JSON.stringify({"status": "success"}));
 });
 
-app.post('/sign_in', async (req, res) => {
 
+app.post('/sign_in', async (req, res) => {
+	const {user, pass} = req.body;
+	console.log(user, pass);
+	// hash password
+	try {
+		// find user's hashed password in the database
+		const hash = await getHashedPass(user);
+		// hash given password and check against db hash
+		const hashed = await checkHashes(pass, hash);
+		if (hashed) {
+			
+			console.log('hashes match!');
+			const token = jwt.sign({"user": user}, process.env.ACCESS_TOKEN_SECRET);
+			console.log(token);
+			res.send(JSON.stringify({"access token": token}));
+		} else {
+			res.send(JSON.stringify({"access token": "failed"}));
+		}
+	} catch (err) {
+		console.log(err);
+		res.send(JSON.stringify({"sign_in": "failed"}));
+	}
 });
+
 
 app.post('/sign_up', async (req, res) => {
+	const {user, pass, email} = req.body;
+	
+	// FIXME: sanitize user, pass, email inputs
 
+	// check to see if username is taken
+	const exists = await checkForUser(user);
+	if (exists) {
+		res.send(JSON.stringify({"user":"unavailable"}));
+		return;
+	} else {
+		await addUser(user, pass, email);
+		// FIXME: return jwt to the user
+		res.send(JSON.stringify({"status":"success"}));
+	}
 });
+
 
 // serve landing page
 app.get('/', (req, res) => {

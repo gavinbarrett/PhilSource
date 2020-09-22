@@ -17,13 +17,10 @@ const UploadPage = ({updateState}) => {
 		let tags = document.getElementById("metatags").value.split(" ");
 		// filter empty strings
 		const filtered = tags.filter((elem) => { return elem.length != 0 });
-		// create a new form data object
-		let text = new FormData();
 		// add supplied file and the tags to the form data
-		text.append("textfile", file);
-		text.append("tags", filtered);
+		const text = {"textfile": file, "tags": filtered};
 		// send the post request
-		const resp = await fetch('/upload', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: text});
+		const resp = await fetch('/upload', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(text)});
 		console.log(resp);
 		await updateState(0);
 	}

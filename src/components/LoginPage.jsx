@@ -13,7 +13,6 @@ const PasswordRetype = () => {
 }
 
 const SubmitSignIn = () => {
-	return (<button id="submit" type="submit">Sign In</button>);
 }
 
 const Emailer = () => {
@@ -21,27 +20,54 @@ const Emailer = () => {
 }
 
 const SignUpBox = () => {
+	
+	const signup = async () => {
+
+		// grab username, password, retyped password, email
+		const user = document.getElementById('username').value;
+		const pass = document.getElementById('password').value;
+		const passretyped = document.getElementById('passwordretype').value;
+		const email = document.getElementById('emailer').value;
+		// FIXME: throw error if any of these are missing
+		// FIXME: enforce requirements for username/password length and constitution
+		// FIXME: check for passwords to match
+		if (pass != passretyped) return;
+		
+		const data = {"user": user,"pass": pass, "email": email};
+
+		const resp = await fetch('/sign_up', {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)});
+		console.log(resp);
+	}
+
 	return (<div className="loginbox">
-		<div className="logintext">Username</div>
+		<div id="user" className="logintext">Username</div>
 		<Username/>
-		<div className="logintext">Password</div>
+		<div id="pass" className="logintext">Password</div>
 		<Password/>
-		<div className="logintext">Retype Password</div>
+		<div id="passretype" className="logintext">Retype Password</div>
 		<PasswordRetype/>
-		<div className="logintext">Email</div>
+		<div id="email" className="logintext">Email</div>
 		<Emailer/>
-		<button id="signupbutton" type="submit">Sign Up</button>
+		<button id="signupbutton" type="submit" onClick={() => signup()}>Sign Up</button>
 	</div>);
 }
 
 const SignInBox = () => {
 
+	const signin = () => {
+		const user = document.getElementById('username').value;
+		const pass = document.getElementById('password').value;
+		const data = {"user": user, "pass": pass};
+		const resp = fetch('/sign_in', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)});
+		console.log(resp);
+	}
+
 	return (<div className="loginbox">
 		<div className="logintext">Username</div>
 		<Username/>
 		<div className="logintext">Password</div>
 		<Password/>
-		<SubmitSignIn/>
+		<button id="submit" type="submit" onClick={signin}>Sign In</button>
 	</div>);
 }
 
