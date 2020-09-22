@@ -15,7 +15,7 @@ const App = () => {
 	else if (state === 1)
 		page = <LoginPage/>;
 	else if (state === 2)
-		page = <UploadPage/>
+		page = <UploadPage updateState={updateState}/>
 
 	return (<>{page}</>);
 }

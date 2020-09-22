@@ -10,7 +10,7 @@ const LandingPage = ({updateState}) => {
 		<Heading updateState={updateState}/>
 		<SearchBox/>
 		<Features/>
-		<Footer/>
+		<Footer updateState={updateState}/>
 	</div>);
 }
 

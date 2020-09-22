@@ -1,21 +1,18 @@
 import React, {useState} from 'react';
 import Dropzone, {useDropzone} from 'react-dropzone';
 
-const Uploader = () => {
-	return (<div>uploader</div>);
-}
-
-const UploadPage = () => {
+const UploadPage = ({updateState}) => {
 	
 	const [file, updateFile] = useState(null);
 	const [tags, updateTags] = useState(null);
 
 	const dropped = async (file) => {
-		console.log(file);
+		// add selected file to the state
 		await updateFile(file[0]);
 	}
 
 	const upload = async () => {
+		if (file === null) return;
 		// grab metadata tags
 		let tags = document.getElementById("metatags").value.split(" ");
 		// filter empty strings
@@ -24,16 +21,16 @@ const UploadPage = () => {
 		let text = new FormData();
 		// add supplied file and the tags to the form data
 		text.append("textfile", file);
-		text.append("tags", JSON.stringify(filtered));
+		text.append("tags", filtered);
 		// send the post request
-		const resp = await fetch('/upload', {method: 'POST', body: text});
+		const resp = await fetch('/upload', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: text});
 		console.log(resp);
+		await updateState(0);
 	}
 
 	return (<div id="uploadpagewrapper">
 		<Dropzone id="dropzone" type="file" accept="application/pdf" onDrop={dropped}>
 			{({getRootProps, getInputProps, isDragActive, isDragReject, acceptedFiles}) => (
-				
 			<div id="dropper" {...getRootProps()}>
 				<input type="file" {...getInputProps()}/>
 				{!isDragActive && acceptedFiles.length == 0 && "Click here or drag a file to upload!"}
@@ -43,9 +40,10 @@ const UploadPage = () => {
 			</div>
 			)}
 		</Dropzone>
-		<input id="metatags" type="text" placeholder="put metadata tags here"/>
-
-		<button type="submit" onClick={upload}>Upload</button>
+		<div id="tags">
+		<input id="metatags" type="text" placeholder="put metadata tags here, separated by commas"/>
+		<button id="submit" type="submit" onClick={upload}>Upload</button>
+		</div>
 	</div>);
 }
 
