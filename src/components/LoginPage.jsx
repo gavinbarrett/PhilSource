@@ -35,6 +35,7 @@ const SignUpBox = () => {
 }
 
 const SignInBox = () => {
+
 	return (<div className="loginbox">
 		<div className="logintext">Username</div>
 		<Username/>
