@@ -92,6 +92,26 @@ const checkForUser = async (user) => {
 app.put('/upload', async (req, res) => {
 	const {textfile, tags} = req.body;
 
+	console.log(textfile["path"]);
+	console.log(tags[0]);
+	
+	const user = 'admin';
+	const title = 'test';
+
+	const file = textfile["path"];
+	// title, user, tags, file
+
+	const CMD = `INSERT INTO texts (title, user, tags, file) VALUES ("${title}", "${user}", "${tags[0]}", "${file}");`;
+
+	console.log(CMD);
+
+	database.query(CMD, (err, rows) => {
+		if (err) {
+			console.log(err);
+			throw err;
+		}
+		console.log('inserted into db');
+	});
 	// insert blob (textfile) into the database with associated tags
 	// should we require a membership in order to upload? probably
 

@@ -22,7 +22,7 @@ const UploadPage = ({updateState}) => {
 		// send the post request
 		const resp = await fetch('/upload', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(text)});
 		console.log(resp);
-		await updateState(0);
+		await updateState(3);
 	}
 
 	return (<div id="uploadpagewrapper">
