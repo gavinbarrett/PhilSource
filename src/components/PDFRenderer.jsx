@@ -22,14 +22,20 @@ const PDFRenderer = ({file}) => {
 	}
 
 	const download = () => {
-		let blob = new Blob([blob], {"type": "application/pdf"});
+		let reader = new FileReader();
 		let link = document.createElement('a');
-		link.href = data;
-		link.download = "file.pdf";
-		link.click();
-		setTimeout(() => {
-			window.URL.revokeObjectURL(data);
-		}, 100);
+		reader.readAsDataURL(file);
+		reader.onloadend = () => {
+			const x = reader.result;
+			link.setAttribute('href', x);
+			link.setAttribute('download', 'file.pdf');
+			link.style.display = 'none';
+			// add link to the page
+			document.body.appendChild(link);
+			link.click();
+			// remove link from the page
+			document.body.removeChild(link);
+		}
 	}
 
 	return (<div id="pdfrendererwrapper">
