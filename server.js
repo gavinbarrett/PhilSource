@@ -78,25 +78,40 @@ const checkForUser = async (user) => {
 	const CMD = `SELECT * FROM users WHERE user='${user}';`;
 	return await new Promise((resolve, reject) => {
 		database.query(CMD, (err, rows) => {
-			if (err) { 
-				console.log('resing to false');
-				resolve(false);
-			}
+			if (err) resolve(false);
 			(rows[0] == undefined) ? resolve(false) : resolve(true);
 		});
 	});
 }
 
 
+app.post('/text_query', async (req, res) => {
+	const { query } = req.body;
+
+	// FIXME: SANITIZE INPUTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+	const CMD = `SELECT * FROM texts WHERE title REGEXP '${query}' OR tags REGEXP '${query}'`;
+
+	const results = await new Promise((resolve, reject) => {
+		database.query(CMD, (err, rows) => {
+			err ? reject(err) : resolve(rows);
+		});
+	});
+
+	res.send(JSON.stringify({"search_results": results}));
+});
+
+
 // upload pdf file
 app.put('/upload', async (req, res) => {
-	const {textfile, tags} = req.body;
+	const {title, textfile, tags} = req.body;
 
 	console.log(textfile["path"]);
 	console.log(tags[0]);
-	
+
+	// FIXME: hash file
+
 	const user = 'admin';
-	const title = 'test';
 
 	const file = textfile["path"];
 	// title, user, tags, file
