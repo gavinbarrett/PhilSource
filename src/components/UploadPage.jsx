@@ -24,8 +24,9 @@ const UploadPage = ({updateState, updateDisplayFile}) => {
 		console.log(resp);
 
 		const blob = new Blob([file], {"type": "application/pdf"});
-		const url = URL.createObjectURL(blob);
-		await updateDisplayFile(url);
+		console.log(blob);
+		//const url = URL.createObjectURL(blob);
+		await updateDisplayFile(blob);
 		await updateState(3);
 	}
 

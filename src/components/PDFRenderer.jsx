@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
-import { Document, Page } from 'react-pdf';
+import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 
 const PDFRenderer = ({file}) => {
-	
-	const [pages, updatePages] = useState(null);
+	console.log(file);	
+	const [pageAmt, updatePageAmt] = useState(null);
 	const [pageNum, updatePageNum] = useState(1);
 	
 	const loadPageNums = async ({numPages}) => {
 		console.log(`${numPages} pages`);
-		await updatePages(numPages);
+		await updatePageAmt(numPages);
 	}
 
 	const nextPage = () => {
+		if (pageNum === pageAmt) return;
 		updatePageNum(pageNum + 1);
 	}
 
 	const prevPage = () => {
+		if (pageNum === 1) return;
 		updatePageNum(pageNum - 1);
 	}
 
@@ -31,7 +33,7 @@ const PDFRenderer = ({file}) => {
 	}
 
 	return (<div id="pdfrendererwrapper">
-		<div id="pdfbox">
+		<div id="pdfcontroller">
 			<nav id="navbar">
 				<div id="movebuttons">
 					<button className="navbutton" onClick={prevPage}>Prev</button>
@@ -39,9 +41,11 @@ const PDFRenderer = ({file}) => {
 				</div>
 				<button className="navbutton" onClick={download}>Download</button>
 			</nav>
-			<Document file={file} onLoadSuccess={loadPageNums}>
-				<Page pageNumber={pageNum} width={600}/>
-			</Document>
+			<div id="pdfbox">
+				<Document file={file} onLoadSuccess={loadPageNums}>
+					<Page pageNumber={pageNum} width={600}/>
+				</Document>
+			</div>
 		</div>
 	</div>);
 }

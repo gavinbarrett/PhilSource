@@ -378,10 +378,22 @@ input[type="text"] {
 	height: 80vh;
 	display: flex;
 	flex-direction: column;
-	justify-content: space-around;
+	justify-content: center;
 	align-items: center;
 	background: #e0fbfc;
 	border-radius: 10px;
+	padding-top: 15%;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+
+#pdfcontroller {
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 }
 
 #movebuttons {
@@ -392,8 +404,10 @@ input[type="text"] {
 
 #navbar {
 	width: 60vw;
+	height: 20vh;
 	display: flex;
-	justify-content: space-evenly;
+	justify-content: center;
+	align-items: center;
 }
 
 .navbutton {
