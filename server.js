@@ -33,7 +33,6 @@ const computeHash = async (pass) => {
 	});
 }
 
-
 const getHashedPass = async (user) => {
 	const CMD = `SELECT * FROM users WHERE User='${user}'`;
 	console.log(CMD);
