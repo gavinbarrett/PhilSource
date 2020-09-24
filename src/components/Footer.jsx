@@ -2,6 +2,8 @@ import React from 'react';
 
 const Footer = ({updateState}) => {
 	
+	const home = () => { updateState(0); }
+
 	const signIn = () => { updateState(1); }
 
 	const upload = () => { updateState(2); }
@@ -9,7 +11,7 @@ const Footer = ({updateState}) => {
 	return (<div id="footer">
 		<div className="footcolumn">
 			<div className="footerheads">Navigation</div>
-			<div className="footerlinks">Home</div>
+			<div className="footerlinks" onClick={home}>Home</div>
 			<div className="footerlinks" onClick={upload}>Upload</div>
 			<div className="footerlinks" onClick={signIn}>Sign In</div>
 		</div>
@@ -26,4 +28,6 @@ const Footer = ({updateState}) => {
 	</div>);
 }
 
-export default Footer;
+export {
+	Footer
+}

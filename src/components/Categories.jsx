@@ -12,4 +12,6 @@ const Categories = [
 	"Political Philosophy",
 ];
 
-export default Categories;
+export {
+	Categories
+}

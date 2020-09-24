@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import FeatureCard from './FeatureCard';
+import { FeatureCard } from './FeatureCard';
 
 const Features = () => {
 	
@@ -49,4 +49,6 @@ const Features = () => {
 	</div>);
 }
 
-export default Features;
+export {
+	Features
+}

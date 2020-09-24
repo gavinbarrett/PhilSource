@@ -11,4 +11,6 @@ const FeatureCard = ({featname}) => {
 	</div>);
 }
 
-export default FeatureCard;
+export {
+	FeatureCard
+}

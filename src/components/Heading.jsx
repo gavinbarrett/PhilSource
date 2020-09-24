@@ -31,4 +31,6 @@ const Heading = ({updateState}) => {
 	</div>);
 }
 
-export default Heading;
+export {
+	Heading
+}

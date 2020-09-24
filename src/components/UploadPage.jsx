@@ -1,32 +1,32 @@
 import React, {useState} from 'react';
 import Dropzone, {useDropzone} from 'react-dropzone';
 
-const UploadPage = ({updateState, updateDisplayFile}) => {
+const UploadPage = ({updateState, updateDisplayFile, changeFilename}) => {
 	
 	const [file, updateFile] = useState(null);
 	const [tags, updateTags] = useState(null);
 
-	const dropped = async (file) => {
+	const dropped = async (f) => {
 		// add selected file to the state
-		await updateFile(file[0]);
+		await updateFile(f[0]);
 	}
 
 	const upload = async () => {
 		if (file === null) return;
+		let title = document.getElementById('texttitle').value;
 		// grab metadata tags
 		let tags = document.getElementById("metatags").value.split(" ");
 		// filter empty strings
 		const filtered = tags.filter((elem) => { return elem.length != 0 });
 		// add supplied file and the tags to the form data
-		const text = {"textfile": file, "tags": filtered};
+		const text = {"title": title, "textfile": file, "tags": filtered};
 		// send the post request
 		const resp = await fetch('/upload', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(text)});
 		console.log(resp);
 
 		const blob = new Blob([file], {"type": "application/pdf"});
-		console.log(blob);
-		//const url = URL.createObjectURL(blob);
 		await updateDisplayFile(blob);
+		await changeFilename(file.name);
 		await updateState(3);
 	}
 
@@ -43,10 +43,13 @@ const UploadPage = ({updateState, updateDisplayFile}) => {
 			)}
 		</Dropzone>
 		<div id="tags">
+		<input id="texttitle" type="text" placeholder="put your title here"/>
 		<input id="metatags" type="text" placeholder="put metadata tags here, separated by commas"/>
 		<button id="submit" type="submit" onClick={upload}>Upload</button>
 		</div>
 	</div>);
 }
 
-export default UploadPage;
+export {
+	UploadPage
+}

@@ -112,4 +112,6 @@ const LoginPage = () => {
 	</div>);
 }
 
-export default LoginPage;
+export {
+	LoginPage
+}
