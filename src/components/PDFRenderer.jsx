@@ -2,9 +2,33 @@ import React, { useState } from 'react';
 import { Footer } from './Footer';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 
+const PostComment = () => {
+	return (<div id="postcomment">
+		<input id="originalpost" type="input" placeholer="put your comment here"/>
+		<div id="subbuttonwrapper"><button id="subbutton">Submit</button></div>
+	</div>);
+}
+
+const Comment = ({text, poster}) => {
+	return (<div className="commentcard">
+		<div className="poster">Posted by: {poster}</div>
+		<div className="postcontent">{text}</div>
+	</div>);
+}
+
 const Comments = () => {
+	
+	let arr = [
+		{"text": "Hello there", "poster": "admin"},
+		{"text": "Anarchy is cool", "poster": "dissenter"},
+		{"text": "My name is Josh", "poster": "Josh"}
+	];
+
 	return (<div id="comments">
-		Comments
+		<PostComment/>
+		{arr.map(ar => {
+			return (<Comment text={ar["text"]} poster={ar["poster"]}/>);
+		})}
 	</div>);
 }
 

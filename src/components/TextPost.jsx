@@ -4,7 +4,7 @@ const TextPost = ({title, user, tags, file, updateState, updateDisplayFile, chan
 	
 	const display = async () => {
 		console.log(file["data"]);
-		const blob = new Blob([file["data"]], {"type": "application/pdf"});
+		const blob = new Blob([file], {"type": "application/pdf"});
 		console.log(blob);
 		await updateDisplayFile(blob);
 		await changeFilename(title);

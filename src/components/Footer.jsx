@@ -22,7 +22,7 @@ const Footer = ({updateState}) => {
 		</div>
 		<div className="footcolumn">
 			<div className="footerheads">Development</div>
-			<div className="footerlinks">Code</div>
+			<div className="footerlinks"><a href="https://github.com/gavinbarrett/PhiloSource">Code</a></div>
 			<div className="footerlinks">Contact</div>
 		</div>
 	</div>);

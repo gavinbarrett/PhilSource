@@ -1,7 +1,9 @@
+const fs = require('fs');
 const bcrypt = require('bcrypt');
 const mysql = require('mysql');
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 require('dotenv').config();
 
 const app = express();
@@ -13,6 +15,11 @@ const database = mysql.createConnection({
 	password: 'rootpass',
 	database: 'philsource'
 });
+
+// const CREATE_USERS = `CREATE TABLE`;
+
+// FIXME: establish database if one does not exist
+
 
 // serve from the dist directory
 app.use(express.static(__dirname + '/dist'));
@@ -83,6 +90,16 @@ const checkForUser = async (user) => {
 	});
 }
 
+const hashFile = async (file) => {
+	return new Promise((resolve, reject) => {
+		const shasum = crypto.createHash('sha256');
+		const stream = fs.createReadStream(file);
+		stream.on('error', err => reject(err));
+		stream.on('data', data => shasum.update(data));
+		stream.on('end', () => resolve(shasum.digest('hex')));
+	});
+}
+
 
 app.post('/text_query', async (req, res) => {
 	const { query } = req.body;
@@ -105,15 +122,18 @@ app.post('/text_query', async (req, res) => {
 app.put('/upload', async (req, res) => {
 	const {title, textfile, tags} = req.body;
 
-	console.log(textfile["path"]);
+	console.log(textfile);
 	console.log(tags[0]);
 
 	// FIXME: hash file
-
 	const user = 'admin';
 
 	const file = textfile["path"];
 	// title, user, tags, file
+
+	// FIXME: fix hashing function
+	const hash = await hashFile(file);
+	console.log(`sha256sum: ${hash}`);
 
 	const CMD = `INSERT INTO texts (title, user, tags, file) VALUES ("${title}", "${user}", "${tags[0]}", "${file}");`;
 
