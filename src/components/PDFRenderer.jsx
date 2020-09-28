@@ -26,8 +26,8 @@ const Comments = () => {
 
 	return (<div id="comments">
 		<PostComment/>
-		{arr.map(ar => {
-			return (<Comment text={ar["text"]} poster={ar["poster"]}/>);
+		{arr.map((ar, index) => {
+			return (<Comment key={index} text={ar["text"]} poster={ar["poster"]}/>);
 		})}
 	</div>);
 }
@@ -94,7 +94,7 @@ const PDFRenderer = ({file, name, updateState}) => {
 		</div>
 		<Comments/>
 	</div>
-	<Footer updateState={updateState}/>
+	<Footer/>
 	</>);
 }
 

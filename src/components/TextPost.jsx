@@ -1,6 +1,8 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 
-const TextPost = ({title, user, tags, file, updateState, updateDisplayFile, changeFilename}) => {
+const TextPost = ({title, user, tags, file, updateDisplayFile, changeFilename}) => {
+	const history = useHistory();
 	
 	const display = async () => {
 		console.log(file["data"]);
@@ -8,7 +10,7 @@ const TextPost = ({title, user, tags, file, updateState, updateDisplayFile, chan
 		console.log(blob);
 		await updateDisplayFile(blob);
 		await changeFilename(title);
-		await updateState(3);
+		history.push('/pdfrenderer');
 	}
 
 	return (<div id="postwrapper" onClick={display}>

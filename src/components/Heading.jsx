@@ -1,33 +1,41 @@
 import React from 'react';
+import { BrowserRouter as Router, Link, useHistory, useRouteMatch } from 'react-router-dom';
 
 const AppTitle = () => {
-	return (<div id="title">PhiloSource</div>);
-}
-
-const Links = ({updateState}) => {
-	return (<div id="links">
-		<UploadLink updateState={updateState}/> | <SignInLink updateState={updateState}/>
+	// Link to home page
+	return (<div id="title">
+		<Link to='/'>PhiloSource</Link>
 	</div>);
 }
 
-const UploadLink = ({updateState}) => {
-	// render upload page
-	const upload = () => { updateState(2); }
-
-	return (<div id="uploadlink" onClick={upload}>Upload</div>);
+const ProfileCard = ({user}) => {
+	return (<div id="signinlink">{user}</div>);
 }
 
-const SignInLink = ({updateState}) => {
+const Links = ({user}) => {
+	return (<div id="links">
+		<UploadLink/> | {user ? <ProfileCard user={user}/> : <SignInLink/>}
+	</div>);
+}
+
+const UploadLink = () => {
+	// Link to upload page
+	return (<div id="uploadlink">
+		<Link to='/upload'>Upload</Link>
+	</div>);
+}
+
+const SignInLink = () => {
 	// render sign in page
-	const signin = () => { updateState(1); }
-
-	return (<div id="signinlink" onClick={signin}>Sign In</div>);
+	return (<div id="signinlink">
+		<Link to='/login'>Sign In</Link>
+	</div>);
 }
 
-const Heading = ({updateState}) => {
+const Heading = ({user}) => {
 	return (<div id="heading">
 		<AppTitle/>
-		<Links updateState={updateState}/>
+		<Links user={user}/>
 	</div>);
 }
 

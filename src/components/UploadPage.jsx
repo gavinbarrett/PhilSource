@@ -1,10 +1,12 @@
 import React, {useState} from 'react';
 import Dropzone, {useDropzone} from 'react-dropzone';
+import { useHistory } from 'react-router-dom';
 
-const UploadPage = ({updateState, updateDisplayFile, changeFilename}) => {
+const UploadPage = ({updateDisplayFile, changeFilename}) => {
 	
 	const [file, updateFile] = useState(null);
 	const [tags, updateTags] = useState(null);
+	const history = useHistory();
 
 	const dropped = async (f) => {
 		// add selected file to the state
@@ -21,13 +23,11 @@ const UploadPage = ({updateState, updateDisplayFile, changeFilename}) => {
 		// add supplied file and the tags to the form data
 		const text = {"title": title, "textfile": file, "tags": filtered};
 		// send the post request
-		const resp = await fetch('/upload', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(text)});
-		console.log(resp);
-
+		const resp = await fetch('/upload', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: text});
 		const blob = new Blob([file], {"type": "application/pdf"});
 		await updateDisplayFile(blob);
 		await changeFilename(file.name);
-		await updateState(3);
+		history.push('/pdfrenderer');
 	}
 
 	return (<div id="uploadpagewrapper">

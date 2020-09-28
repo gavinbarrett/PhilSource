@@ -10,6 +10,9 @@ const Categories = [
 	"Postmodernism",
 	"Platonism",
 	"Political Philosophy",
+	"Metaethics",
+	"Analytic Phil.",
+	"Ancient Greek Phil."
 ];
 
 export {

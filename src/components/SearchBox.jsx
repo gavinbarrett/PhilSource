@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
-const SearchInput = ({updateState, updateSearchResults}) => {
+const SearchInput = ({updateSearchResults}) => {
 
 	const [input, updateInput] = useState('');
 	const [suggestions, updateSuggestions] = useState([]);
+	const history = useHistory();
 
 	useEffect(() => {
 		document.addEventListener('keydown', checkQuery);
@@ -38,7 +40,7 @@ const SearchInput = ({updateState, updateSearchResults}) => {
 		// update search results
 		await updateSearchResults(res);
 		// change page to search display page
-		await updateState(4);
+		history.push('/searchresults');
 	}
 
 	return (<div id="searchinput">
@@ -52,10 +54,10 @@ const SearchInput = ({updateState, updateSearchResults}) => {
 	</div>);
 }
 
-const SearchBox = ({updateState, updateSearchResults}) => {
+const SearchBox = ({updateSearchResults}) => {
 	return (<div id="searchwrapper">
 		<div id="searchbox">
-			<SearchInput updateState={updateState} updateSearchResults={updateSearchResults}/>
+			<SearchInput updateSearchResults={updateSearchResults}/>
 		</div>
 	</div>);
 }

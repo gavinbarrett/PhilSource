@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { FeatureCard } from './FeatureCard';
+import { Categories } from './Categories';
 
 const Features = () => {
 	
 	const [state, changeState] = useState(0);
+
+	const current_feats = ['Feminism', 'Phil. of Science', 'Existentialism', 'Phenomenology', 'Metaphysics', 'Phil. of Mind', 'Logic', 'Metaethics', 'Skepticism'];
 
 	const flipState = () => {
 		state ? changeState(0) : changeState(1);
@@ -39,12 +42,11 @@ const Features = () => {
 		<div id="browseall" onClick={handleBrowse}>Browse All</div>
 	</div>
 	<div id="features">
-		<FeatureCard featname={"Feminism"}/>
-		<FeatureCard featname={"Phil of Science"}/>
-		<FeatureCard featname={"Existentialism"}/>
-		<FeatureCard featname={"Phenomenology"}/>
-		<FeatureCard featname={"Metaphysics"}/>
-		<FeatureCard featname={"Philosophy of Mind"}/>
+		{state ? Categories.map((feature, index) => {
+			return <FeatureCard key={index} featname={feature}/>
+			}) : current_feats.map((feature, index) => {
+				return <FeatureCard key={index} featname={feature}/>;
+		})}
 	</div>
 	</div>);
 }

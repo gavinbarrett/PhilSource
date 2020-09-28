@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 const Username = () => {
 	return (<input id="username" type="text"/>);
@@ -19,7 +20,9 @@ const Emailer = () => {
 	return (<input id="emailer" type="text"/>);
 }
 
-const SignUpBox = () => {
+const SignUpBox = ({updateUser, updateToken}) => {
+	
+	const history = useHistory();
 	
 	const signup = async () => {
 
@@ -36,7 +39,13 @@ const SignUpBox = () => {
 		const data = {"user": user,"pass": pass, "email": email};
 
 		const resp = await fetch('/sign_up', {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)});
-		console.log(resp);
+		const response = await resp.json();
+		console.log(response);
+		// update jwtoken for the one logged in
+		updateUser(response["user"]);
+		updateToken(response["token"]);
+		// update name of logged in 
+		history.push('/');
 	}
 
 	return (<div className="loginbox">
@@ -52,7 +61,9 @@ const SignUpBox = () => {
 	</div>);
 }
 
-const SignInBox = () => {
+const SignInBox = ({updateUser, updateToken}) => {
+	
+	const history = useHistory();
 
 	const signin = () => {
 		const user = document.getElementById('username').value;
@@ -60,6 +71,7 @@ const SignInBox = () => {
 		const data = {"user": user, "pass": pass};
 		const resp = fetch('/sign_in', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)});
 		console.log(resp);
+		history.push('/');
 	}
 
 	return (<div className="loginbox">
@@ -71,7 +83,7 @@ const SignInBox = () => {
 	</div>);
 }
 
-const LoginPage = () => {
+const LoginPage = ({updateUser, updateToken}) => {
 	
 	const [state, changeState] = useState(0);
 
@@ -107,7 +119,7 @@ const LoginPage = () => {
 		<div id="signinselect" onClick={signin}>Sign In</div>
 		<div id="signupselect" onClick={signup}>Sign Up</div>
 		</div>
-		{state ? <SignUpBox/> : <SignInBox/>}
+		{state ? <SignUpBox updateUser={updateUser} updateToken={updateToken}/> : <SignInBox updateUser={updateUser} updateToken={updateToken}/>}
 		</div>
 	</div>);
 }

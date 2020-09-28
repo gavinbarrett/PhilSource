@@ -110,7 +110,7 @@ input[type="text"] {
 .featurecard {
 	width: 25vw;
 	height: 25vh;
-	background: #3d5a80;
+	background: url('feminism.jpg');
 	color: #e0fbfc;
 	margin: 3%;
 	display: flex;
