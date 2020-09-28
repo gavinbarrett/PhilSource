@@ -99,6 +99,7 @@ input[type="text"] {
 }
 
 #features {
+	width: 100vw;
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
@@ -123,8 +124,8 @@ input[type="text"] {
 }
 
 .featurecard:hover {
-	background: #98c1d9;
 	cursor: pointer;
+	filter: brightness(130%);
 }
 
 #featurewrapper {

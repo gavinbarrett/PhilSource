@@ -19,7 +19,7 @@ const App = () => {
 	return (<Switch>
 		<Route path='/' exact render={() => <LandingPage user={user} updateSearchResults={updateSearchResults}/>}/>
 		<Route path='/login' render={() => <LoginPage updateUser={updateUser} updateToken={updateToken}/>}/>
-		<Route path='/upload' render={() => <UploadPage updateDisplayFile={updateDisplayFile} changeFilename={changeFilename}/>}/>
+		<Route path='/upload' render={() => <UploadPage user={user} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename}/>}/>
 		<Route path='/pdfrenderer' render={() => <PDFRenderer file={displayFile} name={filename}/>}/>
 		<Route path='/searchresults' render={() => <SearchResults results={searchResults} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename}/>}/>
 		<Route render={() => <PageNotFound/>}/>

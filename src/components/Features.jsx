@@ -6,7 +6,11 @@ const Features = () => {
 	
 	const [state, changeState] = useState(0);
 
-	const current_feats = ['Feminism', 'Phil. of Science', 'Existentialism', 'Phenomenology', 'Metaphysics', 'Phil. of Mind', 'Logic', 'Metaethics', 'Skepticism'];
+	const current_feats = [
+			{"category": "Feminism", "path": "feminism.jpg"},
+			{"category": "Phil. of Science", "path": "science.jpg"},
+			{"category": "Existentialism", "path": "wanderer.jpg"}
+		];
 
 	const flipState = () => {
 		state ? changeState(0) : changeState(1);
