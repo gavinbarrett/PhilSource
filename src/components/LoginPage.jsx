@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Heading } from './Heading';
+import { Footer } from './Footer';
 import { useHistory } from 'react-router-dom';
 
 const Username = () => {
@@ -96,8 +98,10 @@ const LoginPage = ({updateUser, updateToken}) => {
 		const si = document.getElementById('signinselect');
 		const su = document.getElementById('signupselect');
 		const lb = document.getElementsByClassName('loginbox')[0];
-		si.style.background = '#E0FBFC';
-		su.style.background = '#293241';
+		su.style.background = '#3D5A80';
+		si.style.background = '#293241';
+		//su.style.color = 'black';
+		//si.style.color = 'white';
 		lb.style.borderRadius = '0px 10px 10px 10px';
 		flipState();
 	}
@@ -107,13 +111,16 @@ const LoginPage = ({updateUser, updateToken}) => {
 		const si = document.getElementById('signinselect');
 		const su = document.getElementById('signupselect');
 		const lb = document.getElementsByClassName('loginbox')[0];
-		si.style.background = '#293241';
-		su.style.background = '#E0FBFC';
+		su.style.background = '#293241';
+		si.style.background = '#3D5A80';
+		//su.style.color = 'white';
+		//si.style.color = 'black';
 		lb.style.borderRadius = '10px 10px 10px 10px';
 		flipState();
 	}
 
-	return (<div id="loginpagewrapper">
+	return (<><Heading/>
+	<div id="loginpagewrapper">
 		<div id="boxwrapper">
 		<div id="loginselector">
 		<div id="signinselect" onClick={signin}>Sign In</div>
@@ -121,7 +128,8 @@ const LoginPage = ({updateUser, updateToken}) => {
 		</div>
 		{state ? <SignUpBox updateUser={updateUser} updateToken={updateToken}/> : <SignInBox updateUser={updateUser} updateToken={updateToken}/>}
 		</div>
-	</div>);
+	</div>
+	<Footer/></>);
 }
 
 export {

@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import Dropzone, {useDropzone} from 'react-dropzone';
+import { Heading } from './Heading';
 import { Footer } from './Footer';
 import { useHistory } from 'react-router-dom';
 
@@ -46,7 +47,8 @@ const UploadPage = ({user, updateDisplayFile, changeFilename}) => {
 		history.push('/pdfrenderer');
 	}
 
-	return (<><div id="uploadpagewrapper">
+	return (<><Heading/>
+	<div id="uploadpagewrapper">
 		<Dropzone id="dropzone" type="file" accept="application/pdf" onDrop={dropped}>
 			{({getRootProps, getInputProps, isDragActive, isDragReject, acceptedFiles}) => (
 			<div id="dropper" {...getRootProps()}>

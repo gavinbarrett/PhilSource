@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Link, useHistory, useRouteMatch } from 'react-router-dom';
 
 const AppTitle = () => {
@@ -8,8 +8,36 @@ const AppTitle = () => {
 	</div>);
 }
 
+const ProfileDetail = ({user, toggle}) => {
+	
+	useEffect(() => {
+		document.getElementById("profilecard2").addEventListener("mouseleave", toggle);
+	}, []);
+
+	return (<div id="profilecard2">
+		<div id="avatarcard">
+		<img id="avatar" src="avatar.jpg"/>
+		<div id="cardname">{user}</div>
+		</div>
+	</div>);
+}
+
 const ProfileCard = ({user}) => {
-	return (<div id="signinlink">{user}</div>);
+	
+	const [button, updateButton] = useState(0);
+
+	useEffect(() => {
+		document.getElementById("profilecard").addEventListener("mouseover", toggle);
+	}, []);
+	
+	const toggle = async () => {
+		console.log('toggling');
+		button ? updateButton(0) : updateButton(1);
+	}
+
+	return (<div id="profilecard">
+		{button ? <ProfileDetail user={user} toggle={toggle}/> : user}
+	</div>);
 }
 
 const Links = ({user}) => {

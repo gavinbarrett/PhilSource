@@ -22,7 +22,7 @@ const App = () => {
 		<Route path='/login' render={() => <LoginPage updateUser={updateUser} updateToken={updateToken}/>}/>
 		<Route path='/upload' render={() => <UploadPage user={user} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename}/>}/>
 		<Route path='/pdfrenderer' render={() => <PDFRenderer file={displayFile} name={filename} hash={hash}/>}/>
-		<Route path='/searchresults' render={() => <SearchResults results={searchResults} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash}/>}/>
+		<Route path='/searchresults' render={() => <SearchResults results={searchResults["search_results"]} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash}/>}/>
 		<Route render={() => <PageNotFound/>}/>
 	</Switch>);
 }
