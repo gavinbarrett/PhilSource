@@ -1,11 +1,30 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Footer } from './Footer';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 
-const PostComment = () => {
+const PostComment = ({hash, getComments}) => {
+	
+	const [comment, updateComment] = useState(null);
+
+	const changeComment = async (event) => {
+		await updateComment(event.target.value);
+	}
+
+	const submitComment = async () => {
+		if (comment.length > 1000) return;
+		const resp = await fetch('/comment', {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({"post": comment, "user": "user", "hash": hash})});
+		const r = await resp.json();
+		// erase textarea text
+		await updateComment(null);
+		document.getElementById('originalpost').value = '';
+		getComments(hash);
+		console.log(r);
+	}
+
 	return (<div id="postcomment">
-		<input id="originalpost" type="input" placeholer="put your comment here"/>
-		<div id="subbuttonwrapper"><button id="subbutton">Submit</button></div>
+		<textarea id="originalpost" type="input" placeholer="put your comment here" onChange={changeComment}/>
+		<div>Bold Italic</div>
+		<div id="subbuttonwrapper"><button id="subbutton" onClick={submitComment}>Submit</button></div>
 	</div>);
 }
 
@@ -16,23 +35,33 @@ const Comment = ({text, poster}) => {
 	</div>);
 }
 
-const Comments = () => {
-	
-	let arr = [
-		{"text": "Hello there", "poster": "admin"},
-		{"text": "Anarchy is cool", "poster": "dissenter"},
-		{"text": "My name is Josh", "poster": "Josh"}
-	];
+const NoComments = () => {
+	return (<div className="noComment">"Be the first to comment!"</div>);
+}
 
+const Comments = ({hash}) => {
+	
+	const [posts, updatePosts] = useState([]);
+
+	useEffect(() => {
+		getComments(hash);
+	}, []);
+
+	const getComments = async (hash) => {
+		const resp = await fetch(`/get_comments/?hash=${hash}`, {method: "GET"});
+		const result = await resp.json();
+		await updatePosts(result["posts"]);
+	}
+	
 	return (<div id="comments">
-		<PostComment/>
-		{arr.map((ar, index) => {
-			return (<Comment key={index} text={ar["text"]} poster={ar["poster"]}/>);
-		})}
+		<PostComment hash={hash} getComments={getComments}/>
+		{posts ? posts.map((post, index) => {
+			return (<Comment key={index} text={post["post"]} poster={post["user"]}/>);
+		}) : <NoComments/>}
 	</div>);
 }
 
-const PDFRenderer = ({file, name, updateState}) => {
+const PDFRenderer = ({file, name, hash, updateState}) => {
 	
 	const [pageAmt, updatePageAmt] = useState(null);
 	const [pageNum, updatePageNum] = useState(1);
@@ -63,7 +92,10 @@ const PDFRenderer = ({file, name, updateState}) => {
 	const download = async () => {
 		let reader = new FileReader();
 		let link = document.createElement('a');
-		reader.readAsDataURL(file);
+		console.log(file);
+		console.log(Object.keys(file));
+		const f = new Blob(file["data"], {"type": "application/pdf"});
+		reader.readAsDataURL(f);
 		reader.onloadend = () => {
 			const x = reader.result;
 			link.setAttribute('href', x);
@@ -82,6 +114,7 @@ const PDFRenderer = ({file, name, updateState}) => {
 			<nav id="navbar">
 				<div id="movebuttons">
 					<button className="navbutton" disabled={prevenabled} onClick={prevPage}>Prev</button>
+					Page {pageNum} of {pageAmt}
 					<button className="navbutton" disabled={nextenabled} onClick={nextPage}>Next</button>
 				</div>
 				<button className="navbutton" onClick={download}>Download</button>
@@ -92,7 +125,7 @@ const PDFRenderer = ({file, name, updateState}) => {
 				</Document>
 			</div>
 		</div>
-		<Comments/>
+		<Comments hash={hash}/>
 	</div>
 	<Footer/>
 	</>);

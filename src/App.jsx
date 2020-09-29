@@ -12,6 +12,7 @@ const App = () => {
 	
 	const [user, updateUser] = useState(null);
 	const [token, updateToken] = useState(null);
+	const [hash, updateHash] = useState(null);
 	const [filename, changeFilename] = useState(null);
 	const [displayFile, updateDisplayFile] = useState(null);
 	const [searchResults, updateSearchResults] = useState([]);
@@ -20,8 +21,8 @@ const App = () => {
 		<Route path='/' exact render={() => <LandingPage user={user} updateSearchResults={updateSearchResults}/>}/>
 		<Route path='/login' render={() => <LoginPage updateUser={updateUser} updateToken={updateToken}/>}/>
 		<Route path='/upload' render={() => <UploadPage user={user} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename}/>}/>
-		<Route path='/pdfrenderer' render={() => <PDFRenderer file={displayFile} name={filename}/>}/>
-		<Route path='/searchresults' render={() => <SearchResults results={searchResults} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename}/>}/>
+		<Route path='/pdfrenderer' render={() => <PDFRenderer file={displayFile} name={filename} hash={hash}/>}/>
+		<Route path='/searchresults' render={() => <SearchResults results={searchResults} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash}/>}/>
 		<Route render={() => <PageNotFound/>}/>
 	</Switch>);
 }

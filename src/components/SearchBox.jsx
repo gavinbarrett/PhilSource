@@ -28,8 +28,11 @@ const SearchInput = ({updateSearchResults}) => {
 		// return the objects
 		const res = await resp.json();
 		console.log(res);
+		
+		const titles = Array.from(res["search_results"], res => res["title"]);
+		const uniq = [...new Set(titles)];
 		// update search suggestion box
-		await updateSuggestions(res["search_results"]);
+		await updateSuggestions(uniq);
 	}
 
 	const filterSearch = async () => {
@@ -47,7 +50,7 @@ const SearchInput = ({updateSearchResults}) => {
 		<input id="searchinputbox" list="suggs" type="text" placeholder="search for titles and metadata tags of texts here" onChange={filterInput}/>
 		<datalist id="suggs">
 			{suggestions.map((sug, index) => {
-				return <option key={index} value={sug["title"]}/>
+				return <option key={index} value={sug}/>
 			})}
 		</datalist>
 		<button onClick={filterSearch}>Search</button>

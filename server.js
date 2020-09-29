@@ -161,6 +161,37 @@ const insertTextIntoDB = (rawfile) => {
 	});
 }
 
+app.post('/comment', async (req, res) => {
+	const { post, user, hash } = req.body;
+	// FIXME: check user jwt credentials
+	const CMD = `INSERT INTO comments (post, user, hash) VALUES (?, ?, ?);`
+	const values = [post, user, hash];
+	const resp = await new Promise((resolve, reject) => {
+		database.query(CMD, values, (err, rows) => {
+			if (err) resolve(false);
+			resolve(true);
+		});
+	});
+	resp ? res.send(JSON.stringify({"status":"success"})) : res.send(JSON.stringify({"status":"failure"}));
+});
+
+app.get('/get_comments', async (req, res) => {
+	const hash = req.query["hash"];
+	// FIXME: pull comments from the db
+	console.log(hash);
+
+	const CMD = `SELECT * FROM comments WHERE hash=?`;
+	const values = [hash];
+	const resp = await new Promise((resolve, reject) => {
+		database.query(CMD, values, (err, rows) => {
+			if (err) resolve(false);
+			(rows[0] == undefined) ? resolve(null) : resolve(rows);
+		});
+	});
+	console.log(resp);
+	res.send(JSON.stringify({"posts": resp}));
+});
+
 // upload pdf file
 app.put('/upload', upload.single('textfile'), async (req, res) => {
 	// FIXME: check authenticity of user's jwt

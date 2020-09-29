@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 const zlib = require('zlib');
 
-const TextPost = ({title, user, tags, file, hash, updateDisplayFile, changeFilename}) => {
+const TextPost = ({title, user, tags, file, hash, updateDisplayFile, changeFilename, updateHash}) => {
 
 	const [digest, updateDigest] = useState(null);
 	const history = useHistory();
@@ -29,6 +29,7 @@ const TextPost = ({title, user, tags, file, hash, updateDisplayFile, changeFilen
 		// FIXME: uncompress file and transform from base64 to pdf
 		const blob = new Blob([bfile], {"type": "application/pdf"});
 		await updateDisplayFile(bfile);
+		await updateHash(hash);
 		await changeFilename(title);
 		history.push('/pdfrenderer');
 	}

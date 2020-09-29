@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, {useState} from 'react';
 import Dropzone, {useDropzone} from 'react-dropzone';
 import { Footer } from './Footer';
@@ -40,7 +39,6 @@ const UploadPage = ({user, updateDisplayFile, changeFilename}) => {
 		// FIXME: check response object
 		const resp = await fetch('/upload', {method: 'PUT', body: formData});
 		
-		//const resp = await axios.post('/upload');
 		console.log(resp);
 		const blob = new Blob([file], {"type": "application/pdf"});
 		await updateDisplayFile(blob);
