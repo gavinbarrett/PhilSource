@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Link, useHistory, useRouteMatch } from 'react-router-dom';
+import { BrowserRouter as Router, Link, useHistory } from 'react-router-dom';
 
 const AppTitle = () => {
 	// Link to home page
@@ -10,11 +10,13 @@ const AppTitle = () => {
 
 const ProfileDetail = ({user, toggle}) => {
 	
+	const history = useHistory();
+
 	useEffect(() => {
 		document.getElementById("profilecard2").addEventListener("mouseleave", toggle);
 	}, []);
 
-	return (<div id="profilecard2">
+	return (<div id="profilecard2" onClick={ () => history.push('/profile') }>
 		<div id="avatarcard">
 		<img id="avatar" src="avatar.jpg"/>
 		<div id="cardname">{user}</div>

@@ -1,18 +1,26 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { Heading } from './Heading';
 import { Footer } from './Footer';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 
-const PostComment = ({hash, getComments}) => {
+const PostComment = ({token, hash, getComments}) => {
 	
 	const [comment, updateComment] = useState(null);
+	const history = useHistory();
 
 	const changeComment = async (event) => {
 		await updateComment(event.target.value);
 	}
 
 	const submitComment = async () => {
+		console.log(`comment: ${comment}`);
 		if (comment.length > 1000) return;
-		const resp = await fetch('/comment', {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({"post": comment, "user": "user", "hash": hash})});
+		if (comment == null) return;
+		// redirect to login page if no jwt exists
+		if (token == null) history.push('/login');
+		// send comment post request
+		const resp = await fetch('/comment', {method: "POST", headers: {"authorization": `Bearer ${token}`, "Content-Type": "application/json"}, body: JSON.stringify({"post": comment, "hash": hash})});
 		const r = await resp.json();
 		// erase textarea text
 		await updateComment(null);
@@ -39,7 +47,7 @@ const NoComments = () => {
 	return (<div className="noComment">"Be the first to comment!"</div>);
 }
 
-const Comments = ({hash}) => {
+const Comments = ({token, hash}) => {
 	
 	const [posts, updatePosts] = useState([]);
 
@@ -54,14 +62,14 @@ const Comments = ({hash}) => {
 	}
 	
 	return (<div id="comments">
-		<PostComment hash={hash} getComments={getComments}/>
+		<PostComment token={token} hash={hash} getComments={getComments}/>
 		{posts ? posts.map((post, index) => {
 			return (<Comment key={index} text={post["post"]} poster={post["user"]}/>);
 		}) : <NoComments/>}
 	</div>);
 }
 
-const PDFRenderer = ({file, name, hash, updateState}) => {
+const PDFRenderer = ({user, token, file, name, hash, updateState}) => {
 	
 	const [pageAmt, updatePageAmt] = useState(null);
 	const [pageNum, updatePageNum] = useState(1);
@@ -109,7 +117,8 @@ const PDFRenderer = ({file, name, hash, updateState}) => {
 		}
 	}
 
-	return (<><div id="pdfrendererwrapper">
+	return (<><Heading user={user}/>
+	<div id="pdfrendererwrapper">
 		<div id="pdfcontroller">
 			<nav id="navbar">
 				<div id="movebuttons">
@@ -125,7 +134,7 @@ const PDFRenderer = ({file, name, hash, updateState}) => {
 				</Document>
 			</div>
 		</div>
-		<Comments hash={hash}/>
+		<Comments token={token} hash={hash}/>
 	</div>
 	<Footer/>
 	</>);

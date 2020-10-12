@@ -33,11 +33,17 @@ const SignUpBox = ({updateUser, updateToken}) => {
 		const pass = document.getElementById('password').value;
 		const passretyped = document.getElementById('passwordretype').value;
 		const email = document.getElementById('emailer').value;
+		const regex = new RegExp(/\w+@\w+\.\w+/);
 		// FIXME: throw error if any of these are missing
 		// FIXME: enforce requirements for username/password length and constitution
 		// FIXME: check for passwords to match
 		if (pass != passretyped) return;
-		
+
+		if (!email.match(regex)) {
+			console.log('regex does not match');
+			return;
+		}
+
 		const data = {"user": user,"pass": pass, "email": email};
 
 		const resp = await fetch('/sign_up', {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)});
@@ -67,13 +73,19 @@ const SignInBox = ({updateUser, updateToken}) => {
 	
 	const history = useHistory();
 
-	const signin = () => {
+	const signin = async () => {
 		const user = document.getElementById('username').value;
 		const pass = document.getElementById('password').value;
 		const data = {"user": user, "pass": pass};
-		const resp = fetch('/sign_in', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)});
-		console.log(resp);
+		const resp = await fetch('/sign_in', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)});
+		const response = await resp.json();
+		updateUser(response["user"]);
+		updateToken(response["token"]);
 		history.push('/');
+	}
+
+	const forgotPass = () => {
+		history.push('/forgot');
 	}
 
 	return (<div className="loginbox">
@@ -81,6 +93,9 @@ const SignInBox = ({updateUser, updateToken}) => {
 		<Username/>
 		<div className="logintext">Password</div>
 		<Password/>
+		<div className="forgotlink" onClick={forgotPass}>
+			Forgot Password
+		</div>
 		<button id="submit" type="submit" onClick={signin}>Sign In</button>
 	</div>);
 }
@@ -89,9 +104,7 @@ const LoginPage = ({updateUser, updateToken}) => {
 	
 	const [state, changeState] = useState(0);
 
-	const flipState = () => {
-		state ? changeState(0) : changeState(1);
-	}
+	const flipState = () => { state ? changeState(0) : changeState(1); }
 
 	const signin = () => {
 		if (state === 0) return;

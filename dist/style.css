@@ -84,7 +84,7 @@ body {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	width: 20vw;
+	width: 15vw;
 	height: 40vh;
 	background: #293241;
 	position: fixed;
@@ -104,11 +104,62 @@ body {
 	border-radius: 50%;
 }
 
+#largeavatar {
+	width: 20vw;
+	height: 30vh;
+	border-radius: 50%;
+}
+
+.barselect {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: 'Lato', sans-serif;
+	height: 10vh;
+	font-size: 2vw;
+	color: white;
+}
+
+.barselect:hover {
+	background: #98C1D9;
+	cursor: pointer;
+}
+
 #avatarcard {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+}
+
+#profile {
+	width: 100vw;
+	height: 73vh;
+	display: flex;
+}
+
+#profilebar {
+	width: 10vw;
+	height: 73vh;
+	display: flex;
+	flex-direction: column;
+	background: #3D5A80;
+	color: white;
+}
+
+#profilecontent {
+	width: 90vw;
+	height: 73vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background: white;
+}
+
+#profilename {
+	font-size: 2vw;
+	font-family: 'Lato', sans-serif;
 }
 
 #searchwrapper {
@@ -133,6 +184,60 @@ body {
 #searchinput {
 	display: flex;
 	flex-direction: row;
+}
+
+.forgotpasswrapper {
+	height: 70vh;
+	width: 100vw;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: url(phil.png);
+}
+
+.forgotemail {
+	width: 60vw;
+	height: 60vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background: #293241;
+	border-radius: 10px;
+}
+
+.forgotlink {
+	width: 40vw;
+	display: flex;
+	justify-content: flex-start;
+	font-family: 'Lato', sans-serif;
+	color: white;
+}
+
+.forgotlink:hover {
+	cursor: pointer;
+}
+
+.femail {
+	width: 40vw;
+}
+
+.emailbutton {
+	width: 40vw;
+}
+
+.resetsuccess {
+	width: 60vw;
+	height: 60vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: #293241;
+	border-radius: 10px;
+	color: white;
+	margin: 5%;
+	font-size: 2vw;
+	font-family: 'Lato', sans-serif;
 }
 
 input[type="text"] {

@@ -6,7 +6,9 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const multer = require('multer');
+const nodemailer = require('nodemailer');
 const Duplex = require('stream').Duplex;
+// require environment access token
 require('dotenv').config();
 
 const app = express();
@@ -15,6 +17,7 @@ const PORT = process.env.PORT || 5555;
 // store files in memory
 const upload = multer({storage: multer.memoryStorage()});
 
+// connect to database
 const database = mysql.createConnection({
 	host: 'localhost',
 	user: 'root',
@@ -67,6 +70,20 @@ const checkHashes = async (pass, hashword) => {
 	});
 }
 
+const authUser = async (req, res, next) => {
+	console.log('Authing user');
+	const auth = req.headers["authorization"];
+	console.log(auth);
+	const token = auth && auth.split(' ')[1];
+	console.log(`token: ${token}`);
+	if (token == null || token == undefined) return res.sendStatus(401);
+	jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+		if (err) return res.sendStatus(403);
+		console.log('user authed');
+		req.user = user;
+		next();
+	});
+}
 
 const addUser = async (user, pass, email) => {
 	console.log(`Adding user: ${user}`);
@@ -108,6 +125,42 @@ const hashFile = async (file) => {
 		stream.pipe(shasum);
 	});
 }
+
+const sendPasswordRecoverLink = async () => {
+	console.log('sending email');
+	let testAccount = await nodemailer.createTestAccount();
+	let transporter = nodemailer.createTransport({
+		service: "gmail",
+    	auth: {
+    	  user: "philsource247@gmail.com",
+    	  pass: "Hardpassword",
+		}
+	});
+	let info = await transporter.sendMail({
+		from: '"Philsource" <philsource247@gmail.com>',
+		to: 'gavinbrrtt@gmail.com',
+		subject: 'Hello! This is a new record!',
+		text: 'yo buddy'
+	});
+}
+
+app.post('/forgot', async (req, res) => {
+	const { email } = req.body;
+	const CMD = 'SELECT * FROM users WHERE Email = ?';
+	const values = [email];
+	// search for the user's email in the user table
+	const resp = await new Promise((resolve, reject) => {
+		database.query(CMD, values, (err, rows) => {
+			console.log(rows);
+			if (err || !rows.length) resolve(false);
+			resolve(true);
+		})
+	});
+	// send an email if the email address was in the database
+	if (resp) sendPasswordRecoverLink();
+
+	resp ? res.send(JSON.stringify({"status":"success"})) : res.send(JSON.stringify({"status":"failure"}));
+});
 
 app.post('/text_query', async (req, res) => {
 	const { query } = req.body;
@@ -161,9 +214,9 @@ const insertTextIntoDB = (rawfile) => {
 	});
 }
 
-app.post('/comment', async (req, res) => {
-	const { post, user, hash } = req.body;
-	// FIXME: check user jwt credentials
+app.post('/comment', authUser, async (req, res) => {
+	const { post, hash } = req.body;
+	const user = req.user["user"];
 	const CMD = `INSERT INTO comments (post, user, hash) VALUES (?, ?, ?);`
 	const values = [post, user, hash];
 	const resp = await new Promise((resolve, reject) => {
@@ -193,9 +246,11 @@ app.get('/get_comments', async (req, res) => {
 });
 
 // upload pdf file
-app.put('/upload', upload.single('textfile'), async (req, res) => {
+app.put('/upload', upload.single('textfile'), authUser, async (req, res) => {
 	// FIXME: check authenticity of user's jwt
-	const { title, tags, user } = req.body;
+	console.log('uploading');
+	const { title, tags } = req.body;
+	const user = req.user["user"];
 	// title, user, tags, file
 	const rawfile = req.file["buffer"];
 	const file = Buffer.from(rawfile);
@@ -231,7 +286,7 @@ app.post('/sign_in', async (req, res) => {
 		if (hashed) {
 			console.log('hashes match!');
 			const token = jwt.sign({"user": user}, process.env.ACCESS_TOKEN_SECRET);
-			res.send(JSON.stringify({"user": user, "access token": token}));
+			res.send(JSON.stringify({"user": user, "token": token}));
 		} else
 			res.send(JSON.stringify({"access token": "failed"}));
 	} catch (err) {

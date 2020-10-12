@@ -2,11 +2,13 @@ import React, {useState} from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route, Link, Switch, useRouteMatch } from 'react-router-dom';
 import { LandingPage } from './components/LandingPage';
+import { Profile } from './components/Profile';
 import { LoginPage } from './components/LoginPage';
 import { UploadPage } from './components/UploadPage';
 import { PDFRenderer } from './components/PDFRenderer';
 import { SearchResults } from './components/SearchResults';
 import { PageNotFound } from './components/PageNotFound';
+import { ForgotPassword } from './components/ForgotPassword';
 
 const App = () => {
 	
@@ -20,9 +22,11 @@ const App = () => {
 	return (<Switch>
 		<Route path='/' exact render={() => <LandingPage user={user} updateSearchResults={updateSearchResults}/>}/>
 		<Route path='/login' render={() => <LoginPage updateUser={updateUser} updateToken={updateToken}/>}/>
-		<Route path='/upload' render={() => <UploadPage user={user} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename}/>}/>
-		<Route path='/pdfrenderer' render={() => <PDFRenderer file={displayFile} name={filename} hash={hash}/>}/>
-		<Route path='/searchresults' render={() => <SearchResults results={searchResults["search_results"]} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash}/>}/>
+		<Route path='/forgot' render={() => <ForgotPassword/>}/>
+		<Route path='/upload' render={() => <UploadPage user={user} token={token} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename}/>}/>
+		<Route path='/profile' render={() => <Profile user={user}/>}/>
+		<Route path='/pdfrenderer' render={() => <PDFRenderer user={user} token={token} file={displayFile} name={filename} hash={hash}/>}/>
+		<Route path='/searchresults' render={() => <SearchResults user={user} results={searchResults["search_results"]} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash} updateSearchResults={updateSearchResults}/>}/>
 		<Route render={() => <PageNotFound/>}/>
 	</Switch>);
 }
