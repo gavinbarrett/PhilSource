@@ -9,6 +9,7 @@ import { PDFRenderer } from './components/PDFRenderer';
 import { SearchResults } from './components/SearchResults';
 import { PageNotFound } from './components/PageNotFound';
 import { ForgotPassword } from './components/ForgotPassword';
+import './components/sass/App.scss';
 
 const App = () => {
 	

@@ -1,0 +1,32 @@
+#footer {
+	width: 100vw;
+	height: 15vh;
+	background: #293241;
+	color: #e0fbfc;
+	font-size: 1vw;
+	font-family: 'Lato', sans-serif;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+.footcolumn {
+	display: flex;
+	flex-direction: column;
+	width: 30vw;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.footerheads {
+	text-decoration: underline;
+}
+
+.footerlinks {
+
+}
+
+.footerlinks:hover {
+	color: #3d5a80;
+	cursor: pointer;
+}
+

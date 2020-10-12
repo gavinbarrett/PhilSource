@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Heading } from './Heading';
 import { Footer } from './Footer';
 import { useHistory } from 'react-router-dom';
+import './sass/LoginPage.scss';
 
 const Username = () => {
 	return (<input id="username" type="text"/>);

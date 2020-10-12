@@ -1,0 +1,25 @@
+#searchbox {
+	height: 50%;
+	width: 65vw;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 7px;
+	background: #293241;
+}
+
+#searchwrapper {
+	height: 48vh;
+	width: 100vw;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-image: url('assets/phil.png');
+}
+
+#searchinput {
+	display: flex;
+	flex-direction: row;
+}
+
+

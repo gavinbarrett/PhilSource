@@ -7,6 +7,21 @@ module.exports = {
 				test: /\.(js|jsx)$/,
 				exclude: /node_modules/,
 				use: ['babel-loader'],
+			},
+			{
+				test: /\.scss$/,
+				exclude: /node_modules/,
+				use: [
+					{ 
+						loader: 'style-loader'
+					},
+					'css-loader',
+					'sass-loader'
+				]
+			},
+			{
+				test: /\.(png|jpg)$/,
+				loader: 'url-loader',
 			}
 		]
 	},

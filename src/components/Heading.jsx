@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Link, useHistory } from 'react-router-dom';
+import './sass/Heading.scss';
 
 const AppTitle = () => {
 	// Link to home page

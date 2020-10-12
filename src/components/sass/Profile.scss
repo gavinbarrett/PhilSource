@@ -1,0 +1,46 @@
+#profile {
+	width: 100vw;
+	height: 73vh;
+	display: flex;
+}
+
+#profilebar {
+	width: 10vw;
+	height: 73vh;
+	display: flex;
+	flex-direction: column;
+	background: #3D5A80;
+	color: white;
+}
+.barselect {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: 'Lato', sans-serif;
+	height: 10vh;
+	font-size: 2vw;
+	color: white;
+}
+
+.barselect:hover {
+	background: #98C1D9;
+	cursor: pointer;
+}
+#profilecontent {
+	width: 90vw;
+	height: 73vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background: white;
+}
+#largeavatar {
+	width: 20vw;
+	height: 30vh;
+	border-radius: 50%;
+}
+#profilename {
+	font-size: 2vw;
+	font-family: 'Lato', sans-serif;
+}

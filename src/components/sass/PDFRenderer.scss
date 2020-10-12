@@ -1,0 +1,129 @@
+#movebuttons {
+	width: 30vw;
+	display: flex;
+	justify-content: space-evenly;
+	font-family: 'Lato', sans-serif;
+}
+
+#navbar {
+	width: 60vw;
+	height: 20vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.navbutton {
+	height: 5vh;
+	width: 10vw;
+	background: #3d5a80;
+	color: #e0fbfc;
+	border: 0;
+	border-radius: 8px;
+}
+
+.navbutton:hover {
+	background: #293241;
+}
+
+.navbutton:disabled {
+	background: #98c1d9;
+}
+#postcomment {
+	display: flex;
+	flex-direction: column;
+	width: 55vw;
+	justify-content: center;
+	align-items: center;
+}
+
+#subbuttonwrapper {
+	display: flex;
+	width: 50vw;
+	justify-content: flex-end;
+}
+
+#subbutton {
+	width: 10vw;
+}
+
+#originalpost {
+	width: 50vw;
+	height: 30vh;
+	resize: none;
+	border-radius: 10px;
+	font-family: 'Lato', sans-serif;
+	font-size: 2vw;
+	border: 1px solid gray;
+}
+.noComment {
+	width: 50vw;
+	height: 15vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: 'Lato', sans-serif;
+	font-size: 1.5vw;
+}
+#pdfbox {
+	width: 60vw;
+	height: 80vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background: #e0fbfc;
+	border-radius: 10px;
+	padding-top: 15%;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+.commentcard {
+	width: 45vw;
+	height: 20vh;
+	background: white;
+	border-style: solid;
+	border-width: 1px;
+	border-color: gray;
+	border-radius: 10px;
+	margin: 5%;
+	padding: 3%;
+	font-family: 'Lato', sans-serif;
+}
+.poster {
+	font-size: 1vw;
+	font-weight: 4px;
+	color: black;
+}
+
+.postcontent {
+	font-size: 1vw;
+}
+#comments {
+	width: 60vw;
+	background: white;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	border-radius: 0px 0px 10px 10px;
+}
+
+#pdfrendererwrapper {
+	width: 100vw;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background: url('assets/phil.png');
+}
+
+#pdfcontroller {
+	width: 60vw;
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background: #e0fbfc;
+}

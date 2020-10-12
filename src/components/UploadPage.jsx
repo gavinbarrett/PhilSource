@@ -3,6 +3,7 @@ import Dropzone, {useDropzone} from 'react-dropzone';
 import { Heading } from './Heading';
 import { Footer } from './Footer';
 import { useHistory } from 'react-router-dom';
+import './sass/UploadPage.scss';
 
 const UploadPage = ({user, token, updateDisplayFile, changeFilename}) => {
 	

@@ -1,0 +1,92 @@
+#title {
+	font-family: 'Bebas Neue', cursive;
+	font-size: 4vw;
+	color: white;
+	padding: 5%;
+	cursor: pointer;
+}
+
+#avatarcard {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+#profilecard {
+	padding: 6%;
+	width: 10vw;
+	display: flex;
+	justify-content: flex-start;
+	overflow-x: hidden;
+}
+
+#profilecard2 {
+	color: #98c1d9;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	width: 15vw;
+	height: 40vh;
+	background: #293241;
+	position: fixed;
+	color: white;
+	border-radius: 10px 10px 10px 10px;
+}
+
+#cardname {
+	display: flex;
+	justify-content: center;
+	font-family: 'Lato', sans-serif;
+}
+
+#avatar {
+	width: 5vw;
+	height: 10vh;
+	border-radius: 50%;
+}
+#links {
+	display: flex;
+	width: 30vw;
+	font-family: 'Lato', sans-serif;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
+	color: white;
+	padding: 5%;
+	font-size: 1.5vw;
+}
+
+#uploadlink {
+	padding: 2%;
+	width: 10vw;
+	display: flex;
+	justify-content: center;
+}
+
+#uploadlink:hover {
+	color: #98c1d9;
+	cursor: pointer;
+}
+#signinlink {
+	padding: 2%;
+	width: 10vw;
+	display: flex;
+	justify-content: center;
+}
+
+#signinlink:hover {
+	color: #98c1d9;
+	cursor: pointer;
+}
+
+#heading {
+	height: 12vh;
+	width: 100vw;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	background: #293241;
+}

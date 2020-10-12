@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { Heading } from './Heading';
 import { Footer } from './Footer';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
+import './sass/PDFRenderer.scss';
 
 const PostComment = ({token, hash, getComments}) => {
 	

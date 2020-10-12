@@ -1,0 +1,51 @@
+#tags {
+	width: 70vw;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+}
+
+#submit {
+	background: #3d5a80;
+	color: #e0fbfc;
+	border: 0;
+	border-radius: 10px;
+	font-size: 2vw;
+}
+
+#submit:hover {
+	background: #98c1d9;
+}
+#uploadpagewrapper {
+	width: 100vw;
+	height: 88vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-items: center;
+	background: url('assets/phil.png');
+}
+
+#dropzone {
+	width: 70vw;
+	height: 50vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: red;
+	margin: 5%;
+	padding: 5%;
+}
+
+#dropper {
+	width: 70vw;
+	height: 50vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: #e0fbfc;
+	font-size: 3vw;
+	border-radius: 10px;
+	font-family: 'Lato', sans-serif;
+	color: #293241;
+}

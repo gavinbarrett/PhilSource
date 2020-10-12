@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heading } from './Heading';
 import { Footer } from './Footer';
+import './sass/Profile.scss'
 
 const Profile = ({user}) => {
 	return (<><Heading user={user}/>

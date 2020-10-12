@@ -1,0 +1,121 @@
+#username {
+	width: 40vw;
+}
+
+#password {
+	height: 5vh;
+	width: 40vw;
+	border: 0;
+	border-radius: 12px;
+	padding: 1%;
+	box-shadow: 0 0 15px 4px rgba(0,0,0,0.06);
+}
+
+#passwordretype {
+	height: 5vh;
+	width: 40vw;
+	border: 0;
+	border-radius: 12px;
+	padding: 1%;
+	box-shadow: 0 0 15px 4px rgba(0,0,0,0.06);
+}
+
+#emailer {
+	width: 40vw;
+}
+
+#signupbutton {
+	background: #3d5a80;
+	color: #e0fbfc;
+	border: 0;
+	border-radius: 10px;
+	font-size: 2vw;
+}
+
+.logintext {
+	display: flex;
+	width: 40vw;
+	font-size: 2vw;
+	font-family: 'Lato', sans-serif;
+	color: white;
+}
+
+#loginpagewrapper {
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: url('assets/phil.png');
+}
+
+.loginbox {
+	width: 60vw;
+	height: 60vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-items: center;
+	background: #293241;
+	border-radius: 0px 10px 10px 10px;
+}
+
+#signupselect {
+	background: #3D5A80;
+	width: 10vw;
+	border-radius: 10px 10px 0px 0px;
+	text-align: center;
+	padding: -5%;
+	cursor: pointer;
+	color: white;
+}
+
+#loginselector {
+	height: 5vh;
+	display: flex;
+	flex-direction: row;
+	font-family: 'Lato', sans-serif;
+	font-size: 2vw;
+	width: 60vw;
+}
+
+.forgotlink {
+	width: 40vw;
+	display: flex;
+	justify-content: flex-start;
+	font-family: 'Lato', sans-serif;
+	color: white;
+}
+
+#submit {
+	background: #3d5a80;
+	color: #e0fbfc;
+	border: 0;
+	border-radius: 10px;
+	font-size: 2vw;
+}
+
+#submit:hover {
+	background: #98c1d9;
+}
+
+#signinselect {
+	background: #293241;
+	width: 10vw;
+	border-radius: 10px 10px 0px 0px;
+	text-align: center;
+	padding: -5%;
+	cursor: pointer;
+	color: white;
+}
+
+#signupselect {
+	background: #3D5A80;
+	width: 10vw;
+	border-radius: 10px 10px 0px 0px;
+	text-align: center;
+	padding: -5%;
+	cursor: pointer;
+	color: white;
+}
+

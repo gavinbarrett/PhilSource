@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { FeatureCard } from './FeatureCard';
 import { Categories } from './Categories';
+import './sass/Features.scss';
 
 const Features = () => {
 	
 	const [state, changeState] = useState(0);
 
 	const current_feats = [
-			{"category": "Feminism", "path": "feminism.jpg"},
-			{"category": "Phil. of Science", "path": "science.jpg"},
-			{"category": "Existentialism", "path": "wanderer.jpg"}
+			{"category": "Feminism", "path": "./sass/assets/feminism.jpg"},
+			{"category": "Phil. of Science", "path": "./sass/assets/science.jpg"},
+			{"category": "Existentialism", "path": "./sass/assets/wanderer.jpg"}
 		];
 
 	const flipState = () => {

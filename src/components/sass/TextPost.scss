@@ -1,0 +1,22 @@
+#postwrapper {
+	width: 90vw;
+	height: 20vh;
+	display: flex;
+	flex-direction: column;
+	font-family: 'Lato', sans-serif;
+	border-radius: 10px;
+	background: #98c1d9;
+}
+
+#postwrapper:hover {
+	cursor: pointer;
+	background: #e0fbfc;
+}
+
+#posttitle {
+	font-size: 3vw;
+}
+
+#posttags {
+	font-size: 2vw;
+}

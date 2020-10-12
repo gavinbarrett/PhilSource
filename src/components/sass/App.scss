@@ -1,0 +1,32 @@
+html {
+	margin: 0;
+	padding: 0;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	background: #293241;
+}
+
+#root {
+	margin: 0;
+	padding: 0;
+}
+
+input[type="text"] {
+	height: 5vh;
+	width: 55vw;
+	border: 0;
+	border-radius: 12px;
+	padding: 1%;
+	box-shadow: 0 0 15px 4px rgba(0,0,0,0.06);
+	font-size: 2vw;
+}
+
+a {
+	color: inherit;
+	text-decoration: inherit;
+}

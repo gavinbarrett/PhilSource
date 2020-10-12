@@ -4,14 +4,13 @@ import { SearchBox } from './SearchBox';
 import { Features } from './Features';
 import { Footer } from './Footer';
 import { Categories } from './Categories';
+import './sass/SearchBox.scss';
 
 const LandingPage = ({user, updateSearchResults}) => {
 	
 	useEffect(() => {
 		window.scrollTo(0,0);
 	}, []);
-
-	// return switch wrapped router
 
 	return (<div>
 		<Heading user={user}/>

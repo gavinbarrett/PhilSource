@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Heading } from './Heading';
 import { Footer } from './Footer';
+import './sass/ForgotPassword.scss';
 
 const ResetSuccess = ({email, success}) => {
 	return (<div className="resetsuccess">
