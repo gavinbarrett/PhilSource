@@ -16,7 +16,20 @@ module.exports = {
 						loader: 'style-loader'
 					},
 					'css-loader',
-					'sass-loader'
+					'sass-loader',
+				]
+			},
+			{
+				test: /\.css$/,
+				use: [
+					'style-loader',
+					{
+						loader: 'css-loader',
+						options: {
+							importLoaders: 1,
+							modules: true
+						}
+					}
 				]
 			},
 			{

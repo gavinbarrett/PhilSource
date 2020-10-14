@@ -14,10 +14,10 @@ const ProfileDetail = ({user, toggle}) => {
 	const history = useHistory();
 
 	useEffect(() => {
-		document.getElementById("profilecard2").addEventListener("mouseleave", toggle);
+		//document.getElementById("profilecard2").addEventListener("mouseout", toggle);
 	}, []);
 
-	return (<div id="profilecard2" onClick={ () => history.push('/profile') }>
+	return (<div id="profilecard2" onMouseLeave={() => toggle()} onClick={ () => history.push('/profile') }>
 		<div id="avatarcard">
 		<img id="avatar" src="avatar.jpg"/>
 		<div id="cardname">{user}</div>
@@ -30,7 +30,7 @@ const ProfileCard = ({user}) => {
 	const [button, updateButton] = useState(0);
 
 	useEffect(() => {
-		document.getElementById("profilecard").addEventListener("mouseover", toggle);
+		//document.getElementById("profilecard").addEventListener("mouseover", toggle);
 	}, []);
 	
 	const toggle = async () => {
@@ -38,7 +38,7 @@ const ProfileCard = ({user}) => {
 		button ? updateButton(0) : updateButton(1);
 	}
 
-	return (<div id="profilecard">
+	return (<div id="profilecard" onMouseEnter={() => toggle()}>
 		{button ? <ProfileDetail user={user} toggle={toggle}/> : user}
 	</div>);
 }
@@ -59,7 +59,7 @@ const UploadLink = () => {
 const SignInLink = () => {
 	// render sign in page
 	return (<div id="signinlink">
-		<Link to='/login'>Sign In</Link>
+		<Link to='/signin'>Sign In</Link>
 	</div>);
 }
 

@@ -5,13 +5,11 @@ const FeatureCard = ({featname}) => {
 
 	const category = featname["category"];
 	const path = featname["path"];
-	
-	useEffect(() => {
-		const elem = document.getElementById(category);
-		elem.style.background = `url('./sass/assets/feminism.jpg')`;
-	});
 
-	return (<div id={`${category}`} className="featurecard" onClick={() => console.log(`${featname} card clicked!`)}>
+	console.log(category);
+	console.log(path);
+
+	return (<div id={`${category}`} className={`featurecard ${path}`} onClick={() => console.log(`${featname} card clicked!`)}>
 		{category}
 	</div>);
 }

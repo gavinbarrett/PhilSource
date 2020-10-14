@@ -33,6 +33,9 @@
 	position: fixed;
 	color: white;
 	border-radius: 10px 10px 10px 10px;
+	-webkit-box-shadow: 0px 4px 10px #ffffff;
+	-moz-box-shadow: 0px 4px 10px #ffffff;
+	box-shadow: 0px 4px 10px #ffffff;
 }
 
 #cardname {
@@ -63,22 +66,35 @@
 	width: 10vw;
 	display: flex;
 	justify-content: center;
+	border-radius: 10px;
+	margin-bottom: 0;
 }
 
 #uploadlink:hover {
-	color: #98c1d9;
+	background: #4F5D75;
 	cursor: pointer;
+	transform: translateY(-5px);
+	-webkit-box-shadow: 0 -2px 5px 5px #ffffff;
+    -moz-box-shadow: 0 -2px 5px 5px #ffffff;
+	box-shadow: 0px 4px 10px white;
 }
+
 #signinlink {
 	padding: 2%;
 	width: 10vw;
 	display: flex;
 	justify-content: center;
+	border-radius: 10px;
+	margin-bottom: 0;
 }
 
 #signinlink:hover {
-	color: #98c1d9;
+	background: #4F5D75;
 	cursor: pointer;
+	transform: translateY(-5px);
+	-webkit-box-shadow: 0 0 5px 2px #ffffff;
+    -moz-box-shadow: 0 0 5px 2px #ffffff;
+	box-shadow: 0px 4px 10px white;
 }
 
 #heading {

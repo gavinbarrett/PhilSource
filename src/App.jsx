@@ -9,6 +9,7 @@ import { PDFRenderer } from './components/PDFRenderer';
 import { SearchResults } from './components/SearchResults';
 import { PageNotFound } from './components/PageNotFound';
 import { ForgotPassword } from './components/ForgotPassword';
+import '../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import './components/sass/App.scss';
 
 const App = () => {
@@ -22,7 +23,7 @@ const App = () => {
 
 	return (<Switch>
 		<Route path='/' exact render={() => <LandingPage user={user} updateSearchResults={updateSearchResults}/>}/>
-		<Route path='/login' render={() => <LoginPage updateUser={updateUser} updateToken={updateToken}/>}/>
+		<Route path='/signin' render={() => <LoginPage updateUser={updateUser} updateToken={updateToken}/>}/>
 		<Route path='/forgot' render={() => <ForgotPassword/>}/>
 		<Route path='/upload' render={() => <UploadPage user={user} token={token} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename}/>}/>
 		<Route path='/profile' render={() => <Profile user={user}/>}/>

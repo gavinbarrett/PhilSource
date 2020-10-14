@@ -19,7 +19,7 @@ const UploadPage = ({user, token, updateDisplayFile, changeFilename}) => {
 	const upload = async () => {
 		if (file === null) return;
 		if (user === null) {
-			history.push('/login');
+			history.push('/signin');
 			return;
 		}
 		let title = document.getElementById('texttitle').value;

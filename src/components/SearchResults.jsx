@@ -3,6 +3,7 @@ import { Heading } from './Heading';
 import { Footer } from './Footer';
 import { TextPost } from './TextPost';
 import { SearchBox } from './SearchBox';
+import './sass/SearchResults.scss';
 
 const SearchResults = ({user, results, updateDisplayFile, changeFilename, updateHash, updateSearchResults}) => {
 	return (<><Heading user={user}/>

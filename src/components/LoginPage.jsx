@@ -20,7 +20,7 @@ const SubmitSignIn = () => {
 }
 
 const Emailer = () => {
-	return (<input id="emailer" type="text"/>);
+	return (<input id="emailer" type="email"/>);
 }
 
 const SignUpBox = ({updateUser, updateToken}) => {

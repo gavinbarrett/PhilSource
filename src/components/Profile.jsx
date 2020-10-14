@@ -4,6 +4,14 @@ import { Footer } from './Footer';
 import './sass/Profile.scss'
 
 const Profile = ({user}) => {
+
+	const setProfilePhoto = () => {
+		console.log('clicked avatar!');
+		// FIXME: get photo from user
+		
+		// FIXME: set image src to provided photo
+	}
+
 	return (<><Heading user={user}/>
 	<div id="profile">
 		<div id="profilebar">
@@ -15,7 +23,7 @@ const Profile = ({user}) => {
 		</div>
 		</div>
 		<div id="profilecontent">
-		<img id="largeavatar" src='avatar.jpg'/>
+			<img id="largeavatar" src='avatar.jpg' onClick={setProfilePhoto}/>
 		<div id="profilename">{user}</div>
 		</div>
 	</div>

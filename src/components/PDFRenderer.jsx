@@ -3,6 +3,10 @@ import { useHistory } from 'react-router-dom';
 import { Heading } from './Heading';
 import { Footer } from './Footer';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
+import { EditorState, convertToRaw, ContentState } from 'draft-js';
+import { Editor } from 'react-draft-wysiwyg';
+import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
 import './sass/PDFRenderer.scss';
 
 const PostComment = ({token, hash, getComments}) => {
@@ -29,7 +33,6 @@ const PostComment = ({token, hash, getComments}) => {
 		getComments(hash);
 		console.log(r);
 	}
-
 	return (<div id="postcomment">
 		<textarea id="originalpost" type="input" placeholer="put your comment here" onChange={changeComment}/>
 		<div>Bold Italic</div>
@@ -45,12 +48,13 @@ const Comment = ({text, poster}) => {
 }
 
 const NoComments = () => {
-	return (<div className="noComment">"Be the first to comment!"</div>);
+	return (<div className="noComment">{"Be the first to comment!"}</div>);
 }
 
 const Comments = ({token, hash}) => {
 	
 	const [posts, updatePosts] = useState([]);
+	const [editState, updateEditState] = useState(EditorState.createEmpty());
 
 	useEffect(() => {
 		getComments(hash);
@@ -63,7 +67,10 @@ const Comments = ({token, hash}) => {
 	}
 	
 	return (<div id="comments">
-		<PostComment token={token} hash={hash} getComments={getComments}/>
+		{/*<PostComment token={token} hash={hash} getComments={getComments}/>*/}
+		<div id="editor">
+			<Editor editorState={editState} onEditorStateChange={updateEditState}/>
+		</div>
 		{posts ? posts.map((post, index) => {
 			return (<Comment key={index} text={post["post"]} poster={post["user"]}/>);
 		}) : <NoComments/>}

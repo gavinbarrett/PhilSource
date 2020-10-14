@@ -1,7 +1,7 @@
 const Categories = [
-	{"category": "Existentialism", "path": "wanderer.jpg"},
-	{"category": "Feminism", "path": "feminism.jpg"},
-	{"category": "Metaphysics", "path": "metaphysics.jpg"}
+	{"category": "Existentialism", "path": "existentialism"},
+	{"category": "Feminism", "path": "feminism"},
+	{"category": "Metaphysics", "path": "metaphysics"}
 ];
 
 export {

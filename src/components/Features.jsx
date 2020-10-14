@@ -8,10 +8,10 @@ const Features = () => {
 	const [state, changeState] = useState(0);
 
 	const current_feats = [
-			{"category": "Feminism", "path": "./sass/assets/feminism.jpg"},
-			{"category": "Phil. of Science", "path": "./sass/assets/science.jpg"},
-			{"category": "Existentialism", "path": "./sass/assets/wanderer.jpg"}
-		];
+			{"category": "Feminism", "path": "feminism"},
+			{"category": "Phil. of Science", "path": "science"},
+			{"category": "Existentialism", "path": "existentialism"}
+	];
 
 	const flipState = () => {
 		state ? changeState(0) : changeState(1);

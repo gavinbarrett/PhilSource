@@ -12,6 +12,7 @@
 	background: #3D5A80;
 	color: white;
 }
+
 .barselect {
 	display: flex;
 	justify-content: center;
@@ -26,6 +27,7 @@
 	background: #98C1D9;
 	cursor: pointer;
 }
+
 #profilecontent {
 	width: 90vw;
 	height: 73vh;
@@ -35,11 +37,14 @@
 	align-items: center;
 	background: white;
 }
+
 #largeavatar {
 	width: 20vw;
 	height: 30vh;
 	border-radius: 50%;
+	cursor: pointer;
 }
+
 #profilename {
 	font-size: 2vw;
 	font-family: 'Lato', sans-serif;
