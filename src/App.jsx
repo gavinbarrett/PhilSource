@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route, Link, Switch, useRouteMatch } from 'react-router-dom';
+import { HashRouter as Router, Route, Link, Switch, useRouteMatch } from 'react-router-dom';
 import { LandingPage } from './components/LandingPage';
 import { Profile } from './components/Profile';
 import { LoginPage } from './components/LoginPage';
@@ -29,7 +29,7 @@ const App = () => {
 		<Route path='/profile' render={() => <Profile user={user}/>}/>
 		<Route path='/pdfrenderer' render={() => <PDFRenderer user={user} token={token} file={displayFile} name={filename} hash={hash}/>}/>
 		<Route path='/searchresults' render={() => <SearchResults user={user} results={searchResults["search_results"]} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash} updateSearchResults={updateSearchResults}/>}/>
-		<Route render={() => <PageNotFound/>}/>
+		<Route path='*' render={() => <PageNotFound/>}/>
 	</Switch>);
 }
 
