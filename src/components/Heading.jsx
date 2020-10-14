@@ -13,10 +13,6 @@ const ProfileDetail = ({user, toggle}) => {
 	
 	const history = useHistory();
 
-	useEffect(() => {
-		//document.getElementById("profilecard2").addEventListener("mouseout", toggle);
-	}, []);
-
 	return (<div id="profilecard2" onMouseLeave={() => toggle()} onClick={ () => history.push('/profile') }>
 		<div id="avatarcard">
 		<img id="avatar" src="avatar.jpg"/>
@@ -29,12 +25,7 @@ const ProfileCard = ({user}) => {
 	
 	const [button, updateButton] = useState(0);
 
-	useEffect(() => {
-		//document.getElementById("profilecard").addEventListener("mouseover", toggle);
-	}, []);
-	
 	const toggle = async () => {
-		console.log('toggling');
 		button ? updateButton(0) : updateButton(1);
 	}
 
@@ -45,29 +36,29 @@ const ProfileCard = ({user}) => {
 
 const Links = ({user}) => {
 	return (<div id="links">
-		<UploadLink/> | {user ? <ProfileCard user={user}/> : <SignInLink/>}
+		<UploadLink/>
+		<div className="vrwrapper">
+			<div className="vr"/>
+		</div>
+		{user ? <ProfileCard user={user}/> : <SignInLink/>}
 	</div>);
 }
 
 const UploadLink = () => {
 	// Link to upload page
-	return (<div id="uploadlink">
-		<Link to='/upload'>Upload</Link>
-	</div>);
+	return (<Link id='uploadlink' to='/upload'>Upload</Link>);
 }
 
 const SignInLink = () => {
 	// render sign in page
-	return (<div id="signinlink">
-		<Link to='/signin'>Sign In</Link>
-	</div>);
+	return (<Link id='signinlink' to='/signin'>Sign In</Link>);
 }
 
 const Heading = ({user}) => {
-	return (<div id="heading">
+	return (<header>
 		<AppTitle/>
 		<Links user={user}/>
-	</div>);
+	</header>);
 }
 
 export {

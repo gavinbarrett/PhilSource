@@ -53,7 +53,7 @@ const SearchInput = ({updateSearchResults}) => {
 				return <option key={index} value={sug}/>
 			})}
 		</datalist>
-		<button onClick={filterSearch}>Search</button>
+		<button className="querybutton" onClick={filterSearch}>Search</button>
 	</div>);
 }
 

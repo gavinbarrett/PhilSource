@@ -1,6 +1,6 @@
 #searchbox {
 	height: 50%;
-	width: 65vw;
+	width: 70vw;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -22,4 +22,16 @@
 	flex-direction: row;
 }
 
+.querybutton {
+	width: 10vw;
+	border: 0;
+	background-color: #4F5D75;
+	color: white;
+	border-radius: 6px;
+	font-size: 2vw;
+}
 
+.querybutton:hover {
+	cursor: pointer;
+	background-color: #BFC0C0;
+}

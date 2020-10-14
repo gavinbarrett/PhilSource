@@ -69,7 +69,7 @@ const Comments = ({token, hash}) => {
 	return (<div id="comments">
 		{/*<PostComment token={token} hash={hash} getComments={getComments}/>*/}
 		<div id="editor">
-			<Editor editorState={editState} onEditorStateChange={updateEditState}/>
+			<Editor editorState={editState} onEditorStateChange={updateEditState} wrapperClassName="rich-editor demo-wrapper" editorClassName="demo-editor"/>
 		</div>
 		{posts ? posts.map((post, index) => {
 			return (<Comment key={index} text={post["post"]} poster={post["user"]}/>);

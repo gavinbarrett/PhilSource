@@ -49,6 +49,7 @@
 	height: 10vh;
 	border-radius: 50%;
 }
+
 #links {
 	display: flex;
 	width: 30vw;
@@ -97,7 +98,7 @@
 	box-shadow: 0px 4px 10px white;
 }
 
-#heading {
+header {
 	height: 12vh;
 	width: 100vw;
 	display: flex;
@@ -105,4 +106,14 @@
 	justify-content: space-between;
 	align-items: center;
 	background: #293241;
+}
+
+.vr {
+	border-left: 2px solid #ffffff;
+	height: 35px;
+}
+
+.vrwrapper {
+	margin-left: 3%;
+	margin-right: 3%;
 }
