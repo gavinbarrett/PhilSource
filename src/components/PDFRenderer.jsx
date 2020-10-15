@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { Heading } from './Heading';
 import { Footer } from './Footer';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
-import { EditorState, convertToRaw, ContentState } from 'draft-js';
+import { EditorState } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
@@ -68,8 +68,12 @@ const Comments = ({token, hash}) => {
 	
 	return (<div id="comments">
 		{/*<PostComment token={token} hash={hash} getComments={getComments}/>*/}
-		<div id="editor">
-			<Editor editorState={editState} onEditorStateChange={updateEditState} wrapperClassName="rich-editor demo-wrapper" editorClassName="demo-editor"/>
+		<div className="editor">
+			<Editor editorState={editState} 
+			toolbarClassName="toolbarClassName"
+			wrapperClassName="wrapperClassName"
+			editorClassName="editorClassName"
+			onEditorStateChange={updateEditState}/>
 		</div>
 		{posts ? posts.map((post, index) => {
 			return (<Comment key={index} text={post["post"]} poster={post["user"]}/>);

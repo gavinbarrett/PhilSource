@@ -4,7 +4,7 @@ import './sass/Footer.scss';
 
 const Footer = () => {
 	
-	return (<div id="footer">
+	return (<footer>
 		<div className="footcolumn">
 			<div className="footerheads">Navigation</div>
 			<div className="footerlinks">
@@ -27,7 +27,7 @@ const Footer = () => {
 			<div className="footerlinks"><a href="https://github.com/gavinbarrett/PhiloSource">Code</a></div>
 			<div className="footerlinks">Contact</div>
 		</div>
-	</div>);
+	</footer>);
 }
 
 export {

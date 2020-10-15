@@ -5,7 +5,7 @@ import './sass/ForgotPassword.scss';
 
 const ResetSuccess = ({email, success}) => {
 	return (<div className="resetsuccess">
-		{success ? `An email has been sent to ${email}. Follow the link provided to reset your password.` : `No account was found associated with the email ${email}`}
+		{`An email has been sent to ${email} if an associated account exists. Follow the link provided to reset your password.`}
 	</div>);
 }
 

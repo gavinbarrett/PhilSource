@@ -9,7 +9,6 @@ import { PDFRenderer } from './components/PDFRenderer';
 import { SearchResults } from './components/SearchResults';
 import { PageNotFound } from './components/PageNotFound';
 import { ForgotPassword } from './components/ForgotPassword';
-import '../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import './components/sass/App.scss';
 
 const App = () => {

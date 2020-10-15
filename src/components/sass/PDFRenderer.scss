@@ -39,9 +39,11 @@
 	margin: 2%;
 }
 
-#editor {
-	display: flex;
-	flex-direction: row;
+.editor {
+	width: 50vw;
+	height: 30vh;
+	border: 2px solid gray;
+	border-radius: 10px;
 }
 
 #subbuttonwrapper {

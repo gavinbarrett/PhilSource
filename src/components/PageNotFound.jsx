@@ -8,7 +8,9 @@ import './sass/PageNotFound.scss';
 const PageNotFound = () => {
 	return(<><Heading/>
 	<div className="notfound">
-		404 Page not found
+		<div className="notfoundbox">
+			404 Page not found
+		</div>
 	</div>
 	<Footer/></>);
 }

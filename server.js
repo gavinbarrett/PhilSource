@@ -21,7 +21,7 @@ const upload = multer({storage: multer.memoryStorage()});
 const database = mysql.createConnection({
 	host: 'localhost',
 	user: 'root',
-	password: 'rootpass',
+	password: `${process.env.DB_PASS}`,
 	database: 'philsource'
 });
 
@@ -126,20 +126,21 @@ const hashFile = async (file) => {
 	});
 }
 
-const sendPasswordRecoverLink = async () => {
+const sendPasswordRecoverLink = async (recipient) => {
 	console.log('sending email');
-	let testAccount = await nodemailer.createTestAccount();
+	console.log(process.env.MAIL);
 	let transporter = nodemailer.createTransport({
 		service: "gmail",
-    	auth: {
-    	  user: "philsource247@gmail.com",
-    	  pass: "Hardpassword",
+    	secure: true,
+		auth: {
+    	  user: process.env.MAIL_USER,
+    	  pass: process.env.MAIL_PASS,
 		}
 	});
 	let info = await transporter.sendMail({
 		from: '"Philsource" <philsource247@gmail.com>',
-		to: 'gavinbrrtt@gmail.com',
-		subject: 'Hello! This is a new record!',
+		to: `${recipient}`,
+		subject: 'Philsource Password Recovery',
 		text: 'yo buddy'
 	});
 }
@@ -157,7 +158,7 @@ app.post('/forgot', async (req, res) => {
 		})
 	});
 	// send an email if the email address was in the database
-	if (resp) sendPasswordRecoverLink();
+	if (resp) sendPasswordRecoverLink(email);
 
 	resp ? res.send(JSON.stringify({"status":"success"})) : res.send(JSON.stringify({"status":"failure"}));
 });
@@ -314,6 +315,9 @@ app.post('/sign_up', async (req, res) => {
 	}
 });
 
+app.get('/reset_password', (req, res) => {
+	res.send('./reset');
+})
 
 // serve landing page
 app.get('/', (req, res) => {

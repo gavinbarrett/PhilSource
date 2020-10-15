@@ -1,4 +1,4 @@
-#footer {
+footer {
 	width: 100vw;
 	height: 15vh;
 	background: #293241;
@@ -9,6 +9,7 @@
 	justify-content: space-around;
 	align-items: center;
 }
+
 .footcolumn {
 	display: flex;
 	flex-direction: column;
@@ -22,7 +23,6 @@
 }
 
 .footerlinks {
-
 }
 
 .footerlinks:hover {
