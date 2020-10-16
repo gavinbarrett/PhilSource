@@ -3,10 +3,12 @@ import { useHistory } from 'react-router-dom';
 import { Heading } from './Heading';
 import { Footer } from './Footer';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
-import { EditorState } from 'draft-js';
+import { EditorState, convertToRaw} from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
+import { stateToHTML } from 'draft-js-export-html';
 import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
+
 import './sass/PDFRenderer.scss';
 
 const PostComment = ({token, hash, getComments}) => {
@@ -66,9 +68,13 @@ const Comments = ({token, hash}) => {
 		await updatePosts(result["posts"]);
 	}
 	
+	const printout = () => {
+		const contstate = stateToHTML(editState.getCurrentContent());
+		console.log(contstate);
+	}
+
 	return (<div id="comments">
-		{/*<PostComment token={token} hash={hash} getComments={getComments}/>*/}
-		<div className="editor">
+		<div className="editor" onClick={printout}>
 			<Editor editorState={editState} 
 			toolbarClassName="toolbarClassName"
 			wrapperClassName="wrapperClassName"

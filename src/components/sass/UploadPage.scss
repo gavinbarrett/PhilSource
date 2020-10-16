@@ -37,13 +37,21 @@
 	padding: 5%;
 }
 
+#dropperwrapper {
+	background: #E0FBFC;
+	border-radius: 10px;
+}
+
 #dropper {
 	width: 70vw;
 	height: 50vh;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background: #e0fbfc;
+	background: url(assets/add1.png);
+	background-position: center;
+	background-size: 240px 300px;
+	background-repeat: no-repeat;
 	font-size: 3vw;
 	border-radius: 10px;
 	font-family: 'Lato', sans-serif;

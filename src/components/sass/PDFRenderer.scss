@@ -36,13 +36,13 @@
 	width: 55vw;
 	justify-content: center;
 	align-items: center;
-	margin: 2%;
 }
 
 .editor {
 	width: 50vw;
 	height: 30vh;
 	border: 2px solid gray;
+	padding: 2%;
 	border-radius: 10px;
 }
 
@@ -117,6 +117,7 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	padding-top: 2%;
 	border-radius: 0px 0px 10px 10px;
 }
 

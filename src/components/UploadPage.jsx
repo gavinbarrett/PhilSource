@@ -45,12 +45,14 @@ const UploadPage = ({user, token, updateDisplayFile, changeFilename}) => {
 	<div id="uploadpagewrapper">
 		<Dropzone id="dropzone" type="file" accept="application/pdf" onDrop={dropped}>
 			{({getRootProps, getInputProps, isDragActive, isDragReject, acceptedFiles}) => (
+			<div id="dropperwrapper">
 			<div id="dropper" {...getRootProps()}>
 				<input type="file" {...getInputProps()}/>
 				{!isDragActive && acceptedFiles.length == 0 && "Click here or drag a file to upload!"}
 				{isDragActive && !isDragReject && "Drop your file here!"}
 				{isDragActive && isDragReject && "Please enter an image file"}
 				{acceptedFiles.length > 0 && !isDragActive && !isDragReject && acceptedFiles[0].name}
+			</div>
 			</div>
 			)}
 		</Dropzone>
