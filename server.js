@@ -6,13 +6,14 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const multer = require('multer');
+const moment = require('moment');
 const nodemailer = require('nodemailer');
 const Duplex = require('stream').Duplex;
 // require environment access token
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5555;
+const PORT = process.env.PORT || 5000;
 
 // store files in memory
 const upload = multer({storage: multer.memoryStorage()});
@@ -202,11 +203,13 @@ const checkForTextHash = async (hash) => {
 	});
 }
 
-const insertTextIntoDB = (rawfile) => {
+const insertTextIntoDB = async (rawfile, hash) => {
 	// compress the base64 representation of the file
+	console.log(`hash: ${hash}`);
 	const zipped = zlib.gzipSync(JSON.stringify(rawfile)).toString('base64');
-	const CMD = `INSERT INTO texts (title, user, tags, file, hash) VALUES (?, ?, ?, ?, ?);`;
+	const CMD = `INSERT INTO texts (title, user, tags, file, hash) VALUES (?, ?, ?, ?, ?)`;
 	const values = [title, user, tags, zipped, hash];
+	console.log(values);
 	return new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
 			if (err) reject(false);
@@ -217,9 +220,10 @@ const insertTextIntoDB = (rawfile) => {
 
 app.post('/comment', authUser, async (req, res) => {
 	const { post, hash } = req.body;
+	console.log(`post: ${post}\nhash: ${hash}`);
 	const user = req.user["user"];
-	const CMD = `INSERT INTO comments (post, user, hash) VALUES (?, ?, ?);`
-	const values = [post, user, hash];
+	const CMD = `INSERT INTO comments (user, hash, time, post) VALUES (?, ?, ?, ?);`
+	const values = [user, hash, moment().format('MMMM Do YYYY, h:mm:ss a'), post];
 	const resp = await new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
 			if (err) resolve(false);
@@ -267,8 +271,8 @@ app.put('/upload', upload.single('textfile'), authUser, async (req, res) => {
 			return;
 		}
 		// insert into database
-		const result = await insertTextIntoDB(rawfile);
-		res.send(JSON.stringify({"status": result}));
+		const result = await insertTextIntoDB(rawfile, hash);
+		res.send(JSON.stringify({"status": hash}));
 		return;
 	} catch(err) { 
 		res.send(JSON.stringify({"status": "failed"}));
@@ -314,10 +318,6 @@ app.post('/sign_up', async (req, res) => {
 		res.send(JSON.stringify({"user": user, "token": token}));
 	}
 });
-
-app.get('/reset_password', (req, res) => {
-	res.send('./reset');
-})
 
 // serve landing page
 app.get('/', (req, res) => {

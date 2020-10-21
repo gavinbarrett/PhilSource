@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter as Router, Route, Link, Switch, useRouteMatch } from 'react-router-dom';
 import { LandingPage } from './components/LandingPage';
@@ -19,6 +19,10 @@ const App = () => {
 	const [filename, changeFilename] = useState(null);
 	const [displayFile, updateDisplayFile] = useState(null);
 	const [searchResults, updateSearchResults] = useState([]);
+
+	useEffect(() => {
+		console.log(`Hash is: ${hash}`);
+	}, []);
 
 	return (<Switch>
 		<Route path='/' exact render={() => <LandingPage user={user} updateSearchResults={updateSearchResults}/>}/>

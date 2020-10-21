@@ -33,7 +33,7 @@ const UploadPage = ({user, token, updateDisplayFile, changeFilename}) => {
 		formData.append('textfile', file);
 		formData.append('tags', filtered);
 		// FIXME: activate loading screen
-		const resp = await fetch('/upload', {method: 'PUT', headers: {'authorization': `Bearer ${token}`},  body: formData});
+		const resp = await fetch('/upload', {method: 'PUT', headers: {'Authorization': `Bearer ${token}`},  body: formData});
 		console.log(resp);
 		const blob = new Blob([file], {"type": "application/pdf"});
 		await updateDisplayFile(blob);

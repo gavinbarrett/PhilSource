@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Heading } from './Heading';
 import { Footer } from './Footer';
@@ -42,10 +42,18 @@ const PostComment = ({token, hash, getComments}) => {
 	</div>);
 }
 
-const Comment = ({text, poster}) => {
+const Comment = ({text, poster, time}) => {
+	
+	const ref = useRef(null);
+
+	useEffect(() => {
+		// set the inner html to our serialized comment
+		ref["current"].innerHTML = text;
+	}, []);
+
 	return (<div className="commentcard">
-		<div className="poster">Posted by: {poster}</div>
-		<div className="postcontent">{text}</div>
+		<div className="poster">Posted by: {poster} at {time}</div>
+		<div ref={ref} className="postcontent"></div>
 	</div>);
 }
 
@@ -53,7 +61,7 @@ const NoComments = () => {
 	return (<div className="noComment">{"Be the first to comment!"}</div>);
 }
 
-const Comments = ({token, hash}) => {
+const Comments = ({user, token, hash}) => {
 	
 	const [posts, updatePosts] = useState([]);
 	const [editState, updateEditState] = useState(EditorState.createEmpty());
@@ -62,27 +70,35 @@ const Comments = ({token, hash}) => {
 		getComments(hash);
 	}, []);
 
-	const getComments = async (hash) => {
+	const getComments = async () => {
 		const resp = await fetch(`/get_comments/?hash=${hash}`, {method: "GET"});
 		const result = await resp.json();
 		await updatePosts(result["posts"]);
 	}
 	
-	const printout = () => {
-		const contstate = stateToHTML(editState.getCurrentContent());
-		console.log(contstate);
+	const submitComment = async () => {
+		const commstate = stateToHTML(editState.getCurrentContent());
+		// create json object including user, time, content
+		const resp = await fetch('/comment', {method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify({"user": `${user}`, "post": `${commstate}`, "hash": `${hash}`})});
+		const data = await resp.json();
+		await getComments(hash);
 	}
 
 	return (<div id="comments">
-		<div className="editor" onClick={printout}>
+		<div className="editor">
 			<Editor editorState={editState} 
 			toolbarClassName="toolbarClassName"
 			wrapperClassName="wrapperClassName"
 			editorClassName="editorClassName"
 			onEditorStateChange={updateEditState}/>
 		</div>
+		<div id="subbuttonwrapper">
+			<button id="subbutton" onClick={submitComment}>Comment</button>
+		</div>
+		<div id="cont">
+		</div>
 		{posts ? posts.map((post, index) => {
-			return (<Comment key={index} text={post["post"]} poster={post["user"]}/>);
+			return (<Comment key={index} text={post["post"]} poster={post["user"]} time={post["time"]}/>);
 		}) : <NoComments/>}
 	</div>);
 }
@@ -152,7 +168,7 @@ const PDFRenderer = ({user, token, file, name, hash, updateState}) => {
 				</Document>
 			</div>
 		</div>
-		<Comments token={token} hash={hash}/>
+		<Comments user={user} token={token} hash={hash}/>
 	</div>
 	<Footer/>
 	</>);
