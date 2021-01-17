@@ -16,7 +16,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // store files in memory
-const upload = multer({storage: multer.memoryStorage()});
+const upload = multer({ storage: multer.memoryStorage() });
 
 // connect to database
 const database = mysql.createConnection({
@@ -34,7 +34,6 @@ app.use(express.static(__dirname + '/dist'));
 // allow json consumption
 app.use(express.json({limit: '100mb'}));
 
-
 const computeSaltedHashedPass = async (pass) => {
 	const rounds = 10;
 	return await new Promise((resolve, reject) => {
@@ -48,7 +47,6 @@ const computeSaltedHashedPass = async (pass) => {
 	});
 }
 
-
 const getHashedPass = async (user) => {
 	const CMD = `SELECT * FROM users WHERE User=?`;
 	const values = [user];
@@ -61,6 +59,60 @@ const getHashedPass = async (user) => {
 	});
 }
 
+const forgotPassword = async (req, res) => {
+	const { email } = req.body;
+	const CMD = 'SELECT * FROM users WHERE Email = ?';
+	const values = [email];
+	// search for the user's email in the user table
+	const resp = await new Promise((resolve, reject) => {
+		database.query(CMD, values, (err, rows) => {
+			console.log(rows);
+			if (err || !rows.length) resolve(false);
+			resolve(true);
+		})
+	});
+	// send an email if the email address was in the database
+	if (resp) sendPasswordRecoverLink(email);
+	resp ? res.send(JSON.stringify({"status":"success"})) : res.send(JSON.stringify({"status":"failure"}));
+};
+
+const getTextFromDB = async (req, res) => {
+	const hash = req.query["hash"];
+	const CMD = `SELECT * FROM texts WHERE hash=?`;
+	const values = [hash];
+	const results = await new Promise((resolve, reject) => {
+		database.query(CMD, values, (err, rows) => {
+			err ? reject(err) : resolve(rows);
+		});
+	});
+	res.send(JSON.stringify({"status": results}));
+};
+
+const checkForTextHash = async (hash) => {
+	const CMD = `SELECT * FROM texts WHERE hash REGEXP ?`;
+	const values = [hash];
+	return new Promise((resolve, reject) => {
+		database.query(CMD, values, (err, rows) => {
+			if (err) reject(false);
+			(rows[0] == undefined) ? resolve(false) : resolve(true);
+		});
+	});
+}
+
+const insertTextIntoDB = async (rawfile, hash) => {
+	// compress the base64 representation of the file
+	console.log(`hash: ${hash}`);
+	const zipped = zlib.gzipSync(JSON.stringify(rawfile)).toString('base64');
+	const CMD = `INSERT INTO texts (title, user, tags, file, hash) VALUES (?, ?, ?, ?, ?)`;
+	const values = [title, user, tags, zipped, hash];
+	console.log(values);
+	return new Promise((resolve, reject) => {
+		database.query(CMD, values, (err, rows) => {
+			if (err) reject(false);
+			resolve(true);
+		});
+	});
+}
 
 const checkHashes = async (pass, hashword) => {
 	return await new Promise((resolve, reject) => {
@@ -102,7 +154,6 @@ const addUser = async (user, pass, email) => {
 	});
 }
 
-
 const checkForUser = async (user) => {
 	const CMD = `SELECT * FROM users WHERE user=?;`;
 	const values = [user];
@@ -114,6 +165,42 @@ const checkForUser = async (user) => {
 	});
 }
 
+const signUpUser = async (req, res) => {
+	const { user, pass, email } = req.body;
+	// FIXME: sanitize user, pass, email inputs
+
+	// check to see if username is taken
+	const exists = await checkForUser(user);
+	if (exists) {
+		res.send(JSON.stringify({"user":"unavailable"}));
+		return;
+	} else {
+		const result = await addUser(user, pass, email);
+		console.log(result);
+		// send back user and token
+		const token = jwt.sign({"user": user}, process.env.ACCESS_TOKEN_SECRET);
+		res.send(JSON.stringify({"user": user, "token": token}));
+	}
+};
+
+const signInUser = async (req, res) => {
+	const { user, pass } = req.body;
+	// hash password
+	try {
+		// find user's hashed password in the database
+		const hash = await getHashedPass(user);
+		// hash given password and check against db hash
+		const hashed = await checkHashes(pass, hash);
+		if (hashed) {
+			console.log('hashes match!');
+			const token = jwt.sign({"user": user}, process.env.ACCESS_TOKEN_SECRET);
+			res.send(JSON.stringify({"user": user, "token": token}));
+		} else
+			res.send(JSON.stringify({"access token": "failed"}));
+	} catch (err) {
+		res.send(JSON.stringify({"sign_in": "failed"}));
+	}
+};
 
 const hashFile = async (file) => {
 	return new Promise((resolve, reject) => {
@@ -127,131 +214,8 @@ const hashFile = async (file) => {
 	});
 }
 
-const sendPasswordRecoverLink = async (recipient) => {
-	console.log('sending email');
-	console.log(process.env.MAIL);
-	let transporter = nodemailer.createTransport({
-		service: "gmail",
-    	secure: true,
-		auth: {
-    	  user: process.env.MAIL_USER,
-    	  pass: process.env.MAIL_PASS,
-		}
-	});
-	let info = await transporter.sendMail({
-		from: '"Philsource" <philsource247@gmail.com>',
-		to: `${recipient}`,
-		subject: 'Philsource Password Recovery',
-		text: 'yo buddy'
-	});
-}
-
-app.post('/forgot', async (req, res) => {
-	const { email } = req.body;
-	const CMD = 'SELECT * FROM users WHERE Email = ?';
-	const values = [email];
-	// search for the user's email in the user table
-	const resp = await new Promise((resolve, reject) => {
-		database.query(CMD, values, (err, rows) => {
-			console.log(rows);
-			if (err || !rows.length) resolve(false);
-			resolve(true);
-		})
-	});
-	// send an email if the email address was in the database
-	if (resp) sendPasswordRecoverLink(email);
-
-	resp ? res.send(JSON.stringify({"status":"success"})) : res.send(JSON.stringify({"status":"failure"}));
-});
-
-app.post('/text_query', async (req, res) => {
-	const { query } = req.body;
-
-	// FIXME: SANITIZE INPUTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	const CMD = `SELECT * FROM texts WHERE title REGEXP ? OR tags REGEXP ?`;
-
-	const values = [query, query];
-
-	const results = await new Promise((resolve, reject) => {
-		database.query(CMD, values, (err, rows) => {
-			err ? reject(err) : resolve(rows);
-		});
-	});
-	res.send(JSON.stringify({"search_results": results}));
-});
-
-app.get('/get_text', async (req, res) => {
-	const hash = req.query["hash"];
-	const CMD = `SELECT * FROM texts WHERE hash=?`;
-	const values = [hash];
-	const results = await new Promise((resolve, reject) => {
-		database.query(CMD, values, (err, rows) => {
-			err ? reject(err) : resolve(rows);
-		});
-	});
-	res.send(JSON.stringify({"status": results}));
-});
-
-const checkForTextHash = async (hash) => {
-	const CMD = `SELECT * FROM texts WHERE hash REGEXP ?`;
-	const values = [hash];
-	return new Promise((resolve, reject) => {
-		database.query(CMD, values, (err, rows) => {
-			if (err) reject(false);
-			(rows[0] == undefined) ? resolve(false) : resolve(true);
-		});
-	});
-}
-
-const insertTextIntoDB = async (rawfile, hash) => {
-	// compress the base64 representation of the file
-	console.log(`hash: ${hash}`);
-	const zipped = zlib.gzipSync(JSON.stringify(rawfile)).toString('base64');
-	const CMD = `INSERT INTO texts (title, user, tags, file, hash) VALUES (?, ?, ?, ?, ?)`;
-	const values = [title, user, tags, zipped, hash];
-	console.log(values);
-	return new Promise((resolve, reject) => {
-		database.query(CMD, values, (err, rows) => {
-			if (err) reject(false);
-			resolve(true);
-		});
-	});
-}
-
-app.post('/comment', authUser, async (req, res) => {
-	const { post, hash } = req.body;
-	console.log(`post: ${post}\nhash: ${hash}`);
-	const user = req.user["user"];
-	const CMD = `INSERT INTO comments (user, hash, time, post) VALUES (?, ?, ?, ?);`
-	const values = [user, hash, moment().format('MMMM Do YYYY, h:mm:ss a'), post];
-	const resp = await new Promise((resolve, reject) => {
-		database.query(CMD, values, (err, rows) => {
-			if (err) resolve(false);
-			resolve(true);
-		});
-	});
-	resp ? res.send(JSON.stringify({"status":"success"})) : res.send(JSON.stringify({"status":"failure"}));
-});
-
-app.get('/get_comments', async (req, res) => {
-	const hash = req.query["hash"];
-	// FIXME: pull comments from the db
-	console.log(hash);
-
-	const CMD = `SELECT * FROM comments WHERE hash=?`;
-	const values = [hash];
-	const resp = await new Promise((resolve, reject) => {
-		database.query(CMD, values, (err, rows) => {
-			if (err) resolve(false);
-			(rows[0] == undefined) ? resolve(null) : resolve(rows);
-		});
-	});
-	console.log(resp);
-	res.send(JSON.stringify({"posts": resp}));
-});
-
 // upload pdf file
-app.put('/upload', upload.single('textfile'), authUser, async (req, res) => {
+const uploadText = async (req, res) => {
 	// FIXME: check authenticity of user's jwt
 	console.log('uploading');
 	const { title, tags } = req.body;
@@ -277,52 +241,88 @@ app.put('/upload', upload.single('textfile'), authUser, async (req, res) => {
 	} catch(err) { 
 		res.send(JSON.stringify({"status": "failed"}));
 	}
-});
+};
 
+const textQuery = async (req, res) => {
+	const { query } = req.body;
 
-app.post('/sign_in', async (req, res) => {
-	const { user, pass } = req.body;
-	// hash password
-	try {
-		// find user's hashed password in the database
-		const hash = await getHashedPass(user);
-		// hash given password and check against db hash
-		const hashed = await checkHashes(pass, hash);
-		if (hashed) {
-			console.log('hashes match!');
-			const token = jwt.sign({"user": user}, process.env.ACCESS_TOKEN_SECRET);
-			res.send(JSON.stringify({"user": user, "token": token}));
-		} else
-			res.send(JSON.stringify({"access token": "failed"}));
-	} catch (err) {
-		res.send(JSON.stringify({"sign_in": "failed"}));
-	}
-});
+	// FIXME: SANITIZE INPUTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	const CMD = `SELECT * FROM texts WHERE title REGEXP ? OR tags REGEXP ?`;
 
+	const values = [query, query];
 
-app.post('/sign_up', async (req, res) => {
-	const { user, pass, email } = req.body;
-	
-	// FIXME: sanitize user, pass, email inputs
+	const results = await new Promise((resolve, reject) => {
+		database.query(CMD, values, (err, rows) => {
+			err ? reject(err) : resolve(rows);
+		});
+	});
+	res.send(JSON.stringify({"search_results": results}));
+};
 
-	// check to see if username is taken
-	const exists = await checkForUser(user);
-	if (exists) {
-		res.send(JSON.stringify({"user":"unavailable"}));
-		return;
-	} else {
-		const result = await addUser(user, pass, email);
-		console.log(result);
-		// send back user and token
-		const token = jwt.sign({"user": user}, process.env.ACCESS_TOKEN_SECRET);
-		res.send(JSON.stringify({"user": user, "token": token}));
-	}
-});
+const commentOnPost = async (req, res) => {
+	const { post, hash } = req.body;
+	console.log(`post: ${post}\nhash: ${hash}`);
+	const user = req.user["user"];
+	const CMD = `INSERT INTO comments (user, hash, time, post) VALUES (?, ?, ?, ?);`
+	const values = [user, hash, moment().format('MMMM Do YYYY, h:mm:ss a'), post];
+	const resp = await new Promise((resolve, reject) => {
+		database.query(CMD, values, (err, rows) => {
+			if (err) resolve(false);
+			resolve(true);
+		});
+	});
+	resp ? res.send(JSON.stringify({"status":"success"})) : res.send(JSON.stringify({"status":"failure"}));
+};
+
+const getPostComments = async (req, res) => {
+	const hash = req.query["hash"];
+	// FIXME: pull comments from the db
+	console.log(hash);
+
+	const CMD = `SELECT * FROM comments WHERE hash=?`;
+	const values = [hash];
+	const resp = await new Promise((resolve, reject) => {
+		database.query(CMD, values, (err, rows) => {
+			if (err) resolve(false);
+			(rows[0] == undefined) ? resolve(null) : resolve(rows);
+		});
+	});
+	console.log(resp);
+	res.send(JSON.stringify({"posts": resp}));
+};
+
+const sendPasswordRecoverLink = async (recipient) => {
+	console.log('sending email');
+	console.log(process.env.MAIL);
+	let transporter = nodemailer.createTransport({
+		service: "gmail",
+    	secure: true,
+		auth: {
+    	  user: process.env.MAIL_USER,
+    	  pass: process.env.MAIL_PASS,
+		}
+	});
+	let info = await transporter.sendMail({
+		from: '"Philsource" <philsource247@gmail.com>',
+		to: `${recipient}`,
+		subject: 'Philsource Password Recovery',
+		text: 'yo buddy'
+	});
+}
 
 // serve landing page
 app.get('/', (req, res) => {
 	res.send('./index');
 });
+
+app.get('/get_text', getTextFromDB);
+app.get('/get_comments', getPostComments);
+app.post('/forgot', forgotPassword);
+app.post('/text_query', textQuery);
+app.post('/sign_in', signInUser);
+app.post('/sign_up', signUpUser);
+app.post('/comment', authUser, commentOnPost);
+app.put('/upload', upload.single('textfile'), authUser, uploadText);
 
 app.listen(PORT, () => {
 	console.log(`Listening on port ${PORT}...`);
