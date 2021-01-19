@@ -9,7 +9,7 @@ const FeatureCard = ({featname}) => {
 	console.log(category);
 	console.log(path);
 
-	return (<div id={`${category}`} className={`featurecard ${path}`} onClick={() => console.log(`${featname} card clicked!`)}>
+	return (<div id={`${category}`} className={`featurecard ${path}`}>
 		{category}
 	</div>);
 }

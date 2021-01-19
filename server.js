@@ -2,13 +2,16 @@ const fs = require('fs');
 const zlib = require('zlib');
 const bcrypt = require('bcrypt');
 const mysql = require('mysql');
+const redis = require('redis');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const multer = require('multer');
 const moment = require('moment');
 const nodemailer = require('nodemailer');
+const cookiesession = require('cookie-session');
 const Duplex = require('stream').Duplex;
+const { v4: uuidv4 } = require('uuid');
 // require environment access token
 require('dotenv').config();
 
@@ -26,6 +29,9 @@ const database = mysql.createConnection({
 	database: 'philsource'
 });
 
+const client = redis.createClient();
+client.on('error', err => console.log(err));
+
 // const CREATE_USERS = `CREATE TABLE`;
 // FIXME: establish database if one does not exist
 
@@ -33,6 +39,24 @@ const database = mysql.createConnection({
 app.use(express.static(__dirname + '/dist'));
 // allow json consumption
 app.use(express.json({limit: '100mb'}));
+
+
+//FIXME: add `secure: true` to cookie options
+// 
+app.set('trust proxy', 'loopback');
+// establish cookie sessions
+app.use(cookiesession({
+		secret: process.env.SESH_SEC,
+		resave: false,
+		saveUninitialized: false,
+		cookie: {
+			httpOnly: true,
+			//secure: true,
+			sameSite: true,
+			maxAge: 10000//24 * 60 * 60 * 1000,	// 24-hour cookie life
+		}
+	})
+);
 
 const computeSaltedHashedPass = async (pass) => {
 	const rounds = 10;
@@ -73,7 +97,7 @@ const forgotPassword = async (req, res) => {
 	});
 	// send an email if the email address was in the database
 	if (resp) sendPasswordRecoverLink(email);
-	resp ? res.send(JSON.stringify({"status":"success"})) : res.send(JSON.stringify({"status":"failure"}));
+	resp ? res.send(JSON.stringify({"status" : "success"})) : res.send(JSON.stringify({"status" : "failure"}));
 };
 
 const getTextFromDB = async (req, res) => {
@@ -123,21 +147,6 @@ const checkHashes = async (pass, hashword) => {
 	});
 }
 
-const authUser = async (req, res, next) => {
-	console.log('Authing user');
-	const auth = req.headers["authorization"];
-	console.log(auth);
-	const token = auth && auth.split(' ')[1];
-	console.log(`token: ${token}`);
-	if (token == null || token == undefined) return res.sendStatus(401);
-	jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-		if (err) return res.sendStatus(403);
-		console.log('user authed');
-		req.user = user;
-		next();
-	});
-}
-
 const addUser = async (user, pass, email) => {
 	console.log(`Adding user: ${user}`);
 	// generate hashed password with bcrypt
@@ -178,6 +187,9 @@ const signUpUser = async (req, res) => {
 		const result = await addUser(user, pass, email);
 		console.log(result);
 		// send back user and token
+		
+		// FIXME: create uuid and check redis cache for its existence; if it doesn't exist in the cache, add the uuid and any other metadata needed (e.g. user name, session expiration time)
+		// FIXME: put uuid inside user's cookie
 		const token = jwt.sign({"user": user}, process.env.ACCESS_TOKEN_SECRET);
 		res.send(JSON.stringify({"user": user, "token": token}));
 	}
@@ -192,8 +204,11 @@ const signInUser = async (req, res) => {
 		// hash given password and check against db hash
 		const hashed = await checkHashes(pass, hash);
 		if (hashed) {
-			console.log('hashes match!');
+
+			// FIXME: create uuid and check redis cache for its existence; if it doesn't exist in the cache, add the uuid and any other metadata needed (e.g. user name, session expiration time)
+			// FIXME: put uuid inside user's cookie
 			const token = jwt.sign({"user": user}, process.env.ACCESS_TOKEN_SECRET);
+			res.cookie('jwt', token);
 			res.send(JSON.stringify({"user": user, "token": token}));
 		} else
 			res.send(JSON.stringify({"access token": "failed"}));
@@ -214,34 +229,6 @@ const hashFile = async (file) => {
 	});
 }
 
-// upload pdf file
-const uploadText = async (req, res) => {
-	// FIXME: check authenticity of user's jwt
-	console.log('uploading');
-	const { title, tags } = req.body;
-	const user = req.user["user"];
-	// title, user, tags, file
-	const rawfile = req.file["buffer"];
-	const file = Buffer.from(rawfile);
-	const arraybuff = Uint8Array.from(file).buffer;
-	try {
-		// generate the file hash
-		let hash = await hashFile(file);
-		// check the database for the hash
-		let found = await checkForTextHash(hash);
-		// notify client that file already exists in database
-		if (found) {
-			res.send(JSON.stringify({"status": "hash_collision"}));
-			return;
-		}
-		// insert into database
-		const result = await insertTextIntoDB(rawfile, hash);
-		res.send(JSON.stringify({"status": hash}));
-		return;
-	} catch(err) { 
-		res.send(JSON.stringify({"status": "failed"}));
-	}
-};
 
 const textQuery = async (req, res) => {
 	const { query } = req.body;
@@ -259,20 +246,6 @@ const textQuery = async (req, res) => {
 	res.send(JSON.stringify({"search_results": results}));
 };
 
-const commentOnPost = async (req, res) => {
-	const { post, hash } = req.body;
-	console.log(`post: ${post}\nhash: ${hash}`);
-	const user = req.user["user"];
-	const CMD = `INSERT INTO comments (user, hash, time, post) VALUES (?, ?, ?, ?);`
-	const values = [user, hash, moment().format('MMMM Do YYYY, h:mm:ss a'), post];
-	const resp = await new Promise((resolve, reject) => {
-		database.query(CMD, values, (err, rows) => {
-			if (err) resolve(false);
-			resolve(true);
-		});
-	});
-	resp ? res.send(JSON.stringify({"status":"success"})) : res.send(JSON.stringify({"status":"failure"}));
-};
 
 const getPostComments = async (req, res) => {
 	const hash = req.query["hash"];
@@ -310,20 +283,89 @@ const sendPasswordRecoverLink = async (recipient) => {
 	});
 }
 
+const authUser = async (req, res, next) => {
+	console.log('Authing user');
+	const auth = req.headers["authorization"];
+	console.log(auth);
+	const token = auth && auth.split(' ')[1];
+	console.log(`token: ${token}`);
+	if (token == null || token == undefined) return res.sendStatus(401);
+	jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+		if (err) return res.sendStatus(403);
+		console.log('user authed');
+		req.user = user;
+		// set a cryptographically secure session name
+		//req.session.sessionName = crypto.randomBytes(16).toString('hex')
+		//res.cookie('hello', 'yoyoapplebottom')
+		next();
+	});
+}
+
+// upload pdf file
+const uploadText = async (req, res) => {
+	// FIXME: check authenticity of user's jwt
+	const { title, tags } = req.body;
+	const user = req.user["user"];
+	console.log(`Authed Session name: ${req.session.sessionName}`);
+	// title, user, tags, file
+	const rawfile = req.file["buffer"];
+	const file = Buffer.from(rawfile);
+	const arraybuff = Uint8Array.from(file).buffer;
+	try {
+		// generate the file hash
+		let hash = await hashFile(file);
+		// check the database for the hash
+		let found = await checkForTextHash(hash);
+		// notify client that file already exists in database
+		if (found) {
+			res.send(JSON.stringify({"status": "hash_collision"}));
+			return;
+		}
+		// insert into database
+		const result = await insertTextIntoDB(rawfile, hash);
+		res.send(JSON.stringify({"status": hash}));
+		return;
+	} catch(err) { 
+		res.send(JSON.stringify({"status": "failed"}));
+	}
+};
+
+const commentOnPost = async (req, res) => {
+	const { post, hash } = req.body;
+	console.log(`Authed Session name: ${req.session.sessionName}`);
+	console.log(`Cookie: ${req.cookies}`);
+	console.log(`post: ${post}\nhash: ${hash}`);
+	const user = req.user["user"];
+	const CMD = `INSERT INTO comments (user, hash, time, post) VALUES (?, ?, ?, ?);`
+	const values = [user, hash, moment().format('MMMM Do YYYY, h:mm:ss a'), post];
+	const resp = await new Promise((resolve, reject) => {
+		database.query(CMD, values, (err, rows) => {
+			if (err) resolve(false);
+			resolve(true);
+		});
+	});
+	resp ? res.send(JSON.stringify({"status":"success"})) : res.send(JSON.stringify({"status":"failure"}));
+};
+
 // serve landing page
 app.get('/', (req, res) => {
-	res.send('./index');
+	console.log(`Session: ${req.session}`);
+	res.render('index');
 });
 
+// serve unauthed content
 app.get('/get_text', getTextFromDB);
 app.get('/get_comments', getPostComments);
 app.post('/forgot', forgotPassword);
 app.post('/text_query', textQuery);
 app.post('/sign_in', signInUser);
 app.post('/sign_up', signUpUser);
+
+// serve authed user content
 app.post('/comment', authUser, commentOnPost);
 app.put('/upload', upload.single('textfile'), authUser, uploadText);
 
 app.listen(PORT, () => {
+	console.log(uuidv4());
 	console.log(`Listening on port ${PORT}...`);
 });

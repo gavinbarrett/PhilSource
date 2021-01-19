@@ -50,6 +50,7 @@ const SignUpBox = ({updateUser, updateToken}) => {
 		const resp = await fetch('/sign_up', {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)});
 		const response = await resp.json();
 		console.log(response);
+		console.log(`Headers: ${response.headers}`)
 		// update jwtoken for the one logged in
 		updateUser(response["user"]);
 		updateToken(response["token"]);

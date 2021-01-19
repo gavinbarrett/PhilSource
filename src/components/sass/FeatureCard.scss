@@ -10,6 +10,7 @@
 	font-size: 2vw;
 	font-family: 'Lato', sans-serif;
 	border-radius: 7px;	
+	background-size: 25vw 25vh;
 }
 
 .featurecard:hover {
@@ -34,4 +35,30 @@
 
 .metaphysics {
 	background: url(assets/metaphysics.jpg);
+	background-size: 25vw 25vh;
+}
+
+.mind {
+	background: url(assets/philofmind.jpg);
+	background-size: 25vw 25vh;
+}
+
+.aesthetics {
+	background: url(assets/aesthetics.jpg);
+	background-size: 25vw 25vh;
+}
+
+.gidealism {
+	background: url(assets/germanidealism.jpg);
+	background-size: 25vw 25vh;
+}
+
+.religion {
+	background: url(assets/religion.png);
+	background-size: 25vw 25vh;
+}
+
+.marxism {
+	background: url(assets/marxism.jpg);
+	background-size: 25vw 25vh;
 }
