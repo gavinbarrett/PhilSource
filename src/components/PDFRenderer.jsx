@@ -11,7 +11,7 @@ import htmlToDraft from 'html-to-draftjs';
 
 import './sass/PDFRenderer.scss';
 
-const PostComment = ({token, hash, getComments}) => {
+const PostComment = ({hash, getComments}) => {
 	
 	const [comment, updateComment] = useState(null);
 	const history = useHistory();
@@ -27,7 +27,7 @@ const PostComment = ({token, hash, getComments}) => {
 		// redirect to login page if no jwt exists
 		if (token == null) history.push('/login');
 		// send comment post request
-		const resp = await fetch('/comment', {method: "POST", headers: {"authorization": `Bearer ${token}`, "Content-Type": "application/json"}, body: JSON.stringify({"post": comment, "hash": hash})});
+		const resp = await fetch('/comment', {method: "POST", headers: {"Content-Type": "application/json"}, credentials: 'same-origin', body: JSON.stringify({"post": comment, "hash": hash})});
 		const r = await resp.json();
 		// erase textarea text
 		await updateComment(null);
@@ -61,7 +61,7 @@ const NoComments = () => {
 	return (<div className="noComment">{"Be the first to comment!"}</div>);
 }
 
-const Comments = ({user, token, hash}) => {
+const Comments = ({user, hash}) => {
 	
 	const [posts, updatePosts] = useState([]);
 	const [editState, updateEditState] = useState(EditorState.createEmpty());
@@ -79,7 +79,7 @@ const Comments = ({user, token, hash}) => {
 	const submitComment = async () => {
 		const commstate = stateToHTML(editState.getCurrentContent());
 		// create json object including user, time, content
-		const resp = await fetch('/comment', {method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify({"user": `${user}`, "post": `${commstate}`, "hash": `${hash}`})});
+		const resp = await fetch('/comment', {method: 'POST', headers: {'Content-Type': 'application/json'}, credentials: 'same-origin', body: JSON.stringify({"user": `${user}`, "post": `${commstate}`, "hash": `${hash}`})});
 		const data = await resp.json();
 		await getComments(hash);
 	}
@@ -103,7 +103,7 @@ const Comments = ({user, token, hash}) => {
 	</div>);
 }
 
-const PDFRenderer = ({user, token, file, name, hash, updateState}) => {
+const PDFRenderer = ({user, file, name, hash, updateState}) => {
 	
 	const [pageAmt, updatePageAmt] = useState(null);
 	const [pageNum, updatePageNum] = useState(1);
@@ -168,7 +168,7 @@ const PDFRenderer = ({user, token, file, name, hash, updateState}) => {
 				</Document>
 			</div>
 		</div>
-		<Comments user={user} token={token} hash={hash}/>
+		<Comments user={user} hash={hash}/>
 	</div>
 	<Footer/>
 	</>);

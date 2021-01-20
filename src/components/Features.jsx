@@ -8,7 +8,7 @@ const Features = () => {
 	const [state, changeState] = useState(0);
 
 	const current_feats = [
-			{"category": "Feminism", "path": "feminism"},
+			{"category": "Metaphysics", "path": "metaphysics"},
 			{"category": "Phil. of Science", "path": "science"},
 			{"category": "Existentialism", "path": "existentialism"}
 	];
@@ -18,7 +18,6 @@ const Features = () => {
 	}
 
 	const handleFeatured = () => {
-		console.log("handling featured");
 		if (!state) return;
 		const feat = document.getElementById('featured');
 		const browse = document.getElementById('browseall');
@@ -30,7 +29,6 @@ const Features = () => {
 	}
 
 	const handleBrowse = () => {
-		console.log("handling browsing");
 		if (state) return;
 		const feat = document.getElementById('featured');
 		const browse = document.getElementById('browseall');

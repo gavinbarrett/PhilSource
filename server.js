@@ -1,25 +1,39 @@
 const fs = require('fs');
 const zlib = require('zlib');
-const bcrypt = require('bcrypt');
 const mysql = require('mysql');
 const redis = require('redis');
-const express = require('express');
-const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const multer = require('multer');
 const moment = require('moment');
-const nodemailer = require('nodemailer');
-const cookiesession = require('cookie-session');
-const Duplex = require('stream').Duplex;
+const express = require('express');
 const { v4: uuidv4 } = require('uuid');
+const Duplex = require('stream').Duplex;
+const nodemailer = require('nodemailer');
+const cookieParser = require('cookie-parser');
+
 // require environment access token
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// serve from the dist directory
+app.use(express.static(__dirname + '/dist'));
+// allow json consumption
+app.use(express.json({limit: '100mb'}));
+
+// use localhost proxy
+app.set('trust proxy', '127.0.0.1')
+//FIXME: add `secure: true` to cookie options
+app.use(cookieParser(process.env.SERVER_SECRET));
+
 // store files in memory
 const upload = multer({ storage: multer.memoryStorage() });
+
+// connect to redis cache
+const client = redis.createClient();
+client.on('error', err => console.log(err));
 
 // connect to database
 const database = mysql.createConnection({
@@ -29,36 +43,9 @@ const database = mysql.createConnection({
 	database: 'philsource'
 });
 
-const client = redis.createClient();
-client.on('error', err => console.log(err));
-
-// const CREATE_USERS = `CREATE TABLE`;
-// FIXME: establish database if one does not exist
-
-// serve from the dist directory
-app.use(express.static(__dirname + '/dist'));
-// allow json consumption
-app.use(express.json({limit: '100mb'}));
-
-
-//FIXME: add `secure: true` to cookie options
-// 
-app.set('trust proxy', 'loopback');
-// establish cookie sessions
-app.use(cookiesession({
-		secret: process.env.SESH_SEC,
-		resave: false,
-		saveUninitialized: false,
-		cookie: {
-			httpOnly: true,
-			//secure: true,
-			sameSite: true,
-			maxAge: 10000//24 * 60 * 60 * 1000,	// 24-hour cookie life
-		}
-	})
-);
 
 const computeSaltedHashedPass = async (pass) => {
+	// generate a salted hash of the user submitted password
 	const rounds = 10;
 	return await new Promise((resolve, reject) => {
 		bcrypt.genSalt(rounds, (err, salt) => {
@@ -72,11 +59,11 @@ const computeSaltedHashedPass = async (pass) => {
 }
 
 const getHashedPass = async (user) => {
+	// pull salted hash from the database
 	const CMD = `SELECT * FROM users WHERE User=?`;
 	const values = [user];
 	return await new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
-			console.log(rows);
 			if (err) reject(err);
 			(rows[0] == undefined) ? reject(new Error('User not found.')) : resolve(rows[0]['Pass']);
 		});
@@ -90,7 +77,6 @@ const forgotPassword = async (req, res) => {
 	// search for the user's email in the user table
 	const resp = await new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
-			console.log(rows);
 			if (err || !rows.length) resolve(false);
 			resolve(true);
 		})
@@ -101,6 +87,7 @@ const forgotPassword = async (req, res) => {
 };
 
 const getTextFromDB = async (req, res) => {
+	// pull the file from the database
 	const hash = req.query["hash"];
 	const CMD = `SELECT * FROM texts WHERE hash=?`;
 	const values = [hash];
@@ -113,6 +100,7 @@ const getTextFromDB = async (req, res) => {
 };
 
 const checkForTextHash = async (hash) => {
+	// search the database for a file hash
 	const CMD = `SELECT * FROM texts WHERE hash REGEXP ?`;
 	const values = [hash];
 	return new Promise((resolve, reject) => {
@@ -124,12 +112,11 @@ const checkForTextHash = async (hash) => {
 }
 
 const insertTextIntoDB = async (rawfile, hash) => {
+	// insert a file into the database
 	// compress the base64 representation of the file
-	console.log(`hash: ${hash}`);
 	const zipped = zlib.gzipSync(JSON.stringify(rawfile)).toString('base64');
 	const CMD = `INSERT INTO texts (title, user, tags, file, hash) VALUES (?, ?, ?, ?, ?)`;
 	const values = [title, user, tags, zipped, hash];
-	console.log(values);
 	return new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
 			if (err) reject(false);
@@ -139,6 +126,7 @@ const insertTextIntoDB = async (rawfile, hash) => {
 }
 
 const checkHashes = async (pass, hashword) => {
+	// compare the salted hashed password against the database entry
 	return await new Promise((resolve, reject) => {
 		bcrypt.compare(pass, hashword, (err, hash) => {
 			if (err) reject(err);
@@ -148,6 +136,7 @@ const checkHashes = async (pass, hashword) => {
 }
 
 const addUser = async (user, pass, email) => {
+	// add a user to the system
 	console.log(`Adding user: ${user}`);
 	// generate hashed password with bcrypt
 	const hash = await computeSaltedHashedPass(pass);
@@ -164,6 +153,7 @@ const addUser = async (user, pass, email) => {
 }
 
 const checkForUser = async (user) => {
+	// search the database for the user
 	const CMD = `SELECT * FROM users WHERE user=?;`;
 	const values = [user];
 	return await new Promise((resolve, reject) => {
@@ -174,50 +164,9 @@ const checkForUser = async (user) => {
 	});
 }
 
-const signUpUser = async (req, res) => {
-	const { user, pass, email } = req.body;
-	// FIXME: sanitize user, pass, email inputs
-
-	// check to see if username is taken
-	const exists = await checkForUser(user);
-	if (exists) {
-		res.send(JSON.stringify({"user":"unavailable"}));
-		return;
-	} else {
-		const result = await addUser(user, pass, email);
-		console.log(result);
-		// send back user and token
-		
-		// FIXME: create uuid and check redis cache for its existence; if it doesn't exist in the cache, add the uuid and any other metadata needed (e.g. user name, session expiration time)
-		// FIXME: put uuid inside user's cookie
-		const token = jwt.sign({"user": user}, process.env.ACCESS_TOKEN_SECRET);
-		res.send(JSON.stringify({"user": user, "token": token}));
-	}
-};
-
-const signInUser = async (req, res) => {
-	const { user, pass } = req.body;
-	// hash password
-	try {
-		// find user's hashed password in the database
-		const hash = await getHashedPass(user);
-		// hash given password and check against db hash
-		const hashed = await checkHashes(pass, hash);
-		if (hashed) {
-
-			// FIXME: create uuid and check redis cache for its existence; if it doesn't exist in the cache, add the uuid and any other metadata needed (e.g. user name, session expiration time)
-			// FIXME: put uuid inside user's cookie
-			const token = jwt.sign({"user": user}, process.env.ACCESS_TOKEN_SECRET);
-			res.cookie('jwt', token);
-			res.send(JSON.stringify({"user": user, "token": token}));
-		} else
-			res.send(JSON.stringify({"access token": "failed"}));
-	} catch (err) {
-		res.send(JSON.stringify({"sign_in": "failed"}));
-	}
-};
 
 const hashFile = async (file) => {
+	// compute the sha256 digest of a file 
 	return new Promise((resolve, reject) => {
 		let stream = new Duplex();
 		stream.push(file);
@@ -229,15 +178,12 @@ const hashFile = async (file) => {
 	});
 }
 
-
 const textQuery = async (req, res) => {
+	// search the database file title and tags for a user submitted phrase
 	const { query } = req.body;
-
 	// FIXME: SANITIZE INPUTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	const CMD = `SELECT * FROM texts WHERE title REGEXP ? OR tags REGEXP ?`;
-
 	const values = [query, query];
-
 	const results = await new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
 			err ? reject(err) : resolve(rows);
@@ -248,10 +194,9 @@ const textQuery = async (req, res) => {
 
 
 const getPostComments = async (req, res) => {
+	// pull the comments of a post from the database
 	const hash = req.query["hash"];
 	// FIXME: pull comments from the db
-	console.log(hash);
-
 	const CMD = `SELECT * FROM comments WHERE hash=?`;
 	const values = [hash];
 	const resp = await new Promise((resolve, reject) => {
@@ -260,13 +205,11 @@ const getPostComments = async (req, res) => {
 			(rows[0] == undefined) ? resolve(null) : resolve(rows);
 		});
 	});
-	console.log(resp);
 	res.send(JSON.stringify({"posts": resp}));
 };
 
 const sendPasswordRecoverLink = async (recipient) => {
-	console.log('sending email');
-	console.log(process.env.MAIL);
+	// send a password recovery link
 	let transporter = nodemailer.createTransport({
 		service: "gmail",
     	secure: true,
@@ -283,30 +226,89 @@ const sendPasswordRecoverLink = async (recipient) => {
 	});
 }
 
+const signUpUser = async (req, res) => {
+	// start user sign up process
+	const { user, pass, email } = req.body;
+
+	// FIXME: sanitize user, pass, email inputs
+	
+	// check to see if username is taken
+	const exists = await checkForUser(user);
+	if (exists) {
+		res.send(JSON.stringify({"user":"unavailable"}));
+		return;
+	} else {
+		const result = await addUser(user, pass, email);
+		// send back user and token
+		const sessionID = uuidv4();
+		client.set(sessionID, user);
+		const clientData = {
+			user: user,
+			id: sessionID
+		};
+		// set session ID in the cookie header
+		res.cookie('sessionIDs', clientData, { maxAge: 100000, secure: true, httpOnly: true, sameSite: true });
+		//
+		res.send(JSON.stringify({"authed" : user}));
+	}
+};
+
+const signInUser = async (req, res) => {
+	// sign in the user
+	const { user, pass } = req.body;
+	// hash password
+	try {
+		// find user's hashed password in the database
+		const hash = await getHashedPass(user);
+		// hash given password and check against db hash
+		const hashed = await checkHashes(pass, hash);
+		if (hashed) {
+			// FIXME: create uuid and check redis cache for its existence; if it doesn't exist in the cache, add the uuid and any other metadata needed (e.g. user name, session expiration time)
+			// FIXME: put uuid inside user's cookie
+			// generate a unique session ID
+			const sessionID = uuidv4();
+			client.set(sessionID, user);
+			const clientData = {
+				user: user,
+				id: sessionID
+			};
+			// set session ID in the cookie header
+			res.cookie('sessionIDs', clientData, { maxAge: 100000, secure: true, httpOnly: true, sameSite: true });
+			res.send(JSON.stringify({"authed" : user}));
+		// return failed login status
+		} else
+			res.send(JSON.stringify({"status": "failed"}));
+	} catch (err) {
+		res.send(JSON.stringify({"status": "failed"}));
+	}
+};
+
 const authUser = async (req, res, next) => {
-	console.log('Authing user');
-	const auth = req.headers["authorization"];
-	console.log(auth);
-	const token = auth && auth.split(' ')[1];
-	console.log(`token: ${token}`);
-	if (token == null || token == undefined) return res.sendStatus(401);
-	jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-		if (err) return res.sendStatus(403);
-		console.log('user authed');
-		req.user = user;
-		// set a cryptographically secure session name
-		//req.session.sessionName = crypto.randomBytes(16).toString('hex')
-		//res.cookie('hello', 'yoyoapplebottom')
+	// authenticate the user's session ID against a database
+	if (!req.cookies.sessionIDs) return res.sendStatus(401);
+	const user = req.cookies.sessionIDs['user'];
+	const sessionID = req.cookies.sessionIDs['id'];
+	if (sessionID == null || sessionID == undefined) return res.sendStatus(401);
+	// FIXME: ensure cookie isn't expired; if it is, redirect to login page (send 401 status)
+	// FIXME: check Redis cache for sessionID
+	client.exists(sessionID, (err, data) => {
+		// if sessionID isn't in the cache, send user to re-authenticate
+		if (err) return res.sendStatus(401);
+		// if sessionID is in the cache, user is authed; go to the next middleware function
 		next();
 	});
 }
 
-// upload pdf file
 const uploadText = async (req, res) => {
+	console.log(`ReqAuth: ${req.headers.authorization}`);
+	console.log(`ReqCookie: ${req.headers.cookie}`);
+	// upload pdf file
+	console.log('Uploading');
+	console.log(`SessionID: ${req.cookies.sessionIDs['id']}`);
 	// FIXME: check authenticity of user's jwt
 	const { title, tags } = req.body;
-	const user = req.user["user"];
-	console.log(`Authed Session name: ${req.session.sessionName}`);
+	const user = req.cookies.sessionIDs['user'];
+	console.log(`Authing ${user}`);
 	// title, user, tags, file
 	const rawfile = req.file["buffer"];
 	const file = Buffer.from(rawfile);
@@ -331,6 +333,7 @@ const uploadText = async (req, res) => {
 };
 
 const commentOnPost = async (req, res) => {
+	// comment on a post
 	const { post, hash } = req.body;
 	console.log(`Authed Session name: ${req.session.sessionName}`);
 	console.log(`Cookie: ${req.cookies}`);
@@ -347,9 +350,20 @@ const commentOnPost = async (req, res) => {
 	resp ? res.send(JSON.stringify({"status":"success"})) : res.send(JSON.stringify({"status":"failure"}));
 };
 
+const retrieveSession = async (req, res) => {
+	if (req.cookies.sessionIDs) {
+		client.get(req.cookies.sessionIDs['id'], (err, data) => {
+			if (err)
+				res.send(JSON.stringify({"retrieved" : "failed"}));
+			else
+				res.send(JSON.stringify({"retrieved" : req.cookies.sessionIDs['user']}));
+		});
+	} else
+		res.send(JSON.stringify({"retrieved" : "failed"}));
+};
+
 // serve landing page
 app.get('/', (req, res) => {
-	console.log(`Session: ${req.session}`);
 	res.render('index');
 });
 
@@ -362,10 +376,10 @@ app.post('/sign_in', signInUser);
 app.post('/sign_up', signUpUser);
 
 // serve authed user content
+app.get('/get_session', authUser, retrieveSession);
 app.post('/comment', authUser, commentOnPost);
 app.put('/upload', upload.single('textfile'), authUser, uploadText);
 
 app.listen(PORT, () => {
-	console.log(uuidv4());
 	console.log(`Listening on port ${PORT}...`);
 });

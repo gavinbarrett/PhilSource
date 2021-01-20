@@ -23,7 +23,7 @@ const Emailer = () => {
 	return (<input id="emailer" type="email"/>);
 }
 
-const SignUpBox = ({updateUser, updateToken}) => {
+const SignUpBox = ({updateUser}) => {
 	
 	const history = useHistory();
 	
@@ -47,13 +47,11 @@ const SignUpBox = ({updateUser, updateToken}) => {
 
 		const data = {"user": user,"pass": pass, "email": email};
 
-		const resp = await fetch('/sign_up', {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)});
+		const resp = await fetch('/sign_up', {method: "POST", headers: {"Content-Type": "application/json"}, credentials: 'same-origin', body: JSON.stringify(data)});
 		const response = await resp.json();
-		console.log(response);
-		console.log(`Headers: ${response.headers}`)
+		console.log(`New user logged into session: ${response["authed"]}`);
 		// update jwtoken for the one logged in
-		updateUser(response["user"]);
-		updateToken(response["token"]);
+		updateUser(response["authed"]);
 		// update name of logged in 
 		history.push('/');
 	}
@@ -71,7 +69,7 @@ const SignUpBox = ({updateUser, updateToken}) => {
 	</div>);
 }
 
-const SignInBox = ({updateUser, updateToken}) => {
+const SignInBox = ({updateUser}) => {
 	
 	const history = useHistory();
 
@@ -79,10 +77,10 @@ const SignInBox = ({updateUser, updateToken}) => {
 		const user = document.getElementById('username').value;
 		const pass = document.getElementById('password').value;
 		const data = {"user": user, "pass": pass};
-		const resp = await fetch('/sign_in', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)});
+		const resp = await fetch('/sign_in', {method: 'POST', headers: {"Content-Type": "application/json"}, credentials: 'same-origin', body: JSON.stringify(data)});
 		const response = await resp.json();
-		updateUser(response["user"]);
-		updateToken(response["token"]);
+		console.log(`User logged into session: ${response["authed"]}`);
+		updateUser(response["authed"]);
 		history.push('/');
 	}
 
@@ -102,7 +100,7 @@ const SignInBox = ({updateUser, updateToken}) => {
 	</div>);
 }
 
-const LoginPage = ({updateUser, updateToken}) => {
+const LoginPage = ({updateUser}) => {
 	
 	const [state, changeState] = useState(0);
 
@@ -141,7 +139,7 @@ const LoginPage = ({updateUser, updateToken}) => {
 		<div id="signinselect" onClick={signin}>Sign In</div>
 		<div id="signupselect" onClick={signup}>Sign Up</div>
 		</div>
-		{state ? <SignUpBox updateUser={updateUser} updateToken={updateToken}/> : <SignInBox updateUser={updateUser} updateToken={updateToken}/>}
+		{state ? <SignUpBox updateUser={updateUser}/> : <SignInBox updateUser={updateUser}/>}
 		</div>
 	</div>
 	<Footer/></>);

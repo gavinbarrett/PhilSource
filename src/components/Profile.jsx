@@ -8,7 +8,6 @@ const Profile = ({user}) => {
 	const setProfilePhoto = () => {
 		console.log('clicked avatar!');
 		// FIXME: get photo from user
-		
 		// FIXME: set image src to provided photo
 	}
 

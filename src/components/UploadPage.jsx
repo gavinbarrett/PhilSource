@@ -5,7 +5,7 @@ import { Footer } from './Footer';
 import { useHistory } from 'react-router-dom';
 import './sass/UploadPage.scss';
 
-const UploadPage = ({user, token, updateDisplayFile, changeFilename}) => {
+const UploadPage = ({user, updateDisplayFile, changeFilename}) => {
 	
 	const [file, updateFile] = useState(null);
 	const [tags, updateTags] = useState(null);
@@ -33,8 +33,11 @@ const UploadPage = ({user, token, updateDisplayFile, changeFilename}) => {
 		formData.append('textfile', file);
 		formData.append('tags', filtered);
 		// FIXME: activate loading screen
-		const resp = await fetch('/upload', {method: 'PUT', headers: {'Authorization': `Bearer ${token}`},  body: formData});
+		// try to upload a text to the database
+		const resp = await fetch('/upload', {method: 'PUT',  body: formData});
 		console.log(resp);
+		// if user is not authenticated, redirect to signin page
+		if (resp.status != 200) history.push('/signin');
 		const blob = new Blob([file], {"type": "application/pdf"});
 		await updateDisplayFile(blob);
 		await changeFilename(file.name);

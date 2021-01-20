@@ -10,9 +10,7 @@ const AppTitle = () => {
 }
 
 const ProfileDetail = ({user, toggle}) => {
-	
 	const history = useHistory();
-
 	return (<div id="profilecard2" onMouseLeave={() => toggle()} onClick={ () => history.push('/profile') }>
 		<div id="avatarcard">
 		<img id="avatar" src="avatar.jpg"/>
