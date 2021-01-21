@@ -28,6 +28,7 @@ const PostComment = ({hash, getComments}) => {
 		if (token == null) history.push('/login');
 		// send comment post request
 		const resp = await fetch('/comment', {method: "POST", headers: {"Content-Type": "application/json"}, credentials: 'same-origin', body: JSON.stringify({"post": comment, "hash": hash})});
+		if (resp.status != 200) history.push('/signin');
 		const r = await resp.json();
 		// erase textarea text
 		await updateComment(null);
@@ -65,21 +66,25 @@ const Comments = ({user, hash}) => {
 	
 	const [posts, updatePosts] = useState([]);
 	const [editState, updateEditState] = useState(EditorState.createEmpty());
+	const history = useHistory();
 
 	useEffect(() => {
 		getComments(hash);
 	}, []);
 
-	const getComments = async () => {
+	const getComments = async (hash) => {
+		console.log(`Getting comments for ${hash}`);
 		const resp = await fetch(`/get_comments/?hash=${hash}`, {method: "GET"});
 		const result = await resp.json();
 		await updatePosts(result["posts"]);
 	}
 	
 	const submitComment = async () => {
+		console.log(`Grabbing comments for ${hash}`);
 		const commstate = stateToHTML(editState.getCurrentContent());
 		// create json object including user, time, content
 		const resp = await fetch('/comment', {method: 'POST', headers: {'Content-Type': 'application/json'}, credentials: 'same-origin', body: JSON.stringify({"user": `${user}`, "post": `${commstate}`, "hash": `${hash}`})});
+		if (resp.status != 200) history.push('/signin');
 		const data = await resp.json();
 		await getComments(hash);
 	}
@@ -103,7 +108,7 @@ const Comments = ({user, hash}) => {
 	</div>);
 }
 
-const PDFRenderer = ({user, file, name, hash, updateState}) => {
+const PDFRenderer = ({user, file, name, hash}) => {
 	
 	const [pageAmt, updatePageAmt] = useState(null);
 	const [pageNum, updatePageNum] = useState(1);
@@ -111,7 +116,6 @@ const PDFRenderer = ({user, file, name, hash, updateState}) => {
 	const [nextenabled, updateNextDisabled] = useState(false);
 
 	const loadPageNums = async ({numPages}) => {
-		console.log(`${numPages} pages`);
 		await updatePageAmt(numPages);
 	}
 

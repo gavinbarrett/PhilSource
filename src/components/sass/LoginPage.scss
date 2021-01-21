@@ -80,6 +80,14 @@
 }
 
 .forgotlink {
+	width: 10vw;
+}
+
+.forgotlink:hover {
+	cursor: pointer;
+}
+
+.forgotlinkclass {
 	width: 40vw;
 	display: flex;
 	justify-content: flex-start;
@@ -96,7 +104,15 @@
 }
 
 #submit:hover {
-	background: #98c1d9;
+	animation-name: submitLogin;
+	animation-duration: 0.75s;
+	animation-fill-mode: forwards;
+	animation-timing-function: ease-out;
+}
+
+@keyframes submitLogin {
+	from { background: #3d5a80; }
+	to { background: #98c1d9; }
 }
 
 #signinselect {

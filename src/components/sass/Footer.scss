@@ -20,14 +20,20 @@ footer {
 }
 
 .footerheads {
-	text-decoration: underline;
+	font-family: 'Bebas Neue', cursive;
+	font-size: 1.5vw;
+}
+
+.footerlinkbox {
+	width: 10vw;
+	height: 10vh;
 }
 
 .footerlinks {
+	padding-left: 0.75vw;
 }
 
 .footerlinks:hover {
 	color: #3d5a80;
 	cursor: pointer;
 }
-

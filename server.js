@@ -35,14 +35,16 @@ const upload = multer({ storage: multer.memoryStorage() });
 const client = redis.createClient();
 client.on('error', err => console.log(err));
 
+// set session expiration to 60 minutes
+const expiry = 60 * 60;
+
 // connect to database
 const database = mysql.createConnection({
-	host: 'localhost',
-	user: 'root',
+	host: `${process.env.DB_HOST}`,
+	user: `${process.env.DB_USER}`,
 	password: `${process.env.DB_PASS}`,
-	database: 'philsource'
+	database: `${process.env.DB_NAME}`
 });
-
 
 const computeSaltedHashedPass = async (pass) => {
 	// generate a salted hash of the user submitted password
@@ -60,7 +62,8 @@ const computeSaltedHashedPass = async (pass) => {
 
 const getHashedPass = async (user) => {
 	// pull salted hash from the database
-	const CMD = `SELECT * FROM users WHERE User=?`;
+	console.log(`Received user ${user}`);
+	const CMD = `select * from users where User=?`;
 	const values = [user];
 	return await new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
@@ -72,7 +75,7 @@ const getHashedPass = async (user) => {
 
 const forgotPassword = async (req, res) => {
 	const { email } = req.body;
-	const CMD = 'SELECT * FROM users WHERE Email = ?';
+	const CMD = 'select * from users where Email=?';
 	const values = [email];
 	// search for the user's email in the user table
 	const resp = await new Promise((resolve, reject) => {
@@ -89,7 +92,7 @@ const forgotPassword = async (req, res) => {
 const getTextFromDB = async (req, res) => {
 	// pull the file from the database
 	const hash = req.query["hash"];
-	const CMD = `SELECT * FROM texts WHERE hash=?`;
+	const CMD = `select * from texts where hash=?`;
 	const values = [hash];
 	const results = await new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
@@ -100,27 +103,39 @@ const getTextFromDB = async (req, res) => {
 };
 
 const checkForTextHash = async (hash) => {
+	console.log(`Checking for hash ${hash}`);
 	// search the database for a file hash
-	const CMD = `SELECT * FROM texts WHERE hash REGEXP ?`;
+	const CMD = `select * from texts where hash=?`;
 	const values = [hash];
 	return new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
-			if (err) reject(false);
-			(rows[0] == undefined) ? resolve(false) : resolve(true);
+			if (err) {
+				console.log(`Rejecting when checking hash: ${err}`);
+				reject(false);
+			} else {
+				console.log('Accepting');
+				(rows[0] == undefined) ? resolve(false) : resolve(true);
+			}
 		});
 	});
 }
 
-const insertTextIntoDB = async (rawfile, hash) => {
+const insertTextIntoDB = async (title, user, tags, rawfile, hash) => {
 	// insert a file into the database
 	// compress the base64 representation of the file
 	const zipped = zlib.gzipSync(JSON.stringify(rawfile)).toString('base64');
-	const CMD = `INSERT INTO texts (title, user, tags, file, hash) VALUES (?, ?, ?, ?, ?)`;
+	console.log(`Title: ${title}\nUser: ${user}\nTags: ${tags}\nHash: ${hash}`);
+	const CMD = `insert into texts (title, user, tags, file, hash) values (?, ?, ?, ?, ?)`;
 	const values = [title, user, tags, zipped, hash];
 	return new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
-			if (err) reject(false);
-			resolve(true);
+			if (err) { 
+				console.log(`Rejecting text.\nError: ${err}`);
+				reject(false);
+			} else {
+				console.log(`Inserting ${hash}`);
+				resolve(true);
+			}
 		});
 	});
 }
@@ -137,11 +152,11 @@ const checkHashes = async (pass, hashword) => {
 
 const addUser = async (user, pass, email) => {
 	// add a user to the system
-	console.log(`Adding user: ${user}`);
+	//console.log(`Adding user: ${user}`);
 	// generate hashed password with bcrypt
 	const hash = await computeSaltedHashedPass(pass);
 	// construct an SQL query to insert the user
-	const CMD = `INSERT INTO users (User, Pass, Email) VALUES (?, ?, ?);`;
+	const CMD = `insert into users (User, Pass, Email) values (?, ?, ?);`;
 	const values = [user, hash, email]
 	// place the user and hash password in the database
 	return await new Promise((resolve, reject) => {
@@ -154,7 +169,7 @@ const addUser = async (user, pass, email) => {
 
 const checkForUser = async (user) => {
 	// search the database for the user
-	const CMD = `SELECT * FROM users WHERE user=?;`;
+	const CMD = `select * from users where user=?;`;
 	const values = [user];
 	return await new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
@@ -163,7 +178,6 @@ const checkForUser = async (user) => {
 		});
 	});
 }
-
 
 const hashFile = async (file) => {
 	// compute the sha256 digest of a file 
@@ -182,7 +196,7 @@ const textQuery = async (req, res) => {
 	// search the database file title and tags for a user submitted phrase
 	const { query } = req.body;
 	// FIXME: SANITIZE INPUTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	const CMD = `SELECT * FROM texts WHERE title REGEXP ? OR tags REGEXP ?`;
+	const CMD = `select * from texts where title regexp ? or tags regexp ?`;
 	const values = [query, query];
 	const results = await new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
@@ -196,8 +210,9 @@ const textQuery = async (req, res) => {
 const getPostComments = async (req, res) => {
 	// pull the comments of a post from the database
 	const hash = req.query["hash"];
+	console.log(`Pulling comments from db where hash=${hash}`);
 	// FIXME: pull comments from the db
-	const CMD = `SELECT * FROM comments WHERE hash=?`;
+	const CMD = `select * from comments where hash=?`;
 	const values = [hash];
 	const resp = await new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
@@ -241,13 +256,13 @@ const signUpUser = async (req, res) => {
 		const result = await addUser(user, pass, email);
 		// send back user and token
 		const sessionID = uuidv4();
-		client.set(sessionID, user);
+		client.set(sessionID, user, 'EX', expiry);
 		const clientData = {
 			user: user,
 			id: sessionID
 		};
 		// set session ID in the cookie header
-		res.cookie('sessionIDs', clientData, { maxAge: 100000, secure: true, httpOnly: true, sameSite: true });
+		res.cookie('sessionIDs', clientData, { maxAge: expiry * 1000, secure: true, httpOnly: true, sameSite: true });
 		//
 		res.send(JSON.stringify({"authed" : user}));
 	}
@@ -256,6 +271,7 @@ const signUpUser = async (req, res) => {
 const signInUser = async (req, res) => {
 	// sign in the user
 	const { user, pass } = req.body;
+	console.log(`Body: ${user}\n${pass}`);
 	// hash password
 	try {
 		// find user's hashed password in the database
@@ -267,13 +283,13 @@ const signInUser = async (req, res) => {
 			// FIXME: put uuid inside user's cookie
 			// generate a unique session ID
 			const sessionID = uuidv4();
-			client.set(sessionID, user);
-			const clientData = {
-				user: user,
-				id: sessionID
-			};
-			// set session ID in the cookie header
-			res.cookie('sessionIDs', clientData, { maxAge: 100000, secure: true, httpOnly: true, sameSite: true });
+			// set expiring session in the Redis cache
+			client.set(sessionID, user, 'EX', expiry);
+			// set the session id in the cookie
+			const clientData = { user: user, id: sessionID };
+			// secure the cookie from snooping, XSS, and CSRF; set lifetime to 60 minutes
+			const options = { maxAge: expiry * 1000, secure: true, httpOnly: true, sameSite: true };
+			res.cookie('sessionIDs', clientData, options);
 			res.send(JSON.stringify({"authed" : user}));
 		// return failed login status
 		} else
@@ -300,15 +316,10 @@ const authUser = async (req, res, next) => {
 }
 
 const uploadText = async (req, res) => {
-	console.log(`ReqAuth: ${req.headers.authorization}`);
-	console.log(`ReqCookie: ${req.headers.cookie}`);
-	// upload pdf file
-	console.log('Uploading');
-	console.log(`SessionID: ${req.cookies.sessionIDs['id']}`);
-	// FIXME: check authenticity of user's jwt
 	const { title, tags } = req.body;
+	//console.log(`Req.cookies: ${JSON.stringify(req.cookies)}`);
 	const user = req.cookies.sessionIDs['user'];
-	console.log(`Authing ${user}`);
+	console.log(`Upload from ${user}`);
 	// title, user, tags, file
 	const rawfile = req.file["buffer"];
 	const file = Buffer.from(rawfile);
@@ -316,30 +327,30 @@ const uploadText = async (req, res) => {
 	try {
 		// generate the file hash
 		let hash = await hashFile(file);
+		console.log(`hash: ${hash}`);
 		// check the database for the hash
 		let found = await checkForTextHash(hash);
 		// notify client that file already exists in database
-		if (found) {
-			res.send(JSON.stringify({"status": "hash_collision"}));
-			return;
+		if (found)
+			res.send(JSON.stringify({"status": hash}));
+		else {
+			// insert into database
+			const result = await insertTextIntoDB(title, user, tags, rawfile, hash);
+			res.send(JSON.stringify({"status": hash}));
 		}
-		// insert into database
-		const result = await insertTextIntoDB(rawfile, hash);
-		res.send(JSON.stringify({"status": hash}));
-		return;
 	} catch(err) { 
+		console.log(`Error when uploading: ${err}`);
 		res.send(JSON.stringify({"status": "failed"}));
 	}
 };
 
 const commentOnPost = async (req, res) => {
 	// comment on a post
-	const { post, hash } = req.body;
-	console.log(`Authed Session name: ${req.session.sessionName}`);
-	console.log(`Cookie: ${req.cookies}`);
-	console.log(`post: ${post}\nhash: ${hash}`);
-	const user = req.user["user"];
-	const CMD = `INSERT INTO comments (user, hash, time, post) VALUES (?, ?, ?, ?);`
+	const { user, post, hash } = req.body;
+	//console.log(`Authed Session name: ${req.session.sessionName}`);
+	//console.log(`Cookie: ${req.cookies}`);
+	//console.log(`post: ${post}\nhash: ${hash}`);
+	const CMD = `insert into comments (user, hash, time, post) value (?, ?, ?, ?);`
 	const values = [user, hash, moment().format('MMMM Do YYYY, h:mm:ss a'), post];
 	const resp = await new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {

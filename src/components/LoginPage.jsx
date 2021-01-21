@@ -1,56 +1,52 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Heading } from './Heading';
 import { Footer } from './Footer';
 import { useHistory } from 'react-router-dom';
 import './sass/LoginPage.scss';
 
-const Username = () => {
-	return (<input id="username" type="text"/>);
+const Username = ({updateUsername}) => {
+	return (<input id="username" type="text" onChange={event => updateUsername(event.target.value)}/>);
 }
 
-const Password = () => {
-	return (<input id="password" type="password"/>);
+const Password = ({updatePassword}) => {
+	return (<input id="password" type="password" onChange={event => updatePassword(event.target.value)}/>);
 }
 
-const PasswordRetype = () => {
-	return (<input id="passwordretype" type="password"/>);
+const PasswordRetype = ({updateRePassword}) => {
+	return (<input id="passwordretype" type="password" onChange={event => updateRePassword(event.target.value)}/>);
 }
 
-const SubmitSignIn = () => {
-}
-
-const Emailer = () => {
-	return (<input id="emailer" type="email"/>);
+const Emailer = ({updateEmail}) => {
+	return (<input id="emailer" type="email" onChange={event => updateEmail(event.target.value)}/>);
 }
 
 const SignUpBox = ({updateUser}) => {
+	const [username, updateUsername] = useState('');
+	const [password, updatePassword] = useState('');
+	const [rePassword, updateRePassword] = useState('');
+	const [email, updateEmail] = useState('');
 	
 	const history = useHistory();
 	
 	const signup = async () => {
-
 		// grab username, password, retyped password, email
-		const user = document.getElementById('username').value;
-		const pass = document.getElementById('password').value;
-		const passretyped = document.getElementById('passwordretype').value;
-		const email = document.getElementById('emailer').value;
+		// FIXME: username, password, rePassword, email
 		const regex = new RegExp(/\w+@\w+\.\w+/);
+		
+
 		// FIXME: throw error if any of these are missing
-		// FIXME: enforce requirements for username/password length and constitution
+		// FIXME: enforce requirements for username/password complexity, length, and min/max life
 		// FIXME: check for passwords to match
 		if (pass != passretyped) return;
-
 		if (!email.match(regex)) {
 			console.log('regex does not match');
 			return;
 		}
-
-		const data = {"user": user,"pass": pass, "email": email};
-
+		const data = {"user" : username,"pass" : password, "email" : email};
 		const resp = await fetch('/sign_up', {method: "POST", headers: {"Content-Type": "application/json"}, credentials: 'same-origin', body: JSON.stringify(data)});
 		const response = await resp.json();
 		console.log(`New user logged into session: ${response["authed"]}`);
-		// update jwtoken for the one logged in
+		// update the logged in user's name
 		updateUser(response["authed"]);
 		// update name of logged in 
 		history.push('/');
@@ -58,25 +54,24 @@ const SignUpBox = ({updateUser}) => {
 
 	return (<div className="loginbox">
 		<div id="user" className="logintext">Username</div>
-		<Username/>
+		<Username updateUsername={updateUsername}/>
 		<div id="pass" className="logintext">Password</div>
-		<Password/>
+		<Password updatePassword={updatePassword}/>
 		<div id="passretype" className="logintext">Retype Password</div>
-		<PasswordRetype/>
+		<PasswordRetype updateRePassword={updateRePassword}/>
 		<div id="email" className="logintext">Email</div>
-		<Emailer/>
+		<Emailer updateEmail={updateEmail}/>
 		<button id="signupbutton" type="submit" onClick={() => signup()}>Sign Up</button>
 	</div>);
 }
 
 const SignInBox = ({updateUser}) => {
-	
+	const [username, updateUsername] = useState('');
+	const [password, updatePassword] = useState('');
 	const history = useHistory();
 
 	const signin = async () => {
-		const user = document.getElementById('username').value;
-		const pass = document.getElementById('password').value;
-		const data = {"user": user, "pass": pass};
+		const data = {"user" : username, "pass" : password};
 		const resp = await fetch('/sign_in', {method: 'POST', headers: {"Content-Type": "application/json"}, credentials: 'same-origin', body: JSON.stringify(data)});
 		const response = await resp.json();
 		console.log(`User logged into session: ${response["authed"]}`);
@@ -90,19 +85,22 @@ const SignInBox = ({updateUser}) => {
 
 	return (<div className="loginbox">
 		<div className="logintext">Username</div>
-		<Username/>
+		<Username updateUsername={updateUsername}/>
 		<div className="logintext">Password</div>
-		<Password/>
-		<div className="forgotlink" onClick={forgotPass}>
-			Forgot Password
+		<Password updatePassword={updatePassword}/>
+		<div className="forgotlinkclass">
+			<div className="forgotlink" onClick={forgotPass}>Forgot Password</div>
 		</div>
 		<button id="submit" type="submit" onClick={signin}>Sign In</button>
 	</div>);
 }
 
 const LoginPage = ({updateUser}) => {
-	
 	const [state, changeState] = useState(0);
+
+	useEffect(() => {
+		window.scroll(0,0);
+	}, []);
 
 	const flipState = () => { state ? changeState(0) : changeState(1); }
 

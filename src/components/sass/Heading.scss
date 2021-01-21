@@ -38,6 +38,20 @@
 	box-shadow: 0px 4px 10px #ffffff;
 }
 
+#signout {
+	width: 8vw;
+	height: 3vh;
+	font-size: 1vw;
+	text-align: center;
+	padding-top: 1vh;
+	border-radius: 5px;
+}
+
+#signout:hover {
+	color: #98c1d9;
+	background: white;
+}
+
 #cardname {
 	display: flex;
 	justify-content: center;
@@ -72,12 +86,11 @@
 }
 
 #uploadlink:hover {
-	background: #4F5D75;
 	cursor: pointer;
-	transform: translateY(-5px);
-	-webkit-box-shadow: 0 -2px 5px 5px #ffffff;
-    -moz-box-shadow: 0 -2px 5px 5px #ffffff;
-	box-shadow: 0px 4px 10px white;
+	animation-name: highlightHeader;
+	animation-duration: 0.75s;
+	animation-fill-mode: forwards;
+	animation-timing-function: ease-out;
 }
 
 #signinlink {
@@ -90,12 +103,24 @@
 }
 
 #signinlink:hover {
-	background: #4F5D75;
 	cursor: pointer;
-	transform: translateY(-5px);
-	-webkit-box-shadow: 0 0 5px 2px #ffffff;
-    -moz-box-shadow: 0 0 5px 2px #ffffff;
-	box-shadow: 0px 4px 10px white;
+	animation-name: highlightHeader;
+	animation-duration: 0.75s;
+	animation-fill-mode: forwards;
+	animation-timing-function: ease-out;
+}
+
+@keyframes highlightHeader {
+	from {
+		background: #293241;
+	}
+	to {
+		transform: translateY(-5px);
+		background: #4F5D75;
+		-webkit-box-shadow: 0 -2px 5px 5px #ffffff;
+    	-moz-box-shadow: 0 -2px 5px 5px #ffffff;
+		box-shadow: 0px 4px 10px white;
+	}
 }
 
 header {

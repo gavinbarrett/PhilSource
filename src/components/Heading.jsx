@@ -15,6 +15,7 @@ const ProfileDetail = ({user, toggle}) => {
 		<div id="avatarcard">
 		<img id="avatar" src="avatar.jpg"/>
 		<div id="cardname">{user}</div>
+		<div id="signout" onClick={() => console.log('Gonna sign out!')}>Sign Out</div>
 		</div>
 	</div>);
 }

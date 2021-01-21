@@ -5,7 +5,7 @@ import { Footer } from './Footer';
 import { useHistory } from 'react-router-dom';
 import './sass/UploadPage.scss';
 
-const UploadPage = ({user, updateDisplayFile, changeFilename}) => {
+const UploadPage = ({user, updateDisplayFile, changeFilename, updateHash}) => {
 	
 	const [file, updateFile] = useState(null);
 	const [tags, updateTags] = useState(null);
@@ -39,6 +39,9 @@ const UploadPage = ({user, updateDisplayFile, changeFilename}) => {
 		// if user is not authenticated, redirect to signin page
 		if (resp.status != 200) history.push('/signin');
 		const blob = new Blob([file], {"type": "application/pdf"});
+		const r = await resp.json();
+		await updateHash(r["status"]);
+		console.log(`Hash: ${r["status"]}`);
 		await updateDisplayFile(blob);
 		await changeFilename(file.name);
 		history.push('/pdfrenderer');

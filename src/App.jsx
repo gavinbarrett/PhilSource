@@ -7,6 +7,7 @@ import { LoginPage } from './components/LoginPage';
 import { UploadPage } from './components/UploadPage';
 import { PDFRenderer } from './components/PDFRenderer';
 import { SearchResults } from './components/SearchResults';
+import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { PageNotFound } from './components/PageNotFound';
 import { ForgotPassword } from './components/ForgotPassword';
 import './components/sass/App.scss';
@@ -21,6 +22,7 @@ const App = () => {
 
 	useEffect(() => {
 		console.log('Welcome to Philsource.');
+		window.scroll({ top: 0, left: 0, behavior: 'smooth' });
 		retrieveSession();
 	}, []);
 
@@ -37,10 +39,11 @@ const App = () => {
 		<Route path='/' exact render={() => <LandingPage user={user} updateSearchResults={updateSearchResults}/>}/>
 		<Route path='/signin' render={() => <LoginPage updateUser={updateUser}/>}/>
 		<Route path='/forgot' render={() => <ForgotPassword/>}/>
-		<Route path='/upload' render={() => <UploadPage user={user} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename}/>}/>
+		<Route path='/upload' render={() => <UploadPage user={user} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash}/>}/>
 		<Route path='/profile' render={() => <Profile user={user}/>}/>
 		<Route path='/pdfrenderer' render={() => <PDFRenderer user={user} file={displayFile} name={filename} hash={hash}/>}/>
 		<Route path='/searchresults' render={() => <SearchResults user={user} results={searchResults["search_results"]} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash} updateSearchResults={updateSearchResults}/>}/>
+		<Route path='/privacy' render={() => <PrivacyPolicy/>}/>
 		<Route path='*' render={() => <PageNotFound/>}/>
 	</Switch>);
 }

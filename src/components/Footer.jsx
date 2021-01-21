@@ -12,7 +12,8 @@ const Footer = () => {
 
 	return (<footer>
 		<div className="footcolumn">
-			<div className="footerheads">Navigation</div>
+			<div className="footerlinkbox">
+			<div className="footerheads">PhiloSource</div>
 			<div className="footerlinks">
 				<Link to={'/'} onClick={scrollToTop}>Home</Link>
 			</div>
@@ -22,17 +23,25 @@ const Footer = () => {
 			<div className="footerlinks">
 				<Link to={'/signin'}>Sign In</Link>
 			</div>
+			</div>
 		</div>
 		<div className="footcolumn">
+			<div className="footerlinkbox">
 			<div className="footerheads">About</div>
 			<div className="footerlinks">Use</div>
 			<div className="footerlinks">Help</div>
+			<div className="footerlinks">
+				<Link to={'/privacy'}>Privacy Policy</Link>
+			</div>
+			</div>
 		</div>
 		<div className="footcolumn">
+			<div className="footerlinkbox">
 			<div className="footerheads">Development</div>
-			<div className="footerlinks"><a href="https://github.com/gavinbarrett/PhiloSource">Code</a></div>
 			<div className="footerlinks">Contact</div>
 			<div className="footerlinks"><a href="https://github.com/gavinbarrett/PhiloSource/pulls">Contribute</a></div>
+			<div className="footerlinks">&copy; PhiloSource 2021</div>
+			</div>
 		</div>
 	</footer>);
 }
