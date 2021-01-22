@@ -130,8 +130,7 @@ const LoginPage = ({updateUser}) => {
 		flipState();
 	}
 
-	return (<><Heading/>
-	<div id="loginpagewrapper">
+	return (<><div id="loginpagewrapper">
 		<div id="boxwrapper">
 		<div id="loginselector">
 		<div id="signinselect" onClick={signin}>Sign In</div>
@@ -139,8 +138,7 @@ const LoginPage = ({updateUser}) => {
 		</div>
 		{state ? <SignUpBox updateUser={updateUser}/> : <SignInBox updateUser={updateUser}/>}
 		</div>
-	</div>
-	<Footer/></>);
+	</div></>);
 }
 
 export {

@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Heading } from './Heading';
-import { Footer } from './Footer';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 import { EditorState, convertToRaw} from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
@@ -155,8 +153,7 @@ const PDFRenderer = ({user, file, name, hash}) => {
 		}
 	}
 
-	return (<><Heading user={user}/>
-	<div id="pdfrendererwrapper">
+	return (<><div id="pdfrendererwrapper">
 		<div id="pdfcontroller">
 			<nav id="navbar">
 				<div id="movebuttons">
@@ -173,9 +170,7 @@ const PDFRenderer = ({user, file, name, hash}) => {
 			</div>
 		</div>
 		<Comments user={user} hash={hash}/>
-	</div>
-	<Footer/>
-	</>);
+	</div></>);
 }
 
 export {

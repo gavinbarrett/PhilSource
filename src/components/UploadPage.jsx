@@ -1,7 +1,5 @@
 import React, {useState} from 'react';
 import Dropzone, {useDropzone} from 'react-dropzone';
-import { Heading } from './Heading';
-import { Footer } from './Footer';
 import { useHistory } from 'react-router-dom';
 import './sass/UploadPage.scss';
 
@@ -18,10 +16,8 @@ const UploadPage = ({user, updateDisplayFile, changeFilename, updateHash}) => {
 
 	const upload = async () => {
 		if (file === null) return;
-		if (user === null) {
+		if (user === null)
 			history.push('/signin');
-			return;
-		}
 		let title = document.getElementById('texttitle').value;
 		// grab metadata tags
 		let tags = document.getElementById("metatags").value.split(" ");
@@ -47,8 +43,7 @@ const UploadPage = ({user, updateDisplayFile, changeFilename, updateHash}) => {
 		history.push('/pdfrenderer');
 	}
 
-	return (<><Heading user={user}/>
-	<div id="uploadpagewrapper">
+	return (<><div id="uploadpagewrapper">
 		<Dropzone id="dropzone" type="file" accept="application/pdf" onDrop={dropped}>
 			{({getRootProps, getInputProps, isDragActive, isDragReject, acceptedFiles}) => (
 			<div id="dropperwrapper">
@@ -67,8 +62,7 @@ const UploadPage = ({user, updateDisplayFile, changeFilename, updateHash}) => {
 		<input id="metatags" type="text" placeholder="put metadata tags here, separated by commas"/>
 		<button id="submit" type="submit" onClick={upload}>Upload</button>
 		</div>
-	</div>
-	<Footer/></>);
+	</div></>);
 }
 
 export {

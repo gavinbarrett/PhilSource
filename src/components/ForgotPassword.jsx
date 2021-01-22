@@ -35,11 +35,9 @@ const ForgotPassword = () => {
 	const [success, updateSuccess] = useState(false);
 	const [submitted, updateSubmitted] = useState(null);
 
-	return (<><Heading/>
-		<div className="forgotpasswrapper">
+	return (<><div className="forgotpasswrapper">
 			{submitted ? <ResetSuccess email={email} success={success}/> : <EmailInput email={email} updateEmail={updateEmail} updateSubmitted={updateSubmitted} updateSuccess={updateSuccess}/>}
-		</div>
-	<Footer/></>);
+		</div></>);
 }
 
 export {

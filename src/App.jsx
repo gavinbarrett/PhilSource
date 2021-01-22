@@ -37,17 +37,19 @@ const App = () => {
 			updateUser(retrieved);
 	}
 
-	return (<Switch>
-		<Route path='/' exact render={() => <LandingPage user={user} updateSearchResults={updateSearchResults}/>}/>
+	return (<><Heading user={user} updateUser={updateUser}/>
+		<Switch>
+		<Route path='/' exact render={() => <LandingPage updateSearchResults={updateSearchResults}/>}/>
 		<Route path='/signin' render={() => <LoginPage updateUser={updateUser}/>}/>
 		<Route path='/forgot' render={() => <ForgotPassword/>}/>
-		<Route path='/upload' render={() => <UploadPage user={user} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash}/>}/>
+		<Route path='/upload' render={() => <UploadPage updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash}/>}/>
 		<Route path='/profile' render={() => <Profile user={user}/>}/>
 		<Route path='/pdfrenderer' render={() => <PDFRenderer user={user} file={displayFile} name={filename} hash={hash}/>}/>
 		<Route path='/searchresults' render={() => <SearchResults user={user} results={searchResults["search_results"]} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash} updateSearchResults={updateSearchResults}/>}/>
 		<Route path='/privacy' render={() => <PrivacyPolicy/>}/>
 		<Route path='*' render={() => <PageNotFound/>}/>
-	</Switch>);
+		</Switch>
+	<Footer/></>);
 }
 
 ReactDOM.render(

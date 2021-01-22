@@ -9,25 +9,27 @@ const AppTitle = () => {
 	</div>);
 }
 
-const ProfileDetail = ({user, toggle}) => {
+const ProfileDetail = ({user, updateUser, toggle}) => {
 	const history = useHistory();
 
 	const signOut = async () => {
 		const resp = await fetch('/signout', {method: 'GET'});
-			
-		console.log(r);
+		// log user out
+		updateUser(null);
+		// return to home page
+		history.push('/');
 	}
 
-	return (<div id="profilecard2" onMouseLeave={() => toggle()} onClick={ () => history.push('/profile') }>
+	return (<div id="profilecard2" onMouseLeave={() => toggle()}>
 		<div id="avatarcard">
-		<img id="avatar" src="avatar.jpg"/>
+		<img id="avatar" src="avatar.jpg" onClick={() => history.push('/profile')}/>
 		<div id="cardname">{user}</div>
 		<div id="signout" onClick={signOut}>Sign Out</div>
 		</div>
 	</div>);
 }
 
-const ProfileCard = ({user}) => {
+const ProfileCard = ({user, updateUser}) => {
 	
 	const [button, updateButton] = useState(0);
 
@@ -36,17 +38,17 @@ const ProfileCard = ({user}) => {
 	}
 
 	return (<div id="profilecard" onMouseEnter={() => toggle()}>
-		{button ? <ProfileDetail user={user} toggle={toggle}/> : user}
+		{button ? <ProfileDetail user={user} updateUser={updateUser} toggle={toggle}/> : user}
 	</div>);
 }
 
-const Links = ({user}) => {
+const Links = ({user, updateUser}) => {
 	return (<div id="links">
 		<UploadLink/>
 		<div className="vrwrapper">
 			<div className="vr"/>
 		</div>
-		{user ? <ProfileCard user={user}/> : <SignInLink/>}
+		{user ? <ProfileCard user={user} updateUser={updateUser}/> : <SignInLink/>}
 	</div>);
 }
 
@@ -60,10 +62,10 @@ const SignInLink = () => {
 	return (<Link id='signinlink' to='/signin'>Sign In</Link>);
 }
 
-const Heading = ({user}) => {
+const Heading = ({user, updateUser}) => {
 	return (<header>
 		<AppTitle/>
-		<Links user={user}/>
+		<Links user={user} updateUser={updateUser}/>
 	</header>);
 }
 
