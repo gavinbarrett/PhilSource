@@ -15,7 +15,15 @@
 
 .featurecard:hover {
 	cursor: pointer;
-	filter: brightness(130%);
+	animation-name: brightenCard;
+	animation-duration: 0.5s;
+	animation-fill-mode: forwards;
+	animation-timing-function: ease-out;
+}
+
+@keyframes brightenCard {
+	from { filter: brightness(100%); }
+	to { filter: brightness(130%); }
 }
 
 .feminism {

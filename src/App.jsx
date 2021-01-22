@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter as Router, Route, Link, Switch, useRouteMatch } from 'react-router-dom';
+import { Heading } from './components/Heading';
+import { Footer } from './components/Footer';
 import { LandingPage } from './components/LandingPage';
 import { Profile } from './components/Profile';
 import { LoginPage } from './components/LoginPage';
@@ -28,8 +30,8 @@ const App = () => {
 
 	const retrieveSession = async () => {
 		const resp = await fetch('/get_session', { headers: {'Content-Type': 'application/json'}, credentials: 'same-origin' });
+		if (resp.status != 200) return;
 		const response = await resp.json();
-		console.log(response);
 		const retrieved = response["retrieved"];
 		if (retrieved != 'failed')
 			updateUser(retrieved);

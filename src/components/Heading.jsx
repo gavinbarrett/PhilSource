@@ -11,11 +11,18 @@ const AppTitle = () => {
 
 const ProfileDetail = ({user, toggle}) => {
 	const history = useHistory();
+
+	const signOut = async () => {
+		const resp = await fetch('/signout', {method: 'GET'});
+			
+		console.log(r);
+	}
+
 	return (<div id="profilecard2" onMouseLeave={() => toggle()} onClick={ () => history.push('/profile') }>
 		<div id="avatarcard">
 		<img id="avatar" src="avatar.jpg"/>
 		<div id="cardname">{user}</div>
-		<div id="signout" onClick={() => console.log('Gonna sign out!')}>Sign Out</div>
+		<div id="signout" onClick={signOut}>Sign Out</div>
 		</div>
 	</div>);
 }

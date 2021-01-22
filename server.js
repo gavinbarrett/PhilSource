@@ -362,6 +362,7 @@ const commentOnPost = async (req, res) => {
 };
 
 const retrieveSession = async (req, res) => {
+	console.log(`Cookie: ${req.cookies.sessionIDs['id']}`);
 	if (req.cookies.sessionIDs) {
 		client.get(req.cookies.sessionIDs['id'], (err, data) => {
 			if (err)
@@ -371,6 +372,16 @@ const retrieveSession = async (req, res) => {
 		});
 	} else
 		res.send(JSON.stringify({"retrieved" : "failed"}));
+};
+
+const signUserOut = async (req, res) => {
+	const sessionID = req.cookies.sessionIDs['id'];
+	console.log(`SessionID: ${sessionID}`);
+	// delete session ID
+	client.del(sessionID);
+	// delete cookie
+	res.clearCookie('sessionIDs');
+	res.send(JSON.stringify({"status":"success"}));
 };
 
 // serve landing page
@@ -388,8 +399,9 @@ app.post('/sign_up', signUpUser);
 
 // serve authed user content
 app.get('/get_session', authUser, retrieveSession);
-app.post('/comment', authUser, commentOnPost);
 app.put('/upload', upload.single('textfile'), authUser, uploadText);
+app.post('/comment', authUser, commentOnPost);
+app.get('/signout', authUser, signUserOut);
 
 app.listen(PORT, () => {
 	console.log(`Listening on port ${PORT}...`);
