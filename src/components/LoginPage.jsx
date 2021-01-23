@@ -98,10 +98,6 @@ const SignInBox = ({updateUser}) => {
 const LoginPage = ({updateUser}) => {
 	const [state, changeState] = useState(0);
 
-	useEffect(() => {
-		window.scroll(0,0);
-	}, []);
-
 	const flipState = () => { state ? changeState(0) : changeState(1); }
 
 	const signin = () => {

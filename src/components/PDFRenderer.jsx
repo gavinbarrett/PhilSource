@@ -19,7 +19,6 @@ const PostComment = ({hash, getComments}) => {
 	}
 
 	const submitComment = async () => {
-		console.log(`comment: ${comment}`);
 		if (comment.length > 1000) return;
 		if (comment == null) return;
 		// redirect to login page if no jwt exists

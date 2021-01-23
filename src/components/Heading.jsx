@@ -17,7 +17,7 @@ const ProfileDetail = ({user, updateUser, toggle}) => {
 		// log user out
 		updateUser(null);
 		// return to home page
-		history.push('/');
+		history.replaceState('/');
 	}
 
 	return (<div id="profilecard2" onMouseLeave={() => toggle()}>

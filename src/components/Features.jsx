@@ -3,20 +3,20 @@ import { FeatureCard } from './FeatureCard';
 import { Categories } from './Categories';
 import './sass/Features.scss';
 
-const Features = () => {
+const Features = ({updateFilter}) => {
 	
 	const [state, changeState] = useState(0);
 
-	const current_feats = [
+	const default_feats = [
 			{"category": "Metaphysics", "path": "metaphysics"},
 			{"category": "Phil. of Science", "path": "science"},
 			{"category": "Existentialism", "path": "existentialism"}
 	];
-
+	
 	const flipState = () => {
 		state ? changeState(0) : changeState(1);
 	}
-
+	
 	const handleFeatured = () => {
 		if (!state) return;
 		const feat = document.getElementById('featured');
@@ -38,7 +38,7 @@ const Features = () => {
 		browse.style.color = '#293241';
 		flipState();
 	}
-
+	
 	return (<div id="featurewrapper">
 	<div id="selector">
 		<div id="featured" onClick={handleFeatured}>Featured</div>
@@ -46,9 +46,9 @@ const Features = () => {
 	</div>
 	<div id="features">
 		{state ? Categories.map((feature, index) => {
-			return <FeatureCard key={index} featname={feature}/>
-			}) : current_feats.map((feature, index) => {
-				return <FeatureCard key={index} featname={feature}/>;
+			return <FeatureCard key={index} featname={feature} updateFilter={updateFilter}/>
+			}) : default_feats.map((feature, index) => {
+				return <FeatureCard key={index} featname={feature} updateFilter={updateFilter}/>;
 		})}
 	</div>
 	</div>);

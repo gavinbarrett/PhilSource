@@ -223,6 +223,11 @@ const getPostComments = async (req, res) => {
 	res.send(JSON.stringify({"posts": resp}));
 };
 
+const filterTexts = async (req, res) => {
+	// return a set of texts based on the selected subdiscipline
+	res.send(JSON.stringify({"status":"success"}));
+}
+
 const sendPasswordRecoverLink = async (recipient) => {
 	// send a password recovery link
 	let transporter = nodemailer.createTransport({
@@ -392,6 +397,7 @@ app.get('/', (req, res) => {
 // serve unauthed content
 app.get('/get_text', getTextFromDB);
 app.get('/get_comments', getPostComments);
+app.post('/filtertexts', filterTexts);
 app.post('/forgot', forgotPassword);
 app.post('/text_query', textQuery);
 app.post('/sign_in', signInUser);
