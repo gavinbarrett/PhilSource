@@ -16,6 +16,7 @@
 #submit:hover {
 	background: #98c1d9;
 }
+
 #uploadpagewrapper {
 	width: 100vw;
 	height: 88vh;
@@ -48,6 +49,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	background-color: #e0fbfc;
 	background: url(assets/upload.png);
 	background-position: center;
 	background-size: 240px 300px;
@@ -56,4 +58,21 @@
 	border-radius: 10px;
 	font-family: 'Lato', sans-serif;
 	color: #293241;
+}
+
+#dropper:hover {
+	cursor: pointer;
+	animation-name: changeUploader;
+	animation-duration: 0.5s;
+	animation-fill-mode: forwards;
+	animation-timing-function: ease-out;
+}
+
+@keyframes changeUploader {
+	from {
+		background-color: #e0fbfc;
+	}
+	to {
+		background-color: #cbc5d1;
+	}
 }

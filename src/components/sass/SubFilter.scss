@@ -1,5 +1,56 @@
 .subfilterwrapper {
 	width: 100vw;
 	height: 88vh;
+	display: flex;
 	background-image: url(assets/phil.png);
+	align-items: center;
+	justify-content: center;
+}
+
+.documentbox {
+	width: 85vw;
+	height: 65vh;
+	display: flex;
+	justify-content: flex-start;
+	flex-wrap: wrap;
+}
+
+.documentcase {
+	width: 16vw;
+	height: 41vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.document {
+	width: 14vw;
+	height: 22vh;
+	background-color: white;
+	border-radius: 5px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: 'Lato', sans-serif;
+	overflow-x: hidden;
+}
+
+.document:hover {
+	cursor: pointer;
+	animation-name: animateDocument;
+	animation-duration: 0.5s;
+	animation-fill-mode: forwards;
+	animation-timing-function: ease-out;
+	transition: ease;
+}
+
+@keyframes animateDocument {
+	from {
+		width: 14vw;
+		height: 22vh;
+	}
+	to {
+		width: 15vw;
+		height: 40vh;
+	}
 }

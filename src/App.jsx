@@ -27,8 +27,6 @@ const App = () => {
 	const [searchResults, updateSearchResults] = useState([]);
 
 	useEffect(() => {
-		// scroll to the top
-		//window.scroll({ top: 0, left: 0, behavior: 'smooth' });
 		// retrieve the user's session
 		retrieveSession();
 	}, []);
@@ -60,7 +58,7 @@ const App = () => {
 		<Route path='/profile' render={() => <Profile user={user}/>}/>
 		<Route path='/pdfrenderer' render={() => <PDFRenderer user={user} file={displayFile} name={filename} hash={hash}/>}/>
 		<Route path='/searchresults' render={() => <SearchResults user={user} results={searchResults["search_results"]} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash} updateSearchResults={updateSearchResults}/>}/>
-		<Route path='/subfilter' render={() => <SubFilter filter={filter}/>}/>
+		<Route path='/subfilter/*' render={() => <SubFilter filter={filter} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash}/>}/>
 		<Route path='/contact' render={() => <Contact/>}/>/>
 		<Route path='/privacy' render={() => <PrivacyPolicy/>}/>
 		<Route path='*' render={() => <PageNotFound/>}/>

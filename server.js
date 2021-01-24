@@ -92,7 +92,7 @@ const forgotPassword = async (req, res) => {
 const getTextFromDB = async (req, res) => {
 	// pull the file from the database
 	const hash = req.query["hash"];
-	const CMD = `select * from texts where hash=?`;
+	const CMD = `select * from documents where hash=?`;
 	const values = [hash];
 	const results = await new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
@@ -105,37 +105,31 @@ const getTextFromDB = async (req, res) => {
 const checkForTextHash = async (hash) => {
 	console.log(`Checking for hash ${hash}`);
 	// search the database for a file hash
-	const CMD = `select * from texts where hash=?`;
+	const CMD = `select * from documents where hash=?`;
 	const values = [hash];
 	return new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
-			if (err) {
-				console.log(`Rejecting when checking hash: ${err}`);
-				reject(false);
-			} else {
-				console.log('Accepting');
-				(rows[0] == undefined) ? resolve(false) : resolve(true);
-			}
+			if (err) reject(false);
+			else (rows[0] == undefined) ? resolve(false) : resolve(true);
 		});
 	});
 }
 
-const insertTextIntoDB = async (title, user, tags, rawfile, hash) => {
+const insertTextIntoDB = async (title, author, user, tags, category, hash, file) => {
 	// insert a file into the database
 	// compress the base64 representation of the file
-	const zipped = zlib.gzipSync(JSON.stringify(rawfile)).toString('base64');
-	console.log(`Title: ${title}\nUser: ${user}\nTags: ${tags}\nHash: ${hash}`);
-	const CMD = `insert into texts (title, user, tags, file, hash) values (?, ?, ?, ?, ?)`;
-	const values = [title, user, tags, zipped, hash];
+	// FIXME: check for injection and overflow attacks
+	// FIXME: check that PDF file is valid
+	// compress the pdf file
+	const zipped = zlib.gzipSync(JSON.stringify(file)).toString('base64');
+	// collect file attribute values
+	const values = [title, author, user, tags, category, hash, zipped];
+	// pass attributes through MySQL stored procedures
+	const CMD = `insert into documents (title, author, user, tags, category, hash, file) values (?, ?, ?, ?, ?, ?, ?)`;
 	return new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
-			if (err) { 
-				console.log(`Rejecting text.\nError: ${err}`);
-				reject(false);
-			} else {
-				console.log(`Inserting ${hash}`);
-				resolve(true);
-			}
+			if (err) reject(false);
+			else resolve(true);
 		});
 	});
 }
@@ -196,7 +190,7 @@ const textQuery = async (req, res) => {
 	// search the database file title and tags for a user submitted phrase
 	const { query } = req.body;
 	// FIXME: SANITIZE INPUTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	const CMD = `select * from texts where title regexp ? or tags regexp ?`;
+	const CMD = `select * from documents where title regexp ? or tags regexp ?`;
 	const values = [query, query];
 	const results = await new Promise((resolve, reject) => {
 		database.query(CMD, values, (err, rows) => {
@@ -210,7 +204,6 @@ const textQuery = async (req, res) => {
 const getPostComments = async (req, res) => {
 	// pull the comments of a post from the database
 	const hash = req.query["hash"];
-	console.log(`Pulling comments from db where hash=${hash}`);
 	// FIXME: pull comments from the db
 	const CMD = `select * from comments where hash=?`;
 	const values = [hash];
@@ -224,8 +217,17 @@ const getPostComments = async (req, res) => {
 };
 
 const filterTexts = async (req, res) => {
+	const { category } = req.body;
+	const values = [category];
+	const CMD = `select * from documents where category=?`;
+	const resp = await new Promise((resolve, reject) => {
+		database.query(CMD, values, (err, rows) => {
+			if (err) resolve(false);
+			(rows[0] == undefined) ? resolve(null) : resolve(rows);
+		});
+	});
 	// return a set of texts based on the selected subdiscipline
-	res.send(JSON.stringify({"status":"success"}));
+	res.send(JSON.stringify({"docs": resp}));
 }
 
 const sendPasswordRecoverLink = async (recipient) => {
@@ -276,7 +278,6 @@ const signUpUser = async (req, res) => {
 const signInUser = async (req, res) => {
 	// sign in the user
 	const { user, pass } = req.body;
-	console.log(`Body: ${user}\n${pass}`);
 	// hash password
 	try {
 		// find user's hashed password in the database
@@ -321,7 +322,7 @@ const authUser = async (req, res, next) => {
 }
 
 const uploadText = async (req, res) => {
-	const { title, tags } = req.body;
+	const { title, author, tags, category } = req.body;
 	//console.log(`Req.cookies: ${JSON.stringify(req.cookies)}`);
 	const user = req.cookies.sessionIDs['user'];
 	console.log(`Upload from ${user}`);
@@ -332,7 +333,7 @@ const uploadText = async (req, res) => {
 	try {
 		// generate the file hash
 		let hash = await hashFile(file);
-		console.log(`hash: ${hash}`);
+		console.log(`Title: ${title}\nAuthor: ${author}\nUser: ${user}\nTags: ${tags}\nCategory: ${category}\nHash: ${hash}`);
 		// check the database for the hash
 		let found = await checkForTextHash(hash);
 		// notify client that file already exists in database
@@ -340,7 +341,7 @@ const uploadText = async (req, res) => {
 			res.send(JSON.stringify({"status": hash}));
 		else {
 			// insert into database
-			const result = await insertTextIntoDB(title, user, tags, rawfile, hash);
+			const result = await insertTextIntoDB(title, author, user, tags, category, hash, rawfile);
 			res.send(JSON.stringify({"status": hash}));
 		}
 	} catch(err) { 
@@ -367,7 +368,6 @@ const commentOnPost = async (req, res) => {
 };
 
 const retrieveSession = async (req, res) => {
-	console.log(`Cookie: ${req.cookies.sessionIDs['id']}`);
 	if (req.cookies.sessionIDs) {
 		client.get(req.cookies.sessionIDs['id'], (err, data) => {
 			if (err)

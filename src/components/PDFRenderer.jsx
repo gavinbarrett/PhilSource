@@ -6,7 +6,6 @@ import { Editor } from 'react-draft-wysiwyg';
 import { stateToHTML } from 'draft-js-export-html';
 import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
-
 import './sass/PDFRenderer.scss';
 
 const PostComment = ({hash, getComments}) => {

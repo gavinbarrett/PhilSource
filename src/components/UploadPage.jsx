@@ -3,6 +3,23 @@ import Dropzone, {useDropzone} from 'react-dropzone';
 import { useHistory } from 'react-router-dom';
 import './sass/UploadPage.scss';
 
+const CategorySelector = () => {
+	return (<select name='catselector' id='catselector'>
+		<option value='Aesthetics'>Aesthetics</option>
+		<option value='Existentialism'>Existentialism</option>
+		<option value='Feminism'>Feminism</option>
+		<option value='German Idealism'>German Idealism</option>
+		<option value='Logic'>Logic</option>
+		<option value='Marxism'>Marxism</option>
+		<option value='Metaphysics'>Metaphysics</option>
+		<option value='Phil. of Mind'>Phil. of Mind</option>
+		<option value='Phil. of Religion'>Phil. of Religion</option>
+		<option value='Phil. of Science'>Phil. of Science</option>
+		<option value='Political Philosophy'>Political Philosophy</option>
+		<option value='Skepticism'>Skepticism</option>
+	</select>);
+}
+
 const UploadPage = ({user, updateDisplayFile, changeFilename, updateHash}) => {
 	
 	const [file, updateFile] = useState(null);
@@ -21,13 +38,16 @@ const UploadPage = ({user, updateDisplayFile, changeFilename, updateHash}) => {
 		let title = document.getElementById('texttitle').value;
 		// grab metadata tags
 		let tags = document.getElementById("metatags").value.split(" ");
+		let category = document.getElementById('catselector').value;
 		const path = file["path"];
 		// filter empty strings
 		const filtered = tags.filter((elem) => { return elem.length != 0 });
 		const formData = new FormData();
 		formData.append('title', title);
-		formData.append('textfile', file);
+		formData.append('author', 'samuel clemens');
 		formData.append('tags', filtered);
+		formData.append('category', category);
+		formData.append('textfile', file);
 		// FIXME: activate loading screen
 		// try to upload a text to the database
 		const resp = await fetch('/upload', {method: 'PUT',  body: formData});
@@ -60,6 +80,7 @@ const UploadPage = ({user, updateDisplayFile, changeFilename, updateHash}) => {
 		<div id="tags">
 		<input id="texttitle" type="text" placeholder="put your title here"/>
 		<input id="metatags" type="text" placeholder="put metadata tags here, separated by commas"/>
+		<CategorySelector/>
 		<button id="submit" type="submit" onClick={upload}>Upload</button>
 		</div>
 	</div></>);

@@ -29,9 +29,18 @@
 	color: white;
 	border-radius: 6px;
 	font-size: 2vw;
+	transition: animateSearchButton 0.5s ease-out;
 }
 
 .querybutton:hover {
 	cursor: pointer;
-	background-color: #BFC0C0;
+	animation-name: animateSearchButton;
+	animation-duration: 0.5s;
+	animation-fill-mode: forwards;
+	animation-timing-function: ease-out;
+}
+
+@keyframes animateSearchButton {
+	from { background-color: #4F5D75; }
+	to { background-color: #BFC0C0; }
 }

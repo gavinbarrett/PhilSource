@@ -10,7 +10,7 @@ const FeatureCard = ({featname, updateFilter}) => {
 		// set filter
 		await updateFilter(category);
 		// render filter page
-		history.push('/subfilter');
+		history.push(`/subfilter/${category}`);
 	}
 	return (<div id={`${category}`} className={`featurecard ${path}`} onClick={filterTexts}>
 		{category}
