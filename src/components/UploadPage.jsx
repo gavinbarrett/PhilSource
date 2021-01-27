@@ -3,8 +3,13 @@ import Dropzone, {useDropzone} from 'react-dropzone';
 import { useHistory } from 'react-router-dom';
 import './sass/UploadPage.scss';
 
-const CategorySelector = () => {
-	return (<select name='catselector' id='catselector'>
+const CategorySelector = ({updateCategory}) => {
+	const selectCategory = async event => {
+		// update the uploading category
+		await updateCategory(event.target.value);
+	}
+	return (<select name='catselector' id='catselector' onChange={selectCategory}>
+		<option value='' selected></option>
 		<option value='Aesthetics'>Aesthetics</option>
 		<option value='Existentialism'>Existentialism</option>
 		<option value='Feminism'>Feminism</option>
@@ -22,45 +27,92 @@ const CategorySelector = () => {
 
 const UploadPage = ({user, updateDisplayFile, changeFilename, updateHash}) => {
 	
+	const [title, updateTitle] = useState('');
+	const [author, updateAuthor] = useState('');
+	const [tags, updateTags] = useState('');
 	const [file, updateFile] = useState(null);
-	const [tags, updateTags] = useState(null);
+	const [category, updateCategory] = useState('');
+	const [error, updateError] = useState('');
 	const history = useHistory();
 
-	const dropped = async (f) => {
+	const dropped = async f => {
 		// add selected file to the state
 		await updateFile(f[0]);
 	}
 
+	const changeTitle = async event => {
+		// update uploading file title
+		await updateTitle(event.target.value);
+	}
+
+	const changeAuthor = async event => {
+		await updateAuthor(event.target.value);
+	}
+
+	const changeTags = async event => {
+		// update uploading file title
+		await updateTags(event.target.value);
+	}
+
+	const validInput = async () => {
+		const alphaRegex = /^[a-z0-9\s]+$/i;
+		return new Promise((resolve, reject) => {
+			if (user === '')
+				history.push('/signin');
+			if (file === null) {
+				updateError(`Please enter a file to submit.`);
+				resolve(false);
+			} else if (title === '') {
+				updateError(`Please enter a title for the file.`);
+				resolve(false);
+			} else if (author === '') {
+				updateError(`Please enter an author for the file.`);
+				resolve(false)
+			} else if (category === '') {
+				updateError(`Please enter a category for the file.`);
+				resolve(false);
+			} else if (!title.match(alphaRegex)) {
+				console.log(`Title: ${title}`);
+				updateError(`Please enter an alphanumeric title (a-z, A-Z, 0-9, ' ').`);
+				resolve(false);
+			} else if (!author.match(alphaRegex)) {
+				updateError(`Please enter an alphanumeric author name (a-z, A-Z, 0-9, ' ').`);
+				resolve(false);
+			} else if (!(tags.split(',').join('')).match(alphaRegex)) {
+				updateError(`Please enter alphanumeric tags (a-z, A-Z, 0-9, ' ') separated by commas.`);
+				resolve(false);
+			}
+			resolve(true);
+		});	
+	}
+
 	const upload = async () => {
-		if (file === null) return;
-		if (user === null)
-			history.push('/signin');
-		let title = document.getElementById('texttitle').value;
-		// grab metadata tags
-		let tags = document.getElementById("metatags").value.split(" ");
-		let category = document.getElementById('catselector').value;
-		const path = file["path"];
-		// filter empty strings
-		const filtered = tags.filter((elem) => { return elem.length != 0 });
-		const formData = new FormData();
-		formData.append('title', title);
-		formData.append('author', 'samuel clemens');
-		formData.append('tags', filtered);
-		formData.append('category', category);
-		formData.append('textfile', file);
-		// FIXME: activate loading screen
-		// try to upload a text to the database
-		const resp = await fetch('/upload', {method: 'PUT',  body: formData});
-		console.log(resp);
-		// if user is not authenticated, redirect to signin page
-		if (resp.status != 200) history.push('/signin');
-		const blob = new Blob([file], {"type": "application/pdf"});
-		const r = await resp.json();
-		await updateHash(r["status"]);
-		console.log(`Hash: ${r["status"]}`);
-		await updateDisplayFile(blob);
-		await changeFilename(file.name);
-		history.push('/pdfrenderer');
+		if (await validInput()) {
+			const path = file["path"];
+			// split metadata tags by commas
+			let split = tags.split(',').map(str => str.trim());
+			// filter empty strings
+			//const filtered = tags.filter((elem) => { return elem.length != 0 });
+			const formData = new FormData();
+			formData.append('title', title);
+			formData.append('author', 'samuel clemens');
+			formData.append('tags', split);
+			formData.append('category', category);
+			formData.append('textfile', file);
+			// FIXME: activate loading screen
+			// try to upload a text to the database
+			const resp = await fetch('/upload', {method: 'PUT',  body: formData});
+			console.log(resp);
+			// if user is not authenticated, redirect to signin page
+			if (resp.status != 200) history.push('/signin');
+			const blob = new Blob([file], {"type": "application/pdf"});
+			const r = await resp.json();
+			await updateHash(r["status"]);
+			await updateDisplayFile(blob);
+			await changeFilename(file.name);
+			history.push('/pdfrenderer');
+		}
+		console.log('cannot upload');
 	}
 
 	return (<><div id="uploadpagewrapper">
@@ -77,12 +129,14 @@ const UploadPage = ({user, updateDisplayFile, changeFilename, updateHash}) => {
 			</div>
 			)}
 		</Dropzone>
+		{error ? <div className='uploaderror'>{error}</div> : ''}
 		<div id="tags">
-		<input id="texttitle" type="text" placeholder="put your title here"/>
-		<input id="metatags" type="text" placeholder="put metadata tags here, separated by commas"/>
-		<CategorySelector/>
+		<input id="texttitle" type="text" placeholder="put your title here" onChange={changeTitle}/>
+		<input id="metatags" type="text" placeholder="put metadata tags here, separated by commas" onChange={changeTags}/>
+		<CategorySelector updateCategory={updateCategory}/>
 		<button id="submit" type="submit" onClick={upload}>Upload</button>
 		</div>
+		<input id="author" type="text" placeholder="put the author here" onChange={changeAuthor}/>
 	</div></>);
 }
 

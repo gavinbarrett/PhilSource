@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './sass/Profile.scss'
 
-const Profile = ({user}) => {
+const Profile = ({user, profile, updateProfile}) => {
 
-	const setProfilePhoto = () => {
-		console.log('clicked avatar!');
+	const loadFile = async event => {
+		const file = event.target.files[0];
+		const formData = new FormData();
+		// add the profile picture to the form
+		formData.append('profilepic', file);
+		// send the picture to the server
+		const resp = await fetch('/upload_profile', {method: 'PUT', body: formData});
+		const r = await resp.json();
+		if (r["status"] == "success") {
+			const blob = new Blob([file], {"type" : "application/image"});
+			const url = URL.createObjectURL(blob);
+			await updateProfile(url);
+			console.log(blob);
+		} else
+			console.log("Couldn't change profile pic");
 	}
 
 	return (<><div id="profile">
@@ -16,8 +29,11 @@ const Profile = ({user}) => {
 			Settings
 		</div>
 		</div>
-		<div id="profilecontent">
-			<img id="largeavatar" src='avatar.jpg' onClick={setProfilePhoto}/>
+		<div className="profileimage">
+			<label for='file-input'>
+				{profile ? <img id='largeavatar' src={profile} accept='image/*'/> : <img id='largeavatar' src="avatar.jpg" accept='image/*'/>}
+			</label>
+			<input id='file-input' type='file' name='profilepic' onChange={loadFile}/>
 		<div id="profilename">{user}</div>
 		</div>
 	</div></>);

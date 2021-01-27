@@ -25,34 +25,59 @@ const SignUpBox = ({updateUser}) => {
 	const [password, updatePassword] = useState('');
 	const [rePassword, updateRePassword] = useState('');
 	const [email, updateEmail] = useState('');
-	
+	const [error, updateError] = useState('');
+
 	const history = useHistory();
 	
-	const signup = async () => {
-		// grab username, password, retyped password, email
-		// FIXME: username, password, rePassword, email
-		const regex = new RegExp(/\w+@\w+\.\w+/);
-		
+	//FIXME: fix input validation for this component and the signin component
+	const validInput = async () => {
+		return new Promise((resolve, reject) => {
+			const alphaRegex = /^[a-z0-9]+$/i;
+			const emailRegex = /^[a-z0-9]+@\w+\.\w+/;
+			// check that fields are filled out
+			if (username === '' || password === '' || rePassword === '' || email === '') {
+				updateError(`Please fill out all input fields.`);
+				resolve(false);
+			// check that passwords match
+			} else if (password != rePassword) {
+				updateError(`Passwords do not match.`);
+				resolve(false);
+			} else if (!email.match(emailRegex)) {
+				updateError(`Invalid email syntax.`);
+				resolve(false);
+			// check that username/password is alphanumeric
+			} else if (!username.match(alphaRegex)) {
+				updateError(`Username must be alphanumeric (a-z, A-Z, 0-9).`);
+				resolve(false);
+			} else if (!password.match(alphaRegex)) {
+				updateError(`Password must be alphanumeric (a-z, A-Z, 0-9).`);
+				resolve(false);
+			} else if (password.length < 12 || password.length > 48) {
+				updateError(`Password length must be between 12 and 48 characters.`);
+				resolve(false);
+			}
+			resolve(true);
+		});
+		// FIXME: check that username contains numbers and letters and doesn't contain invalid
+		// FIXME: check that passwords are a good enough size (12-48) and contain numbers and letters and doesn't contain invalid
+	}
 
-		// FIXME: throw error if any of these are missing
-		// FIXME: enforce requirements for username/password complexity, length, and min/max life
-		// FIXME: check for passwords to match
-		if (pass != passretyped) return;
-		if (!email.match(regex)) {
-			console.log('regex does not match');
-			return;
-		}
-		const data = {"user" : username,"pass" : password, "email" : email};
-		const resp = await fetch('/sign_up', {method: "POST", headers: {"Content-Type": "application/json"}, credentials: 'same-origin', body: JSON.stringify(data)});
-		const response = await resp.json();
-		console.log(`New user logged into session: ${response["authed"]}`);
-		// update the logged in user's name
-		updateUser(response["authed"]);
-		// update name of logged in 
-		history.push('/');
+	const signup = async () => {
+		if (await validInput()) {
+			const data = {"user" : username,"pass" : password, "email" : email};
+			const resp = await fetch('/sign_up', {method: "POST", headers: {"Content-Type": "application/json"}, credentials: 'same-origin', body: JSON.stringify(data)});
+			const response = await resp.json();
+			console.log(`New user logged into session: ${response["authed"]}`);
+			// update the logged in user's name
+			updateUser(response["authed"]);
+			// update name of logged in 
+			history.push('/');
+		} else
+			console.log('Invalid input.');
 	}
 
 	return (<div className="loginbox">
+		{error ? <div className='error'>{error}</div> : ''}
 		<div id="user" className="logintext">Username</div>
 		<Username updateUsername={updateUsername}/>
 		<div id="pass" className="logintext">Password</div>
@@ -68,22 +93,49 @@ const SignUpBox = ({updateUser}) => {
 const SignInBox = ({updateUser}) => {
 	const [username, updateUsername] = useState('');
 	const [password, updatePassword] = useState('');
+	const [error, updateError] = useState('');
 	const history = useHistory();
-
-	const signin = async () => {
-		const data = {"user" : username, "pass" : password};
-		const resp = await fetch('/sign_in', {method: 'POST', headers: {"Content-Type": "application/json"}, credentials: 'same-origin', body: JSON.stringify(data)});
-		const response = await resp.json();
-		console.log(`User logged into session: ${response["authed"]}`);
-		updateUser(response["authed"]);
-		history.push('/');
-	}
-
+	
 	const forgotPass = () => {
 		history.push('/forgot');
 	}
 
+	const validInput = async () => {
+		return new Promise((resolve, reject) => {
+			const alphaRegex = /^[a-z0-9]+$/i;
+			// check that fields are filled out
+			if (username === '' || password === '') {
+				updateError(`Please fill out all fields.`);
+				resolve(false);
+			// check that username/password is alphanumeric
+			} else if (!username.match(alphaRegex)) {
+				updateError(`Username must be alphanumeric (A-Z, a-z, 0-9).`);
+				resolve(false);
+			} else if (!password.match(alphaRegex)) {
+				updateError(`Password must be alphanumeric (A-Z, a-z, 0-9).`);
+				resolve(false);
+			} else if (password.length < 12 || password.length > 48) {
+				updateError(`Password length must be between 12 and 48 characters.`);
+				resolve(false)
+			}
+			resolve(true);
+		});
+	}
+
+	const signin = async () => {
+		if (await validInput()) {
+			const data = {"user" : username, "pass" : password};
+			const resp = await fetch('/sign_in', {method: 'POST', headers: {"Content-Type": "application/json"}, credentials: 'same-origin', body: JSON.stringify(data)});
+			const response = await resp.json();
+			console.log(`User logged into session: ${response["authed"]}`);
+			updateUser(response["authed"]);
+			history.push('/');
+		} else
+			console.log('Invalid input.');
+	}
+
 	return (<div className="loginbox">
+		{error ? <div className='error'>{error}</div> : ''}
 		<div className="logintext">Username</div>
 		<Username updateUsername={updateUsername}/>
 		<div className="logintext">Password</div>

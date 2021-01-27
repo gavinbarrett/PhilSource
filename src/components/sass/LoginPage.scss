@@ -135,3 +135,16 @@
 	color: white;
 }
 
+.error {
+	width: 30vw;
+	height: 5vh;
+	color: #b81e11;
+	background: #f7786d;
+	box-sizing: border-box;
+	border: solid #b81e11 1px;
+	border-radius: 7px;
+	font-family: 'Lato', sans-serif;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

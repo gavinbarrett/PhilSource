@@ -17,7 +17,7 @@
 
 .documentcase {
 	width: 16vw;
-	height: 41vh;
+	height: 33vh;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -51,6 +51,20 @@
 	}
 	to {
 		width: 15vw;
-		height: 40vh;
+		height: 32vh;
 	}
+}
+
+.nodocs {
+	width: 50vw;
+	height: 30vh;
+	margin: auto;
+	font-family: 'Lato', sans-serif;
+	color: white;
+	font-size: 2vw;
+	background: #293241;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 10px;
 }

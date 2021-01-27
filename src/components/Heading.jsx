@@ -9,46 +9,45 @@ const AppTitle = () => {
 	</div>);
 }
 
-const ProfileDetail = ({user, updateUser, toggle}) => {
+const ProfileDetail = ({user, updateUser, toggle, profile, updateProfile}) => {
 	const history = useHistory();
 
 	const signOut = async () => {
 		const resp = await fetch('/signout', {method: 'GET'});
 		// log user out
 		updateUser(null);
+		// FIXME: update user profile to defaul
+		updateProfile(null);
 		// return to home page
-		history.replaceState('/');
+		history.push('/');
 	}
 
 	return (<div id="profilecard2" onMouseLeave={() => toggle()}>
 		<div id="avatarcard">
-		<img id="avatar" src="avatar.jpg" onClick={() => history.push('/profile')}/>
+		{profile ? <img id="avatar" src={profile} onClick={() => history.push('/profile')}/> : <img id="avatar" src="avatar.jpg" onClick={() => history.push('/profile')}/>}
 		<div id="cardname">{user}</div>
 		<div id="signout" onClick={signOut}>Sign Out</div>
 		</div>
 	</div>);
 }
 
-const ProfileCard = ({user, updateUser}) => {
-	
+const ProfileCard = ({user, updateUser, profile, updateProfile}) => {
 	const [button, updateButton] = useState(0);
-
 	const toggle = async () => {
 		button ? updateButton(0) : updateButton(1);
 	}
-
 	return (<div id="profilecard" onMouseEnter={() => toggle()}>
-		{button ? <ProfileDetail user={user} updateUser={updateUser} toggle={toggle}/> : user}
+		{button ? <ProfileDetail user={user} updateUser={updateUser} toggle={toggle} profile={profile} updateProfile={updateProfile}/> : user}
 	</div>);
 }
 
-const Links = ({user, updateUser}) => {
+const Links = ({user, updateUser, profile, updateProfile}) => {
 	return (<div id="links">
 		<UploadLink/>
 		<div className="vrwrapper">
 			<div className="vr"/>
 		</div>
-		{user ? <ProfileCard user={user} updateUser={updateUser}/> : <SignInLink/>}
+		{user ? <ProfileCard user={user} updateUser={updateUser} profile={profile} updateProfile={updateProfile}/> : <SignInLink/>}
 	</div>);
 }
 
@@ -62,10 +61,10 @@ const SignInLink = () => {
 	return (<Link id='signinlink' to='/signin'>Sign In</Link>);
 }
 
-const Heading = ({user, updateUser}) => {
+const Heading = ({user, updateUser, profile, updateProfile}) => {
 	return (<header>
 		<AppTitle/>
-		<Links user={user} updateUser={updateUser}/>
+		<Links user={user} updateUser={updateUser} profile={profile} updateProfile={updateProfile}/>
 	</header>);
 }
 

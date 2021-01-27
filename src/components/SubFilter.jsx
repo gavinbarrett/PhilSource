@@ -24,6 +24,12 @@ const Document = ({doc, updateDisplayFile, changeFilename, updateHash}) => {
 	</div>);
 }
 
+const NoDocuments = ({filter}) => {
+	return (<div className='nodocs'>
+		{`No documents on ${filter} found.`}
+	</div>);
+}
+
 const SubFilter = ({filter, updateDisplayFile, changeFilename, updateHash}) => {
 	
 	const [docs, updateDocs] = useState(null);
@@ -54,7 +60,7 @@ const SubFilter = ({filter, updateDisplayFile, changeFilename, updateHash}) => {
 				return (<div className='documentcase'>
 					<Document key={index} doc={doc} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash}/>
 				</div>);
-			}) : `No documents on ${filter} found.`}
+			}) : <NoDocuments filter={filter}/>}
 		</div>
 	</div>);
 }
