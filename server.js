@@ -298,9 +298,10 @@ const getTextFromDisk = async (req, res) => {
 	const hash = req.query['hash'];
 	const resp = await readDocFromDisk(hash);
 	if (resp) {
-		res.send({"status": resp});
+		console.log(resp);
+		res.send(JSON.stringify({"file": resp}));
 	} else
-		res.send({"status": "failed"});
+		res.send(JSON.stringify({"file": null}));
 }
 
 const writeDocToDisk = async (hash, file) => {

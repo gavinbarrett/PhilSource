@@ -18,20 +18,16 @@ const TextPost = ({title, user, tags, file, hash, updateDisplayFile, changeFilen
 	const display = async () => {
 		// call fetch and pull file with hash
 		const resp = await fetch(`/get_text/?hash=${digest}`, {method: 'GET'});
-		const results = await resp.json();
-		//console.log(results);
-		let file = results["status"];
-		if (file != 'failed') {
-			const fileObj = new File(file, {type: 'application/pdf'});
-			console.log(`fileObj: ${fileObj}`);
-			// FIXME: uncompress file and transform from base64 to pdf
-			const blob = new Blob([fileObj]);
-			console.log(`Blob: ${blob}`);
-			//const url = URL.createObjectURL(blob);
-			await updateDisplayFile(blob);
-			console.log(`updating hash to: ${hash}`);
-			await updateHash(hash);
+		const result = await resp.json();
+		const f = result['file'];
+		if (f) {
+			// read base64 into a buffer
+			const buffer = Buffer.from(f, 'base64');
+			// construct pdf file object
+			const pdf = new File([buffer], {type: 'application/json'});
 			await changeFilename(title);
+			await updateHash(hash);
+			await updateDisplayFile(pdf);
 			history.push('/pdfrenderer');
 		}
 	}

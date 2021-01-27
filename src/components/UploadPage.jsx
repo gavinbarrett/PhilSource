@@ -86,33 +86,35 @@ const UploadPage = ({user, updateDisplayFile, changeFilename, updateHash}) => {
 		});	
 	}
 
+	const loadForm = async () => {
+		const formData = new FormData();
+		formData.append('title', title);
+		formData.append('author', author);
+		formData.append('tags', split);
+		formData.append('category', category);
+		formData.append('textfile', file);
+		return formData;
+	}
+
 	const upload = async () => {
 		if (await validInput()) {
-			const path = file["path"];
-			// split metadata tags by commas
-			let split = tags.split(',').map(str => str.trim());
-			// filter empty strings
-			//const filtered = tags.filter((elem) => { return elem.length != 0 });
-			const formData = new FormData();
-			formData.append('title', title);
-			formData.append('author', 'samuel clemens');
-			formData.append('tags', split);
-			formData.append('category', category);
-			formData.append('textfile', file);
-			// FIXME: activate loading screen
-			// try to upload a text to the database
+			// add file attributes to the FormData object
+			const formData = loadForm();
 			const resp = await fetch('/upload', {method: 'PUT',  body: formData});
-			console.log(resp);
 			// if user is not authenticated, redirect to signin page
 			if (resp.status != 200) history.push('/signin');
 			const blob = new Blob([file], {"type": "application/pdf"});
 			const r = await resp.json();
+			// store the hash of the current file
 			await updateHash(r["status"]);
+			// set the PDF file stream
 			await updateDisplayFile(blob);
+			// change the name of the displayed file
 			await changeFilename(file.name);
+			// switch to the PDFRenderer page
 			history.push('/pdfrenderer');
 		}
-		console.log('cannot upload');
+		console.log('Cannot upload file.');
 	}
 
 	return (<><div id="uploadpagewrapper">
