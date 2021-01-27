@@ -33,7 +33,7 @@ const Profile = ({user, profile, updateProfile}) => {
 			<label for='file-input'>
 				{profile ? <img id='largeavatar' src={profile} accept='image/*'/> : <img id='largeavatar' src="avatar.jpg" accept='image/*'/>}
 			</label>
-			<input id='file-input' type='file' name='profilepic' onChange={loadFile}/>
+			<input id='file-input' type='file' name='profilepic' /*onChange={loadFile}*//>
 		<div id="profilename">{user}</div>
 		</div>
 	</div></>);

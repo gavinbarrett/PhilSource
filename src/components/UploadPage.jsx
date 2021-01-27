@@ -25,7 +25,7 @@ const CategorySelector = ({updateCategory}) => {
 	</select>);
 }
 
-const UploadPage = ({user, updateDisplayFile, changeFilename, updateHash}) => {
+const UploadPage = ({user, changeFilename, updateHash}) => {
 	
 	const [title, updateTitle] = useState('');
 	const [author, updateAuthor] = useState('');
@@ -35,24 +35,13 @@ const UploadPage = ({user, updateDisplayFile, changeFilename, updateHash}) => {
 	const [error, updateError] = useState('');
 	const history = useHistory();
 
-	const dropped = async f => {
-		// add selected file to the state
-		await updateFile(f[0]);
-	}
+	const dropped = async f => { await updateFile(f[0]); }
 
-	const changeTitle = async event => {
-		// update uploading file title
-		await updateTitle(event.target.value);
-	}
+	const changeTitle = async event => { await updateTitle(event.target.value); }
 
-	const changeAuthor = async event => {
-		await updateAuthor(event.target.value);
-	}
+	const changeAuthor = async event => { await updateAuthor(event.target.value); }
 
-	const changeTags = async event => {
-		// update uploading file title
-		await updateTags(event.target.value);
-	}
+	const changeTags = async event => { await updateTags(event.target.value); }
 
 	const validInput = async () => {
 		const alphaRegex = /^[a-z0-9\s]+$/i;
@@ -86,29 +75,24 @@ const UploadPage = ({user, updateDisplayFile, changeFilename, updateHash}) => {
 		});	
 	}
 
-	const loadForm = async () => {
-		const formData = new FormData();
-		formData.append('title', title);
-		formData.append('author', author);
-		formData.append('tags', split);
-		formData.append('category', category);
-		formData.append('textfile', file);
-		return formData;
-	}
-
 	const upload = async () => {
 		if (await validInput()) {
 			// add file attributes to the FormData object
-			const formData = loadForm();
+			const formData = new FormData();
+			formData.append('title', title);
+			formData.append('author', author);
+			formData.append('tags', tags);
+			formData.append('category', category);
+			formData.append('textfile', file);
 			const resp = await fetch('/upload', {method: 'PUT',  body: formData});
 			// if user is not authenticated, redirect to signin page
 			if (resp.status != 200) history.push('/signin');
-			const blob = new Blob([file], {"type": "application/pdf"});
+			//const blob = new Blob([file], {"type": "application/pdf"});
 			const r = await resp.json();
 			// store the hash of the current file
 			await updateHash(r["status"]);
 			// set the PDF file stream
-			await updateDisplayFile(blob);
+			//await updateDisplayFile(blob);
 			// change the name of the displayed file
 			await changeFilename(file.name);
 			// switch to the PDFRenderer page
@@ -122,7 +106,7 @@ const UploadPage = ({user, updateDisplayFile, changeFilename, updateHash}) => {
 			{({getRootProps, getInputProps, isDragActive, isDragReject, acceptedFiles}) => (
 			<div id="dropperwrapper">
 			<div id="dropper" {...getRootProps()}>
-				<input type="file" {...getInputProps()}/>
+				<input name="textfile" type="file" {...getInputProps()}/>
 				{!isDragActive && acceptedFiles.length == 0 && "Click here or drag a file to upload!"}
 				{isDragActive && !isDragReject && "Drop your file here!"}
 				{isDragActive && isDragReject && "Please enter an image file"}

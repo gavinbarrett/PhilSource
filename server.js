@@ -298,18 +298,17 @@ const getTextFromDisk = async (req, res) => {
 	const hash = req.query['hash'];
 	const resp = await readDocFromDisk(hash);
 	if (resp) {
-		console.log(resp);
 		res.send(JSON.stringify({"file": resp}));
 	} else
 		res.send(JSON.stringify({"file": null}));
 }
 
 const writeDocToDisk = async (hash, file) => {
-	/* save a file to disk */
+	/* save the file to disk */
 	return new Promise((resolve, reject) => {
 		fs.writeFile(`./data/documents/${hash}.pdf`, file, err => {
 			if (err) resolve(null);
-			console.log(`${hash}.pdf saved to disk.`);
+			console.log(`${hash}.pdf written to disk.`);
 			resolve(true);
 		});
 	});
@@ -363,16 +362,13 @@ const authUser = async (req, res, next) => {
 
 const uploadText = async (req, res) => {
 	const { title, author, tags, category } = req.body;
-	//console.log(`Req.cookies: ${JSON.stringify(req.cookies)}`);
 	const user = req.cookies.sessionIDs['user'];
-	console.log(`Upload from ${user}`);
 	// title, user, tags, file
-	const rawfile = req.file["buffer"];
-	const file = Buffer.from(rawfile);
+	const fileObj = req.file["buffer"];
+	const file = Buffer.from(fileObj);
 	try {
 		// generate the file hash
 		let hash = await hashFile(file);
-		console.log(`Title: ${title}\nAuthor: ${author}\nUser: ${user}\nTags: ${tags}\nCategory: ${category}\nHash: ${hash}`);
 		// check the database for the hash
 		let found = await checkForTextHash(hash);
 		// notify client that file already exists in database
@@ -381,7 +377,7 @@ const uploadText = async (req, res) => {
 		else {
 			// insert into database
 			// FIXME: write savedoctodisk function
-			const written = await writeDocToDisk(hash, rawfile);
+			const written = await writeDocToDisk(hash, file);
 			// if file was successfully saved to disk, add a record in the documents table
 			if (written) {
 				let r = await insertDocIntoDB(title, author, user, tags, category, hash);
@@ -402,18 +398,15 @@ const uploadProfile = async (req, res) => {
 	try {
 		// try to insert image file into the users table
 		const result = await insertProfileIntoDB(user, image);
-		res.send(JSON.stringify({"status":"success"}));
+		res.send(JSON.stringify({"status": "success"}));
 	} catch (err) {
-		res.send(JSON.stringify({"status":"failed"}));
+		res.send(JSON.stringify({"status": "failed"}));
 	}
 }
 
 const commentOnPost = async (req, res) => {
 	// comment on a post
 	const { user, post, hash } = req.body;
-	//console.log(`Authed Session name: ${req.session.sessionName}`);
-	//console.log(`Cookie: ${req.cookies}`);
-	//console.log(`post: ${post}\nhash: ${hash}`);
 	const CMD = `insert into comments (user, hash, time, post) value (?, ?, ?, ?);`
 	const values = [user, hash, moment().format('MMMM Do YYYY, h:mm:ss a'), post];
 	const resp = await new Promise((resolve, reject) => {
@@ -478,7 +471,7 @@ app.post('/sign_up', signUpUser);
 // serve authed user content
 app.get('/get_session', authUser, retrieveSession);
 app.put('/upload', upload.single('textfile'), authUser, uploadText);
-app.put('/upload_profile', upload.single('profilepic'), authUser, uploadProfile);
+//app.put('/upload_profile', upload.single('profilepic'), authUser, uploadProfile);
 app.post('/comment', authUser, commentOnPost);
 app.get('/signout', authUser, signUserOut);
 

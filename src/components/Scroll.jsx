@@ -7,7 +7,6 @@ const Scroll = () => {
 	useEffect(() => {
 		// scroll to the top of the page
 		window.scrollTo(0, 0);
-		console.log(`Pathname: ${pathname}`);
 	}, [pathname]);
 
 	return null;

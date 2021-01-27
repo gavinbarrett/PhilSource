@@ -75,11 +75,11 @@ const App = () => {
 		<Route path='/' exact render={() => <LandingPage updateSearchResults={updateSearchResults} updateFilter={updateFilter}/>}/>
 		<Route path='/signin' render={() => <LoginPage updateUser={updateUser}/>}/>
 		<Route path='/forgot' render={() => <ForgotPassword/>}/>
-		<Route path='/upload' render={() => <UploadPage updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash}/>}/>
+		<Route path='/upload' render={() => <UploadPage changeFilename={changeFilename} updateHash={updateHash}/>}/>
 		<Route path='/profile' render={() => <Profile user={user} profile={profile} updateProfile={updateProfile}/>}/>
-		<Route path='/pdfrenderer' render={() => <PDFRenderer user={user} file={displayFile} name={filename} hash={hash}/>}/>
-		<Route path='/searchresults' render={() => <SearchResults user={user} results={searchResults["search_results"]} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash} updateSearchResults={updateSearchResults}/>}/>
-		<Route path='/subfilter/*' render={() => <SubFilter filter={filter} updateDisplayFile={updateDisplayFile} changeFilename={changeFilename} updateHash={updateHash}/>}/>
+		<Route path='/pdfrenderer' render={() => <PDFRenderer user={user} file={displayFile} updateDisplayFile={updateDisplayFile} name={filename} hash={hash}/>}/>
+		<Route path='/searchresults' render={() => <SearchResults user={user} results={searchResults["search_results"]} changeFilename={changeFilename} updateHash={updateHash} updateSearchResults={updateSearchResults}/>}/>
+		<Route path='/subfilter/*' render={() => <SubFilter filter={filter} changeFilename={changeFilename} updateHash={updateHash}/>}/>
 		<Route path='/contact' render={() => <Contact/>}/>/>
 		<Route path='/privacy' render={() => <PrivacyPolicy/>}/>
 		<Route path='*' render={() => <PageNotFound/>}/>

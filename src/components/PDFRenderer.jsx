@@ -8,39 +8,12 @@ import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
 import './sass/PDFRenderer.scss';
 
-const PostComment = ({hash, getComments}) => {
-	
-	const [comment, updateComment] = useState(null);
-	const history = useHistory();
-
-	const changeComment = async (event) => {
-		await updateComment(event.target.value);
-	}
-
-	const submitComment = async () => {
-		if (comment.length > 1000) return;
-		if (comment == null) return;
-		// redirect to login page if no jwt exists
-		if (token == null) history.push('/login');
-		// send comment post request
-		const resp = await fetch('/comment', {method: "POST", headers: {"Content-Type": "application/json"}, credentials: 'same-origin', body: JSON.stringify({"post": comment, "hash": hash})});
-		if (resp.status != 200) history.push('/signin');
-		const r = await resp.json();
-		// erase textarea text
-		await updateComment(null);
-		document.getElementById('originalpost').value = '';
-		getComments(hash);
-		console.log(r);
-	}
-	return (<div id="postcomment">
-		<textarea id="originalpost" type="input" placeholer="put your comment here" onChange={changeComment}/>
-		<div>Bold Italic</div>
-		<div id="subbuttonwrapper"><button id="subbutton" onClick={submitComment}>Submit</button></div>
-	</div>);
+const NoComments = () => {
+	/* Return this component if the document doesn't have any comments */
+	return (<div className="noComment">{"Be the first to comment!"}</div>);
 }
 
 const Comment = ({text, poster, time}) => {
-	
 	const ref = useRef(null);
 
 	useEffect(() => {
@@ -54,34 +27,33 @@ const Comment = ({text, poster, time}) => {
 	</div>);
 }
 
-const NoComments = () => {
-	return (<div className="noComment">{"Be the first to comment!"}</div>);
-}
-
 const Comments = ({user, hash}) => {
-	
 	const [posts, updatePosts] = useState([]);
 	const [editState, updateEditState] = useState(EditorState.createEmpty());
 	const history = useHistory();
 
 	useEffect(() => {
+		/* Pull comments for the document from the comments table */
 		getComments(hash);
 	}, []);
 
 	const getComments = async (hash) => {
-		console.log(`Getting comments for ${hash}`);
+		/* Download the comments based on the hash */
 		const resp = await fetch(`/get_comments/?hash=${hash}`, {method: "GET"});
 		const result = await resp.json();
 		await updatePosts(result["posts"]);
 	}
 	
 	const submitComment = async () => {
+		/* Comment on a document */
 		console.log(`Grabbing comments for ${hash}`);
+		console.log(`State: ${typeof editState.getCurrentContent()}`);
 		const commstate = stateToHTML(editState.getCurrentContent());
 		// create json object including user, time, content
 		const resp = await fetch('/comment', {method: 'POST', headers: {'Content-Type': 'application/json'}, credentials: 'same-origin', body: JSON.stringify({"user": `${user}`, "post": `${commstate}`, "hash": `${hash}`})});
 		if (resp.status != 200) history.push('/signin');
 		const data = await resp.json();
+		// load the new comment
 		await getComments(hash);
 	}
 
@@ -104,18 +76,43 @@ const Comments = ({user, hash}) => {
 	</div>);
 }
 
-const PDFRenderer = ({user, file, name, hash}) => {
-	
+const PDFRenderer = ({user, file, updateDisplayFile, name, hash}) => {
 	const [pageAmt, updatePageAmt] = useState(null);
 	const [pageNum, updatePageNum] = useState(1);
 	const [prevenabled, updatePrevDisabled] = useState(true);
 	const [nextenabled, updateNextDisabled] = useState(false);
 
-	const loadPageNums = async ({numPages}) => {
+	useEffect(() => {
+		/* Downloads a document from the server. The PDFRenderer component is the sole 
+		component that downloads files and displays them. All other components just set
+		the hash of the file and render the PDFRenderer page, triggering this function. */
+		getDocument();
+	}, []);
+
+	const getDocument = async () => {
+		/* download the document if a hash is set */
+		if (!hash) return;
+		// request file
+		const resp = await fetch(`/get_text/?hash=${hash}`, {method: 'GET'});
+		const content = await resp.json();
+		// check that a file exists
+		if (content && content["file"]) {
+			// decode base64
+			const buffer = Buffer.from(content["file"], 'base64');
+			// create file object
+			const fl = new File([buffer], {type: 'application/json'});
+			// add file to the document component
+			await updateDisplayFile(fl);
+		}
+	}
+	
+	const loadPageNums = async ({numPages}) => { 
+		/* Set the document page number */
 		await updatePageAmt(numPages);
 	}
 
 	const nextPage = async () => {
+		/* Flip to the next page in the document if one exists */
 		if (pageNum === pageAmt) return;
 		else if (pageNum === pageAmt-1)
 			await updateNextDisabled(true);
@@ -124,6 +121,7 @@ const PDFRenderer = ({user, file, name, hash}) => {
 	}
 
 	const prevPage = async () => {
+		/* Flip to the previous page of the document if one exists */
 		if (pageNum === 1) return;
 		else if (pageNum === 2)
 			await updatePrevDisabled(true);
@@ -132,6 +130,7 @@ const PDFRenderer = ({user, file, name, hash}) => {
 	}
 
 	const download = async () => {
+		/* Prompt the user to save the file to their drive */
 		let reader = new FileReader();
 		let link = document.createElement('a');
 		console.log(file);

@@ -18,9 +18,12 @@ const SearchInput = ({updateSearchResults}) => {
 	}
 
 	const filterInput = async (event) => {
+		// persist keyDown event
+		event.persist();
+		// check if input is valid (alphanumeric)
+		if (! await validInput(event.target.value)) return;
 		if (event.target.value === '') return;
 		// persist event in async function
-		event.persist();
 		// update the input value for search button queries
 		await updateInput(event.target.value);
 		// call fetch to get a list of database entries matching the input
@@ -35,9 +38,19 @@ const SearchInput = ({updateSearchResults}) => {
 		await updateSuggestions(uniq);
 	}
 
+	const validInput = async (inp) => {
+		return new Promise((resolve, reject) => {
+			if (inp === '') return(false);
+			const alphaRegex = /^[a-z0-9\s]+$/i;
+			if (!inp.match(alphaRegex)) resolve(false);
+			resolve(true);
+		});
+	}
+
 	const filterSearch = async () => {
-		console.log(input);
 		if (input === '') return;
+		// check that input is valid
+		if (! await validInput(input)) return;
 		const resp = await fetch('/text_query', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify({"query": input})});
 		let res = await resp.json();
 		// update search results

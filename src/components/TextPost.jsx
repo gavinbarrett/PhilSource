@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 const zlib = require('zlib');
 import './sass/TextPost.scss';
 
-const TextPost = ({title, user, tags, file, hash, updateDisplayFile, changeFilename, updateHash}) => {
+const TextPost = ({title, user, tags, file, hash, changeFilename, updateHash}) => {
 
 	const [digest, updateDigest] = useState(null);
 	const history = useHistory();
@@ -27,7 +27,6 @@ const TextPost = ({title, user, tags, file, hash, updateDisplayFile, changeFilen
 			const pdf = new File([buffer], {type: 'application/json'});
 			await changeFilename(title);
 			await updateHash(hash);
-			await updateDisplayFile(pdf);
 			history.push('/pdfrenderer');
 		}
 	}
