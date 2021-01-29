@@ -15,9 +15,9 @@ const NoComments = () => {
 
 const Comment = ({text, poster, time}) => {
 	const ref = useRef(null);
-
+	
 	useEffect(() => {
-		// set the inner html to our serialized comment
+		/* Set the inner html to our serialized comment */
 		ref["current"].innerHTML = text;
 	}, []);
 
@@ -30,6 +30,7 @@ const Comment = ({text, poster, time}) => {
 const Comments = ({user, hash}) => {
 	const [posts, updatePosts] = useState([]);
 	const [editState, updateEditState] = useState(EditorState.createEmpty());
+	const [maxLength, updateMaxLength] = useState(200);
 	const history = useHistory();
 
 	useEffect(() => {
@@ -57,13 +58,20 @@ const Comments = ({user, hash}) => {
 		await getComments(hash);
 	}
 
+	const checkDraftLength = async () => {
+		/* If the comment length is equal to or greater than the maxLength, stop reading into editState */
+		if (draftToHtml(convertToRaw(editState.getCurrentContent())).length >= maxLength)
+			return 'handled';
+	}
+
 	return (<div id="comments">
 		<div className="editor">
 			<Editor editorState={editState} 
 			toolbarClassName="toolbarClassName"
 			wrapperClassName="wrapperClassName"
 			editorClassName="editorClassName"
-			onEditorStateChange={updateEditState}/>
+			onEditorStateChange={updateEditState}
+			handleBeforeInput={checkDraftLength}/>
 		</div>
 		<div id="subbuttonwrapper">
 			<button id="subbutton" onClick={submitComment}>Comment</button>

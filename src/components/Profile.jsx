@@ -1,9 +1,20 @@
 import React, { useState } from 'react';
 import './sass/Profile.scss'
 
+const ProfileLandingPage = ({user, profile}) => {
+		return (<div className="profileimage">
+			<label for='file-input'>
+				{profile ? <img id='largeavatar' src={profile} accept='image/*'/> : <img id='largeavatar' src="avatar.jpg" accept='image/*'/>}
+			</label>
+			<input id='file-input' type='file' name='profilepic' /*onChange={loadFile}*//>
+		<div id="profilename">{user}</div>
+		</div>);
+}
+
 const Profile = ({user, profile, updateProfile}) => {
 
 	const loadFile = async event => {
+		/* Load */
 		const file = event.target.files[0];
 		const formData = new FormData();
 		// add the profile picture to the form
@@ -15,7 +26,6 @@ const Profile = ({user, profile, updateProfile}) => {
 			const blob = new Blob([file], {"type" : "application/image"});
 			const url = URL.createObjectURL(blob);
 			await updateProfile(url);
-			console.log(blob);
 		} else
 			console.log("Couldn't change profile pic");
 	}
@@ -29,13 +39,7 @@ const Profile = ({user, profile, updateProfile}) => {
 			Settings
 		</div>
 		</div>
-		<div className="profileimage">
-			<label for='file-input'>
-				{profile ? <img id='largeavatar' src={profile} accept='image/*'/> : <img id='largeavatar' src="avatar.jpg" accept='image/*'/>}
-			</label>
-			<input id='file-input' type='file' name='profilepic' /*onChange={loadFile}*//>
-		<div id="profilename">{user}</div>
-		</div>
+		<ProfileLandingPage user={user} profile={profile}/>
 	</div></>);
 }
 

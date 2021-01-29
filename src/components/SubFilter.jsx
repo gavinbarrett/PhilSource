@@ -26,8 +26,7 @@ const NoDocuments = ({filter}) => {
 }
 
 const SubFilter = ({filter, changeFilename, updateHash}) => {
-	
-	const [docs, updateDocs] = useState(null);
+	const [docs, updateDocs] = useState([]);
 	const [path, updatePath] = useState(useLocation());
 	
 	useEffect(() => {
@@ -44,7 +43,7 @@ const SubFilter = ({filter, changeFilename, updateHash}) => {
 
 	return (<div className='subfilterwrapper'>
 		<div className='documentbox'>
-			{docs ? docs.map((doc, index) => {
+			{(docs && docs[0] != undefined) ? docs.map((doc, index) => {
 				return (<div className='documentcase'>
 					<Document key={index} doc={doc} changeFilename={changeFilename} updateHash={updateHash}/>
 				</div>);

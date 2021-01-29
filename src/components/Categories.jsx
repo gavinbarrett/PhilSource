@@ -6,9 +6,9 @@ const Categories = [
 	{"category": "Logic", "path": "logic"},
 	{"category": "Marxism", "path": "marxism"},
 	{"category": "Metaphysics", "path": "metaphysics"},
-	{"category": "Phil. of Mind", "path": "mind"},
-	{"category": "Phil. of Religion", "path": "religion"},
-	{"category": "Phil. of Science", "path": "science"},
+	{"category": "Philosophy of Mind", "path": "mind"},
+	{"category": "Philosophy of Religion", "path": "religion"},
+	{"category": "Philosophy of Science", "path": "science"},
 	{"category": "Political Philosophy", "path": "political"},
 	{"category": "Skepticism", "path": "skepticism"},
 ];

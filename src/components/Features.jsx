@@ -9,7 +9,7 @@ const Features = ({updateFilter}) => {
 
 	const default_feats = [
 			{"category": "Metaphysics", "path": "metaphysics"},
-			{"category": "Phil. of Science", "path": "science"},
+			{"category": "Philosophy of Science", "path": "science"},
 			{"category": "Existentialism", "path": "existentialism"}
 	];
 	

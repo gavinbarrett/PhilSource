@@ -17,16 +17,15 @@ const CategorySelector = ({updateCategory}) => {
 		<option value='Logic'>Logic</option>
 		<option value='Marxism'>Marxism</option>
 		<option value='Metaphysics'>Metaphysics</option>
-		<option value='Phil. of Mind'>Phil. of Mind</option>
-		<option value='Phil. of Religion'>Phil. of Religion</option>
-		<option value='Phil. of Science'>Phil. of Science</option>
+		<option value='Philosophy of Mind'>Philosophy of Mind</option>
+		<option value='Philosophy of Religion'>Philosophy of Religion</option>
+		<option value='Philosophy of Science'>Philosophy of Science</option>
 		<option value='Political Philosophy'>Political Philosophy</option>
 		<option value='Skepticism'>Skepticism</option>
 	</select>);
 }
 
 const UploadPage = ({user, changeFilename, updateHash}) => {
-	
 	const [title, updateTitle] = useState('');
 	const [author, updateAuthor] = useState('');
 	const [tags, updateTags] = useState('');
@@ -35,15 +34,20 @@ const UploadPage = ({user, changeFilename, updateHash}) => {
 	const [error, updateError] = useState('');
 	const history = useHistory();
 
+	// update document file object
 	const dropped = async f => { await updateFile(f[0]); }
 
+	// update the document's title
 	const changeTitle = async event => { await updateTitle(event.target.value); }
 
+	// update the document's author
 	const changeAuthor = async event => { await updateAuthor(event.target.value); }
 
+	// update the document's metadata tags
 	const changeTags = async event => { await updateTags(event.target.value); }
 
 	const validInput = async () => {
+		/* Check the validity of user-supplied file metadata fields */
 		const alphaRegex = /^[a-z0-9\s]+$/i;
 		return new Promise((resolve, reject) => {
 			if (user === '')
@@ -76,6 +80,7 @@ const UploadPage = ({user, changeFilename, updateHash}) => {
 	}
 
 	const upload = async () => {
+		// try to upload the file if it's metadata passes validation
 		if (await validInput()) {
 			// add file attributes to the FormData object
 			const formData = new FormData();
@@ -91,8 +96,6 @@ const UploadPage = ({user, changeFilename, updateHash}) => {
 			const r = await resp.json();
 			// store the hash of the current file
 			await updateHash(r["status"]);
-			// set the PDF file stream
-			//await updateDisplayFile(blob);
 			// change the name of the displayed file
 			await changeFilename(file.name);
 			// switch to the PDFRenderer page
@@ -117,12 +120,12 @@ const UploadPage = ({user, changeFilename, updateHash}) => {
 		</Dropzone>
 		{error ? <div className='uploaderror'>{error}</div> : ''}
 		<div id="tags">
-		<input id="texttitle" type="text" placeholder="put your title here" onChange={changeTitle}/>
-		<input id="metatags" type="text" placeholder="put metadata tags here, separated by commas" onChange={changeTags}/>
+		<input id="texttitle" type="text" placeholder="put your title here" maxlength="64" onChange={changeTitle}/>
+		<input id="metatags" type="text" placeholder="put metadata tags here, separated by commas" maxlength="64"onChange={changeTags}/>
 		<CategorySelector updateCategory={updateCategory}/>
 		<button id="submit" type="submit" onClick={upload}>Upload</button>
 		</div>
-		<input id="author" type="text" placeholder="put the author here" onChange={changeAuthor}/>
+		<input id="author" type="text" placeholder="put the author here" maxlength="64" onChange={changeAuthor}/>
 	</div></>);
 }
 

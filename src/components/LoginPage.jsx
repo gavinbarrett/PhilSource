@@ -5,19 +5,19 @@ import { useHistory } from 'react-router-dom';
 import './sass/LoginPage.scss';
 
 const Username = ({updateUsername}) => {
-	return (<input id="username" type="text" onChange={event => updateUsername(event.target.value)}/>);
+	return (<input id="username" type="text" autocomplete={"off"} maxLength={64} onChange={event => updateUsername(event.target.value)}/>);
 }
 
 const Password = ({updatePassword}) => {
-	return (<input id="password" type="password" onChange={event => updatePassword(event.target.value)}/>);
+	return (<input id="password" type="password" autocomplete={"off"} maxLength={64} onChange={event => updatePassword(event.target.value)}/>);
 }
 
 const PasswordRetype = ({updateRePassword}) => {
-	return (<input id="passwordretype" type="password" onChange={event => updateRePassword(event.target.value)}/>);
+	return (<input id="passwordretype" type="password" autocomplete={"off"} maxLength={64} onChange={event => updateRePassword(event.target.value)}/>);
 }
 
 const Emailer = ({updateEmail}) => {
-	return (<input id="emailer" type="email" onChange={event => updateEmail(event.target.value)}/>);
+	return (<input id="emailer" type="email" autocomplete={"off"} maxLength={64} onChange={event => updateEmail(event.target.value)}/>);
 }
 
 const SignUpBox = ({updateUser}) => {
@@ -26,11 +26,10 @@ const SignUpBox = ({updateUser}) => {
 	const [rePassword, updateRePassword] = useState('');
 	const [email, updateEmail] = useState('');
 	const [error, updateError] = useState('');
-
 	const history = useHistory();
 	
-	//FIXME: fix input validation for this component and the signin component
 	const validInput = async () => {
+		/* Check the validity of user-supplied sign up credentials */
 		return new Promise((resolve, reject) => {
 			const alphaRegex = /^[a-z0-9]+$/i;
 			const emailRegex = /^[a-z0-9]+@\w+\.\w+/;
@@ -97,10 +96,12 @@ const SignInBox = ({updateUser}) => {
 	const history = useHistory();
 	
 	const forgotPass = () => {
+		// render the password retrieval page
 		history.push('/forgot');
 	}
 
 	const validInput = async () => {
+		/* Check the validity of user-supplied credentials */
 		return new Promise((resolve, reject) => {
 			const alphaRegex = /^[a-z0-9]+$/i;
 			// check that fields are filled out
@@ -141,18 +142,20 @@ const SignInBox = ({updateUser}) => {
 		<div className="logintext">Password</div>
 		<Password updatePassword={updatePassword}/>
 		<div className="forgotlinkclass">
-			<div className="forgotlink" onClick={forgotPass}>Forgot Password</div>
-		</div>
+			{'<div className="forgotlink" onClick={forgotPass}>Forgot Password</div>'}
+		</div>}
 		<button id="submit" type="submit" onClick={signin}>Sign In</button>
 	</div>);
 }
 
 const LoginPage = ({updateUser}) => {
 	const [state, changeState] = useState(0);
-
+	
+	// alternate between SignIn and SignUp components
 	const flipState = () => { state ? changeState(0) : changeState(1); }
 
 	const signin = () => {
+		// display SignIn component
 		if (state === 0) return;
 		const si = document.getElementById('signinselect');
 		const su = document.getElementById('signupselect');
@@ -166,6 +169,7 @@ const LoginPage = ({updateUser}) => {
 	}
 
 	const signup = () => {
+		// display SignUp component
 		if (state === 1) return;
 		const si = document.getElementById('signinselect');
 		const su = document.getElementById('signupselect');

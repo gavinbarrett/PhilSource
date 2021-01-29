@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 const SearchInput = ({updateSearchResults}) => {
-
 	const [input, updateInput] = useState('');
 	const [suggestions, updateSuggestions] = useState([]);
 	const history = useHistory();
@@ -27,12 +26,11 @@ const SearchInput = ({updateSearchResults}) => {
 		// update the input value for search button queries
 		await updateInput(event.target.value);
 		// call fetch to get a list of database entries matching the input
-		const resp = await fetch('/text_query', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify({"query": event.target.value})});
+		const resp = await fetch('/text_query', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify({"tag": event.target.value})});
 		// return the objects
 		const res = await resp.json();
-		console.log(res);
-		
-		const titles = Array.from(res["search_results"], res => res["title"]);
+		// FIXME: check for null
+		const titles = Array.from(res["search_results"]["rows"], res => res["title"]);
 		const uniq = [...new Set(titles)];
 		// update search suggestion box
 		await updateSuggestions(uniq);
@@ -51,8 +49,9 @@ const SearchInput = ({updateSearchResults}) => {
 		if (input === '') return;
 		// check that input is valid
 		if (! await validInput(input)) return;
-		const resp = await fetch('/text_query', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify({"query": input})});
+		const resp = await fetch('/text_query', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify({"tag": input})});
 		let res = await resp.json();
+		console.log(`Res: ${res}`);
 		// update search results
 		await updateSearchResults(res);
 		// change page to search display page
