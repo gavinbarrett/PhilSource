@@ -1,13 +1,14 @@
-const db = require('./databaseFunctions.js');
 const zlib = require('zlib');
 const crypto = require('crypto');
 const moment = require('moment');
 const Duplex = require('stream').Duplex;
-const { writeDocToDisk } = require('./databaseFunctions.js');
+// PhiloSource server functions
+const db = require('./databaseFunctions.js');
+const { writeDocToDisk, writeProfileToDisk } = require('./diskUtilities.js');
 
 // regular expressions for database input validation
-const alphaNumRegex = /^[a-z0-9]+$/i;
-const alphaSpaceRegex = /^[a-z0-9\s]+$/i;
+const alphaNumRegex = /^[a-z0-9]+$/i; // alphanumeric
+const alphaSpaceRegex = /^[a-z0-9\s]+$/i; // alphanumeric + space
 
 exports.commentOnPost = async (req, res) => {
 	// FIXME: add input validation
@@ -91,9 +92,15 @@ exports.uploadProfile = async (req, res) => {
 	try {
 		// try to insert image file into the users table
 		// FIXME: save to disk instead of inserting into the db; add the hash to the user record
-		const result = await insertProfileIntoDB(user, image);
-		res.send(JSON.stringify({"status": "success"}));
-	} catch (err) {
+		const hash = await hashFile(image);
+		console.log(`Hash: ${hash}`);
+		// save profile photo on disk
+		const written = await writeProfileToDisk(hash, image, 'jpg');
+		// insert hash into the document table
+		const result = await insertProfileIntoDB(user, hash);
+		(written && result) ? res.send(JSON.stringify({"status": "success"})) : res.send(JSON.stringify({"status": null}));
+	} catch (error) {
+		console.log(`Error uploading file: ${error}`);
 		res.send(JSON.stringify({"status": "failed"}));
 	}
 }
@@ -155,21 +162,21 @@ const insertDocIntoDB = async (title, author, user, tags, category, hash) => {
 	}
 }
 // FIXME: save the profile picture to the profiles/ folder; name it after the user primary key
-const insertProfileIntoDB = async (user, image) => {
+const insertProfileIntoDB = async (user, hash) => {
 	// FIXME: add input validation
-	// zip the file and encode it in base64
-	const zipped = zlib.gzipSync(JSON.stringify(image)).toString('base64');
+	// FIXME: store image hash
 	// load file and user values
-	const values = [zipped, user]
-	const query = `update users set Picture=? where User=?`;
-	return new Promise((resolve, reject) => {
-		// pass values through MySQL stored procedures
-		db.query(query, values, (err, rows) => {
-			if (err) reject(false);
-			// add user profile picture to the users table
-			resolve(true);
-		});
-	});
+	const values = [hash, user]
+	const query = `update users set profile=$1 where username=$2`;
+	try {
+		const rows = await db.query(query, values);
+		if (rows)
+			return true;
+		return false;
+	} catch(error) {
+		console.log(`Error inserting profile into db: ${error}`);
+		return false;
+	}
 }
 
 const checkForTextHash = async (hash) => {

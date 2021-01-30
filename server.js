@@ -5,7 +5,7 @@ const nodemailer = require('nodemailer');
 const cookieParser = require('cookie-parser');
 const { authUser, signUserUp, signUserIn, signUserOut, retrieveSession } = require('./server/authServer.js');
 const { commentOnPost, filterTexts, getPostComments, textQuery, uploadProfile, uploadText } = require('./server/uploadMedia.js');
-const { getDocFromDisk } = require('./server/diskUtilities.js');
+const { getDocFromDisk, getProfileFromDisk } = require('./server/diskUtilities.js');
 const { forgotPassword } = require('./server/passwordRecovery.js');
 const db = require('./server/databaseFunctions.js');
 require('dotenv').config();
@@ -30,6 +30,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 app.get('/', (req, res) => res.render('index'));
 // serve other unauthed content
 app.get('/get_text', getDocFromDisk);
+app.get('/get_profile', getProfileFromDisk);
 app.get('/get_comments', getPostComments);
 app.post('/text_query', textQuery);
 app.post('/filtertexts', filterTexts);
@@ -40,7 +41,7 @@ app.post('/forgot', forgotPassword);
 // serve authed user content
 app.get('/get_session', authUser, retrieveSession);
 app.put('/upload', upload.single('textfile'), authUser, uploadText);
-//app.put('/upload_profile', upload.single('profilepic'), authUser, uploadProfile);
+app.put('/upload_profile', upload.single('profilepic'), authUser, uploadProfile);
 app.post('/comment', authUser, commentOnPost);
 app.get('/signout', authUser, signUserOut);
 

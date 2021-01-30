@@ -89,7 +89,7 @@ const SignUpBox = ({updateUser}) => {
 	</div>);
 }
 
-const SignInBox = ({updateUser}) => {
+const SignInBox = ({updateUser, updateProfile}) => {
 	const [username, updateUsername] = useState('');
 	const [password, updatePassword] = useState('');
 	const [error, updateError] = useState('');
@@ -129,6 +129,9 @@ const SignInBox = ({updateUser}) => {
 			const resp = await fetch('/sign_in', {method: 'POST', headers: {"Content-Type": "application/json"}, credentials: 'same-origin', body: JSON.stringify(data)});
 			const response = await resp.json();
 			console.log(`User logged into session: ${response["authed"]}`);
+			const picture = response["picture"];
+			const url = 'data:image/png;base64,' + picture;
+			updateProfile(url);
 			updateUser(response["authed"]);
 			history.push('/');
 		} else
@@ -142,13 +145,13 @@ const SignInBox = ({updateUser}) => {
 		<div className="logintext">Password</div>
 		<Password updatePassword={updatePassword}/>
 		<div className="forgotlinkclass">
-			{'<div className="forgotlink" onClick={forgotPass}>Forgot Password</div>'}
+			{"<div className='forgotlink' onClick={forgotPass}>Forgot Password</div>"}
 		</div>}
 		<button id="submit" type="submit" onClick={signin}>Sign In</button>
 	</div>);
 }
 
-const LoginPage = ({updateUser}) => {
+const LoginPage = ({updateUser, updateProfile}) => {
 	const [state, changeState] = useState(0);
 	
 	// alternate between SignIn and SignUp components
@@ -188,7 +191,7 @@ const LoginPage = ({updateUser}) => {
 		<div id="signinselect" onClick={signin}>Sign In</div>
 		<div id="signupselect" onClick={signup}>Sign Up</div>
 		</div>
-		{state ? <SignUpBox updateUser={updateUser}/> : <SignInBox updateUser={updateUser}/>}
+		{state ? <SignUpBox updateUser={updateUser}/> : <SignInBox updateUser={updateUser} updateProfile={updateProfile}/>}
 		</div>
 	</div></>);
 }

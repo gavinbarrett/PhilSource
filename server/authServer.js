@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const db = require('./databaseFunctions.js');
+const { getProfileFromDisk, readProfileFromDisk } = require('./diskUtilities.js');
 
 // set cookie/session lifetime to 60 minutes
 const expiry = 60 * 60;
@@ -22,7 +23,6 @@ exports.authUser = async (req, res, next) => {
 exports.signUserUp = async (req, res) => {
 	// start user sign up process
 	const { user, pass, email } = req.body;
-
 	// FIXME: sanitize user, pass, email inputs
 	try {
 		// check to see if username is taken
@@ -57,21 +57,21 @@ exports.signUserIn = async (req, res) => {
 	try {
 		// find user's hashed password in the database
 		const hash = await getHashedPass(user);
+		// FIXME: check for profile photo hash; if one exists, read from disk with getProfileFromDisk
 		// hash given password and check against db hash
 		const hashed = await checkHashes(pass, hash);
 		if (hashed) {
-			// FIXME: create uuid and check redis cache for its existence; if it doesn't exist in the cache, add the uuid and any other metadata needed (e.g. user name, session expiration time)
-			// FIXME: put uuid inside user's cookie
 			// generate a unique session ID
 			const sessionID = await generateSessionID();
 			// set expiring session in the Redis cache
 			db.set(sessionID, user, 'EX', expiry);
+			const picture = await getProfilePicture(user);
 			// set the session id in the cookie
 			const clientData = { user: user, id: sessionID };
 			// secure the cookie from snooping, XSS, and CSRF; set lifetime to 60 minutes
 			const options = { maxAge: expiry * 1000, secure: true, httpOnly: true, sameSite: true };
 			res.cookie('sessionIDs', clientData, options);
-			res.send(JSON.stringify({"authed" : user}));
+			picture ? res.send(JSON.stringify({"authed": user, "picture": picture})) : res(JSON.stringify({"authed": user, "picture": null}));
 		// return failed login status
 		} else
 			res.send(JSON.stringify({"status": "failed"}));
@@ -95,20 +95,53 @@ exports.retrieveSession = async (req, res) => {
 	if (req.cookies.sessionIDs) {
 		const id = req.cookies.sessionIDs['id'];
 		const user = req.cookies.sessionIDs['user'];
+		// FIXME: check db; make sure user exists; return the hash of the profile photo if it exists
 		const session = await checkForSession(id);
 		if (!session)
-			res.send(JSON.stringify({"retrieved": "failed"}));
-		else // FIXME: check fs for session
-			res.send(JSON.stringify({"retrieved": user}));
+			res.send(JSON.stringify({"retrieved": "failed", "profile": null}));
+		else {
+			const picture = await getProfilePicture(user);
+			//console.log(`Picture retrieved: ${picture}`);
+			res.send(JSON.stringify({"retrieved": user, "profile": picture}));
+		}
 	} else
-		res.send(JSON.stringify({"retrieved": "failed"}));
+		res.send(JSON.stringify({"retrieved": "failed", "profile": null}));
 };
+
+const getProfilePicture = async (user) => {
+	// FIXME: check users table for user; extract profile picture hash; read disk by hash and return it to the user
+	const query = `select * from users where username=$1`;
+	const values = [user];
+	try {
+		const rows = await db.query(query, values);
+		if (rows.rows.length !== 0) {
+			const hash = rows['rows'][0]['profile'];
+			console.log(hash);
+			try {
+				const image = await readProfileFromDisk(hash);
+				//console.log(`Image from disk: ${image}`);
+				if (image)
+					return image;
+				return null;
+				console.log(`Image hash: ${image}`);
+				return null;
+			} catch(error) {
+				console.log(`Error getting profile image.`);
+				return null;
+			}
+		}
+		return null;
+	} catch(error) {
+		console.log(`Error getting profile picture: ${error}`);
+		return null;
+	}
+}
 
 const checkForSession = async (id) => {
 	/* check the Redis cache for the session */
 	try {
 		const r = await db.get(id);
-		if (r)
+		if (r)	// session exists; authenticate user
 			return r;
 		return null;
 	} catch(error) {
@@ -123,11 +156,11 @@ const addUser = async (user, pass, email) => {
 	console.log(`Adding user.`);
 	const hash = await computeSaltedHashedPass(pass);
 	// construct an SQL query to insert the user
-	const CMD = `insert into users (username, password, email) values ($1, $2, $3);`;
+	const query = `insert into users (username, password, email) values ($1, $2, $3);`;
 	const values = [user, hash, email]
 	// place the user and hash password in the database
 	try {
-		const resp = await db.query(CMD, values);
+		const resp = await db.query(query, values);
 		return resp;
 	} catch (err) {
 		console.log(`Error adding user: ${err}`);
@@ -168,8 +201,11 @@ const getHashedPass = async (user) => {
 	const values = [user];
 	try {
 		const rows = await db.query(query, values);
-		if (rows)
+		console.log(`Length: ${rows.rows.length}`);
+		if (rows.rows.length !== 0) {
+			console.log(`Rows: "${Object.getOwnPropertyNames(rows["rows"]["length"])}"`);
 			return rows['rows'][0]['password'];
+		}
 		throw new Error('User not found.');
 	} catch (error) {
 		console.log(`Error getting hashed password: ${error}`);

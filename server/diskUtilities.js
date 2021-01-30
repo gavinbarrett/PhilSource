@@ -10,6 +10,7 @@ exports. getDocFromDisk = async (req, res) => {
 		res.send(JSON.stringify({"file": null}));
 }
 
+
 exports.writeDocToDisk = async (hash, file) => {
 	/* save the file to disk */
 	return new Promise((resolve, reject) => {
@@ -38,4 +39,58 @@ readDocFromDisk = async (hash) => {
 			});
 		});
 	});
+}
+
+exports.getProfileFromDisk = async (req, res) => {
+	const hash = req.query['hash'];
+	console.log(`Hash: ${hash}`);
+	const resp = await readProfileFromDisk(hash);
+	console.log(`Resp: ${resp}`);
+	resp ? res.send(JSON.stringify({"file": resp})) : res.send(JSON.stringify({"file": "null"}));
+}
+
+exports.writeProfileToDisk = async (hash, file, ext) => {
+	return new Promise((resolve, reject) => {
+		fs.writeFile(`./data/profiles/${hash}.${ext}`, file, err => {
+			if (err)
+				resolve(null);
+			console.log(`${hash}.${ext} written to disk.`);
+			resolve(true);
+		});
+	});
+}
+
+exports.readProfileFromDisk = async (profile) => {
+	// FIXME: add input validation
+	/* read a file from disk if it exists */
+	const dir = `./data/profiles/`;
+	const fileRegex = new RegExp(`${profile}\.((png)|(jpg)|(jpeg))`);
+	return new Promise((resolve, reject) => {
+		fs.readdir(dir, (err, files) => {
+			console.log(`Files: ${files}`);
+			const file = files.filter(ff => { return ff.match(fileRegex) });
+			console.log(`File: ${file}`);
+			if (!file) resolve(null);
+			const path = `./data/profiles/${file}`;
+			fs.access(path, fs.F_OK, err => {
+				if (err) {
+					console.log(`Error accessing file: ${err}`);
+					resolve(null);
+				}
+				fs.readFile(path, 'base64', (err, data) => {
+					if (err) {
+						console.log(`Error reading file: ${err}`);
+						resolve(null);
+					}
+					resolve(data);
+				});
+			});
+		});
+	});
+}
+
+const matchFile = async (file, fileRegex) => {
+	console.log(`Matching file: ${file}`);
+	console.log(`Regex: ${fileRegex}`);
+	return file.match(fileRegex);
 }

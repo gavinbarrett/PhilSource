@@ -1,18 +1,7 @@
 import React, { useState } from 'react';
 import './sass/Profile.scss'
 
-const ProfileLandingPage = ({user, profile}) => {
-		return (<div className="profileimage">
-			<label for='file-input'>
-				{profile ? <img id='largeavatar' src={profile} accept='image/*'/> : <img id='largeavatar' src="avatar.jpg" accept='image/*'/>}
-			</label>
-			<input id='file-input' type='file' name='profilepic' /*onChange={loadFile}*//>
-		<div id="profilename">{user}</div>
-		</div>);
-}
-
-const Profile = ({user, profile, updateProfile}) => {
-
+const ProfileLandingPage = ({user, profile, updateProfile}) => {
 	const loadFile = async event => {
 		/* Load */
 		const file = event.target.files[0];
@@ -22,6 +11,7 @@ const Profile = ({user, profile, updateProfile}) => {
 		// send the picture to the server
 		const resp = await fetch('/upload_profile', {method: 'PUT', body: formData});
 		const r = await resp.json();
+		// FIXME: retrieve hash from profile photo upload, send hash to getProfileFromDisk to download photo
 		if (r["status"] == "success") {
 			const blob = new Blob([file], {"type" : "application/image"});
 			const url = URL.createObjectURL(blob);
@@ -30,6 +20,16 @@ const Profile = ({user, profile, updateProfile}) => {
 			console.log("Couldn't change profile pic");
 	}
 
+	return (<div className="profileimage">
+		<label for='file-input'>
+			{profile ? <img id='largeavatar' src={profile} accept='image/*'/> : <img id='largeavatar' src="avatar.jpg" accept='image/*'/>}
+		</label>
+		<input id='file-input' type='file' name='profilepic' onChange={loadFile}/>
+	<div id="profilename">{user}</div>
+	</div>);
+}
+
+const Profile = ({user, profile, updateProfile}) => {
 	return (<><div id="profile">
 		<div id="profilebar">
 		<div className="barselect">
@@ -39,7 +39,7 @@ const Profile = ({user, profile, updateProfile}) => {
 			Settings
 		</div>
 		</div>
-		<ProfileLandingPage user={user} profile={profile}/>
+		<ProfileLandingPage user={user} profile={profile} updateProfile={updateProfile}/>
 	</div></>);
 }
 

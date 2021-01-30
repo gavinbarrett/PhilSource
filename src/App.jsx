@@ -43,29 +43,16 @@ const App = () => {
 		} // resuming old session
 		const response = await resp.json();
 		const retrieved = response["retrieved"];
-		//const pic = response["profile"][0]["Picture"];
+		const profile = response["profile"];
 		if (retrieved != 'failed') {
 			console.log(`Welcome back to PhiloSource, ${retrieved}.`);
 			// set client username
 			await updateUser(retrieved);	
-			/*
-			if (pic) {		
-				const unzipped = zlib.unzipSync(new Buffer(pic, 'base64')).toString('base64');
-				console.log(`Unzipped: ${unzipped}`);
-				const reader = new FileReader();
-				const fileObj = new File([pic], {type: 'image/jpeg'});
-				reader.onloadend = async () => {
-					console.log(`Res: ${reader.result}`);
-					await updateProfile(reader.result);
-				};
-				reader.readAsDataURL(fileObj);
-				//console.log(`fileObj: ${fileObj}`);
-				//const blob = new Blob([fileObj]);
-				//console.log(`Blob: ${blob}`);
-				//const blob = new Blob([unzipped], {"type": "application/image"});
-				//await updateProfile(fileObj);
+			if (profile) {
+				const url = 'data:image/jpg;base64,' + profile;
+				// set 
+				await updateProfile(url);
 			}
-			*/
 		}
 	}
 
@@ -73,7 +60,7 @@ const App = () => {
 	<Heading user={user} updateUser={updateUser} profile={profile} updateProfile={updateProfile}/>
 		<Switch>
 		<Route path='/' exact render={() => <LandingPage updateSearchResults={updateSearchResults} updateFilter={updateFilter}/>}/>
-		<Route path='/signin' render={() => <LoginPage updateUser={updateUser}/>}/>
+		<Route path='/signin' render={() => <LoginPage updateUser={updateUser} updateProfile={updateProfile}/>}/>
 		<Route path='/forgot' render={() => <ForgotPassword/>}/>
 		<Route path='/upload' render={() => <UploadPage changeFilename={changeFilename} updateHash={updateHash}/>}/>
 		<Route path='/profile' render={() => <Profile user={user} profile={profile} updateProfile={updateProfile}/>}/>
