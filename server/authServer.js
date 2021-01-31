@@ -1,7 +1,10 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const db = require('./databaseFunctions.js');
+const { validateQuery } = require('./validateQuery.js');
 const { getProfileFromDisk, readProfileFromDisk } = require('./diskUtilities.js');
+
+const alphaSpaceRegex = /^[a-z0-9\s]+$/i;
 
 // set cookie/session lifetime to 60 minutes
 const expiry = 60 * 60;
@@ -24,15 +27,19 @@ exports.signUserUp = async (req, res) => {
 	// start user sign up process
 	const { user, pass, email } = req.body;
 	// FIXME: sanitize user, pass, email inputs
+	console.log(`User: ${user}\nPass: ${pass}\nEmail: ${email}`);
 	try {
 		// check to see if username is taken
 		const exists = await checkForUser(user);
 		if (exists) {
+			console.log(`User exists: ${exists}`);
 			// FIXME: clean up this response so that users can't impersonate as the unavailable user
 			res.send(JSON.stringify({"user":"unavailable"}));
 			return;
 		} else {
+			console.log(`User: ${user} does not exist.\nAdding user now.`);
 			const result = await addUser(user, pass, email);
+			console.log(`${user} added.`);
 			// send back user and token
 			const sessionID = await generateSessionID();
 			db.set(sessionID, user, 'EX', expiry);
@@ -46,7 +53,7 @@ exports.signUserUp = async (req, res) => {
 			res.send(JSON.stringify({"authed" : user}));
 		}
 	} catch (error) {
-		res.send(JSON.stringify({"authed" : null}));
+		res.send(JSON.stringify({"user" : null}));
 	}
 };
 
@@ -98,43 +105,46 @@ exports.retrieveSession = async (req, res) => {
 		// FIXME: check db; make sure user exists; return the hash of the profile photo if it exists
 		const session = await checkForSession(id);
 		if (!session)
-			res.send(JSON.stringify({"retrieved": "failed", "profile": null}));
+			res.send(JSON.stringify({"retrieved": null, "profile": null}));
 		else {
 			const picture = await getProfilePicture(user);
 			//console.log(`Picture retrieved: ${picture}`);
 			res.send(JSON.stringify({"retrieved": user, "profile": picture}));
 		}
 	} else
-		res.send(JSON.stringify({"retrieved": "failed", "profile": null}));
+		res.send(JSON.stringify({"retrieved": null, "profile": null}));
 };
 
 const getProfilePicture = async (user) => {
 	// FIXME: check users table for user; extract profile picture hash; read disk by hash and return it to the user
 	const query = `select * from users where username=$1`;
 	const values = [user];
-	try {
-		const rows = await db.query(query, values);
-		if (rows.rows.length !== 0) {
-			const hash = rows['rows'][0]['profile'];
-			console.log(hash);
-			try {
-				const image = await readProfileFromDisk(hash);
-				//console.log(`Image from disk: ${image}`);
-				if (image)
-					return image;
-				return null;
-				console.log(`Image hash: ${image}`);
-				return null;
-			} catch(error) {
-				console.log(`Error getting profile image.`);
-				return null;
+	if (await validateQuery(values, alphaSpaceRegex)) {
+		try {
+			const rows = await db.query(query, values);
+			if (rows.rows.length !== 0) {
+				const hash = rows['rows'][0]['profile'];
+				console.log(hash);
+				try {
+					const image = await readProfileFromDisk(hash);
+					//console.log(`Image from disk: ${image}`);
+					if (image)
+						return image;
+					return null;
+					console.log(`Image hash: ${image}`);
+					return null;
+				} catch(error) {
+					console.log(`Error getting profile image.`);
+					return null;
+				}
 			}
+			return null;
+		} catch(error) {
+			console.log(`Error getting profile picture: ${error}`);
+			return null;
 		}
-		return null;
-	} catch(error) {
-		console.log(`Error getting profile picture: ${error}`);
-		return null;
 	}
+	return null
 }
 
 const checkForSession = async (id) => {
@@ -150,34 +160,63 @@ const checkForSession = async (id) => {
 	}
 }
 
-const addUser = async (user, pass, email) => {
-	// add a user to the system
+const validUserRecord = async (username, password, email) => {
+	/* FIXME: make sure user, hash, email are all <= 64 chars in length;
+			  make sure user is alphaSpaceRegex comp, hash is alphaNumRegex comp, and email is alphaNum, `@` alphaNum `.` alphaNum
+	
+	*/
+	const alphaNumRegex = /^[a-z0-9]+$/i;
+	const alphaSpaceRegex = /^[a-z0-9\s]+$/i;
+	const emailRegex = /^[a-z0-9]+\@[a-z0-9]+\.[a-z]+$/i;
+	// make sure user credentials don't overflow
+	if (username.length > 64 || password.length > 64 || email.length > 64) return false;
+	// make sure that username contains only characters, numbers, and space
+	if (!username.match(alphaSpaceRegex)) return false;
+	// make sure that password contains only characters and numbers
+	if (!password.match(alphaNumRegex)) return false;
+	// make sure that email matches valid email syntax
+	if (!email.match(emailRegex)) return false;
+	return true;
+}
+
+const addUser = async (username, password, email) => {
+	/* add a user to the system */
 	// generate hashed password with bcrypt
-	console.log(`Adding user.`);
-	const hash = await computeSaltedHashedPass(pass);
+	const hash = await computeSaltedHashedPass(password);
 	// construct an SQL query to insert the user
 	const query = `insert into users (username, password, email) values ($1, $2, $3);`;
-	const values = [user, hash, email]
-	// place the user and hash password in the database
-	try {
-		const resp = await db.query(query, values);
-		return resp;
-	} catch (err) {
-		console.log(`Error adding user: ${err}`);
-		return false;
+	const values = [username, hash, email]
+	// FIXME: validate username and email
+	// run input validation on the query inputs
+	if (validUserRecord(username, password, email)) {
+		// place the user and hash password in the database
+		try {
+			const resp = await db.query(query, values);
+			return resp;
+		} catch (err) {
+			console.log(`Error adding user: ${err}`);
+			return false;
+		}
 	}
+	return false;
 }
 
 const checkForUser = async (user) => {
-	// search the database for the user
+	/* search the database for the user */
+	const query = `select * from users where username=$1`;
 	const values = [user];
-	const query = `select * from users where user=$1`;
-	try {
-		const resp = await db.query(query, values);
-	} catch(error) {
-		console.log(`Error checking for user ${error}`);
-		return false;
+	if (await validateQuery(values, alphaSpaceRegex)) {
+		try {
+			const rows = await db.query(query, values);
+			if (rows.rows.length !== 0)
+				return true;
+			return false;
+		} catch(error) {
+			console.log(`Error checking for user ${error}`);
+			return false;
+		}
 	}
+	return false;
 }
 
 const computeSaltedHashedPass = async (pass) => {
@@ -195,22 +234,21 @@ const computeSaltedHashedPass = async (pass) => {
 }
 
 const getHashedPass = async (user) => {
-	// FIXME: add input validation
 	/* get the salted hashed password of a user from the user table */
 	const query = `select * from users where username=$1`;
 	const values = [user];
-	try {
-		const rows = await db.query(query, values);
-		console.log(`Length: ${rows.rows.length}`);
-		if (rows.rows.length !== 0) {
-			console.log(`Rows: "${Object.getOwnPropertyNames(rows["rows"]["length"])}"`);
-			return rows['rows'][0]['password'];
+	if (await validateQuery(values, alphaSpaceRegex)) {
+		try {
+			const rows = await db.query(query, values);
+			if (rows.rows.length !== 0)
+				return rows['rows'][0]['password'];
+			throw new Error('User not found.');
+		} catch (error) {
+			console.log(`Error getting hashed password: ${error}`);
+			return null;
 		}
-		throw new Error('User not found.');
-	} catch (error) {
-		console.log(`Error getting hashed password: ${error}`);
-		return null;
-	}	
+	}
+	return null;
 }
 
 const checkHashes = async (pass, hashword) => {

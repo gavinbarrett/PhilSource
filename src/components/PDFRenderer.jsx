@@ -78,7 +78,7 @@ const Comments = ({user, hash}) => {
 		</div>
 		<div id="cont">
 		</div>
-		{posts ? posts.map((post, index) => {
+		{(posts && Array.isArray(posts)) ? posts.map((post, index) => {
 			return (<Comment key={index} text={post["post"]} poster={post["user"]} time={post["time"]}/>);
 		}) : <NoComments/>}
 	</div>);

@@ -88,9 +88,3 @@ exports.readProfileFromDisk = async (profile) => {
 		});
 	});
 }
-
-const matchFile = async (file, fileRegex) => {
-	console.log(`Matching file: ${file}`);
-	console.log(`Regex: ${fileRegex}`);
-	return file.match(fileRegex);
-}

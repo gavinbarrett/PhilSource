@@ -29,7 +29,8 @@ const SearchInput = ({updateSearchResults}) => {
 		const resp = await fetch('/text_query', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify({"tag": event.target.value})});
 		// return the objects
 		const res = await resp.json();
-		// FIXME: check for null
+		console.log(res["search_results"]);
+		if (!res["search_results"]) return;
 		const titles = Array.from(res["search_results"]["rows"], res => res["title"]);
 		const uniq = [...new Set(titles)];
 		// update search suggestion box

@@ -92,16 +92,18 @@ const UploadPage = ({user, changeFilename, updateHash}) => {
 			const resp = await fetch('/upload', {method: 'PUT',  body: formData});
 			// if user is not authenticated, redirect to signin page
 			if (resp.status != 200) history.push('/signin');
-			//const blob = new Blob([file], {"type": "application/pdf"});
 			const r = await resp.json();
+			if (!r["status"]) return;
+			console.log(`Hash: ${r["status"]}`);
 			// store the hash of the current file
 			await updateHash(r["status"]);
 			// change the name of the displayed file
 			await changeFilename(file.name);
 			// switch to the PDFRenderer page
 			history.push('/pdfrenderer');
+		} else {
+			console.log('Cannot upload file.');
 		}
-		console.log('Cannot upload file.');
 	}
 
 	return (<><div id="uploadpagewrapper">

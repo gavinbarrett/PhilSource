@@ -38,19 +38,19 @@ const App = () => {
 		const resp = await fetch('/get_session', { headers: {'Content-Type': 'application/json'}, credentials: 'same-origin' });
 		// starting new session
 		if (resp.status != 200) {
-			console.log('Welcome to PhiloSource.');
+			console.log('Welcome to PhiloSource. Please sign in or make an account to access all of our features!');
 			return;
 		} // resuming old session
 		const response = await resp.json();
 		const retrieved = response["retrieved"];
 		const profile = response["profile"];
-		if (retrieved != 'failed') {
-			console.log(`Welcome back to PhiloSource, ${retrieved}.`);
+		if (retrieved) {
+			console.log(`Welcome back, ${retrieved}.`);
 			// set client username
 			await updateUser(retrieved);	
 			if (profile) {
 				const url = 'data:image/jpg;base64,' + profile;
-				// set 
+				// set user profile photo
 				await updateProfile(url);
 			}
 		}
