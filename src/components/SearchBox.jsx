@@ -20,7 +20,7 @@ const SearchInput = ({updateSearchResults}) => {
 		// persist keyDown event
 		event.persist();
 		// check if input is valid (alphanumeric)
-		if (! await validInput(event.target.value)) return;
+		if (!await validInput(event.target.value)) return;
 		if (event.target.value === '') return;
 		// persist event in async function
 		// update the input value for search button queries
@@ -33,13 +33,14 @@ const SearchInput = ({updateSearchResults}) => {
 		if (!res["search_results"]) return;
 		const titles = Array.from(res["search_results"]["rows"], res => res["title"]);
 		const uniq = [...new Set(titles)];
+		// FIXME: if titles > 10, take a slice of the first 10
 		// update search suggestion box
 		await updateSuggestions(uniq);
 	}
 
 	const validInput = async (inp) => {
 		return new Promise((resolve, reject) => {
-			if (inp === '') return(false);
+			if (inp === '') resolve(false);
 			const alphaRegex = /^[a-z0-9\s]+$/i;
 			if (!inp.match(alphaRegex)) resolve(false);
 			resolve(true);
@@ -47,14 +48,14 @@ const SearchInput = ({updateSearchResults}) => {
 	}
 
 	const filterSearch = async () => {
-		if (input === '') return;
 		// check that input is valid
-		if (! await validInput(input)) return;
+		if (!await validInput(input)) return;
 		const resp = await fetch('/text_query', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify({"tag": input})});
 		let res = await resp.json();
-		console.log(`Res: ${res}`);
+		if (res.search_results.rows.length === 0) return;
+		console.log(`Filtered Documents: ${res.search_results.rowAsArray}`);
 		// update search results
-		await updateSearchResults(res);
+		await updateSearchResults(res.search_results);
 		// change page to search display page
 		history.push('/searchresults');
 	}

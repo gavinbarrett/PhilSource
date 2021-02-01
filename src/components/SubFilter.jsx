@@ -38,7 +38,9 @@ const SubFilter = ({filter, changeFilename, updateHash}) => {
 		const data = {"category" : path.pathname.split('/').pop(-1)};
 		const resp = await fetch('/filtertexts', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)});
 		const r = await resp.json();
-		await updateDocs(r["docs"]);
+		console.log(`Response: ${Object.getOwnPropertyNames(r["docs"]["rows"][0])}`);
+		if (r.docs.rows.length === 0) await updateDocs(null);
+		await updateDocs(r["docs"]["rows"]);
 	}
 
 	return (<div className='subfilterwrapper'>
