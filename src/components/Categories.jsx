@@ -1,4 +1,4 @@
-const Categories = [
+export const Categories = [
 	{"category": "Aesthetics", "path": "aesthetics"},
 	{"category": "Existentialism", "path": "existentialism"},
 	{"category": "Feminism", "path": "feminism"},
@@ -12,7 +12,3 @@ const Categories = [
 	{"category": "Political Philosophy", "path": "political"},
 	{"category": "Skepticism", "path": "skepticism"},
 ];
-
-export {
-	Categories
-}

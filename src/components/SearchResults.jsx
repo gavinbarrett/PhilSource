@@ -3,16 +3,14 @@ import { TextPost } from './TextPost';
 import { SearchBox } from './SearchBox';
 import './sass/SearchResults.scss';
 
-const SearchResults = ({user, results, changeFilename, updateHash, updateSearchResults}) => {
+export const SearchResults = ({user, results, changeFilename, updateHash, updateSearchResults}) => {
 	console.log(`Results: ${results}`);
-	return (<><div id="resultswrapper">
-		{(results && results.length) ? results.map((res, index) => (
-			<TextPost key={index} title={res["title"]} user={res["user"]} tags={res["tags"]} file={res["file"]} hash={res["hash"]} changeFilename={changeFilename} updateHash={updateHash}/>
-		)) : <div id="nores">{"No results found"}</div>}
+	return (<div id="resultswrapper">
 		<SearchBox updateSearchResults={updateSearchResults}/>
-	</div></>);
-}
-
-export {
-	SearchResults
+		<div className="post-results">
+			{(results && results.length) ? results.map((res, index) => (
+				<TextPost key={index} title={res["title"]} user={res["user"]} tags={res["tags"]} file={res["file"]} hash={res["hash"]} changeFilename={changeFilename} updateHash={updateHash}/>
+			)) : <div id="nores">{"No results found"}</div>}
+		</div>
+	</div>);
 }

@@ -3,14 +3,13 @@ import { useHistory } from 'react-router-dom';
 const zlib = require('zlib');
 import './sass/TextPost.scss';
 
-const TextPost = ({title, user, tags, file, hash, changeFilename, updateHash}) => {
-
+export const TextPost = ({title, user, tags, file, hash, changeFilename, updateHash}) => {
 	const [digest, updateDigest] = useState(null);
 	const history = useHistory();
 
 	useEffect(() => {
-		const upHash = async () => {
-			await updateDigest(hash);
+		const upHash = () => {
+			updateDigest(hash);
 		}
 		upHash();
 	}, []);
@@ -35,8 +34,4 @@ const TextPost = ({title, user, tags, file, hash, changeFilename, updateHash}) =
 		<div id="posttitle">{title}</div>
 		<div id="posttags">{tags}</div>
 	</div>);
-}
-
-export {
-	TextPost
 }

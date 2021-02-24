@@ -61,13 +61,9 @@ const SignInLink = () => {
 	return (<Link id='signinlink' to='/signin'>Sign In</Link>);
 }
 
-const Heading = ({user, updateUser, profile, updateProfile}) => {
+export const Heading = ({user, updateUser, profile, updateProfile}) => {
 	return (<header>
 		<AppTitle/>
 		<Links user={user} updateUser={updateUser} profile={profile} updateProfile={updateProfile}/>
 	</header>);
-}
-
-export {
-	Heading
 }

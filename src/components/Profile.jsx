@@ -29,7 +29,7 @@ const ProfileLandingPage = ({user, profile, updateProfile}) => {
 	</div>);
 }
 
-const Profile = ({user, profile, updateProfile}) => {
+export const Profile = ({user, profile, updateProfile}) => {
 	return (<><div id="profile">
 		<div id="profilebar">
 		<div className="barselect">
@@ -41,8 +41,4 @@ const Profile = ({user, profile, updateProfile}) => {
 		</div>
 		<ProfileLandingPage user={user} profile={profile} updateProfile={updateProfile}/>
 	</div></>);
-}
-
-export {
-	Profile
 }

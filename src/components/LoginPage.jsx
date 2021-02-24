@@ -163,7 +163,7 @@ const SignInBox = ({updateUser, updateProfile}) => {
 	</div>);
 }
 
-const LoginPage = ({updateUser, updateProfile}) => {
+export const LoginPage = ({updateUser, updateProfile}) => {
 	const [state, changeState] = useState(0);
 	
 	// alternate between SignIn and SignUp components
@@ -206,8 +206,4 @@ const LoginPage = ({updateUser, updateProfile}) => {
 		{state ? <SignUpBox updateUser={updateUser}/> : <SignInBox updateUser={updateUser} updateProfile={updateProfile}/>}
 		</div>
 	</div></>);
-}
-
-export {
-	LoginPage
 }

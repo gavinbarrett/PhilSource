@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './sass/Footer.scss';
 
-const Footer = () => {
+export const Footer = () => {
 	
 	const scrollToTop = () => {
 		// scroll to the top of the Home page
@@ -38,8 +38,4 @@ const Footer = () => {
 			</div>
 		</div>
 	</footer>);
-}
-
-export {
-	Footer
 }

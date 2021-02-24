@@ -13,13 +13,9 @@ const SourceCode = () => {
 	</div>);
 }
 
-const Contact = () => {
+export const Contact = () => {
 	return (<div className='contactpage'>
 		<Emailer/>
 		<SourceCode/>
 	</div>);
-}
-
-export {
-	Contact
 }

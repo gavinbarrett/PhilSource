@@ -1,7 +1,7 @@
 import React from 'react';
 import './sass/PrivacyPolicy.scss';
 
-const PrivacyPolicy = () => {
+export const PrivacyPolicy = () => {
 	return (<><div className="privacypolicybox">
 		<div>
 		<p className="policyHeader">{"Who we are"}</p>
@@ -16,8 +16,4 @@ const PrivacyPolicy = () => {
 		<p className="policy">{"When you sign up for an account on PhiloSource, we only require that you choose an appropriate username and password and provide an email address. When you log into our website, we will authenticate your username and password against our database and establish a session for you. You will be given a cookie that your browser will use to help keep you logged into your session and allow you to perform user actions."}</p>
 		</div>
 	</div></>);
-}
-
-export {
-	PrivacyPolicy
 }

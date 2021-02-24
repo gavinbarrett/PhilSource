@@ -3,8 +3,7 @@ import { FeatureCard } from './FeatureCard';
 import { Categories } from './Categories';
 import './sass/Features.scss';
 
-const Features = ({updateFilter}) => {
-	
+export const Features = ({updateFilter}) => {
 	const [state, changeState] = useState(0);
 
 	const default_feats = [
@@ -52,8 +51,4 @@ const Features = ({updateFilter}) => {
 		})}
 	</div>
 	</div>);
-}
-
-export {
-	Features
 }

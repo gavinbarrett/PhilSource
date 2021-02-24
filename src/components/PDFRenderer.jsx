@@ -82,9 +82,10 @@ const Comments = ({user, path}) => {
 	</div>);
 }
 
-const PDFRenderer = ({user, file, updateDisplayFile, name}) => {
+export const PDFRenderer = ({user, name}) => {
 	const [pageAmt, updatePageAmt] = useState(null);
 	const [pageNum, updatePageNum] = useState(1);
+	const [file, updateDisplayFile] = useState(null);
 	const [prevenabled, updatePrevDisabled] = useState(true);
 	const [nextenabled, updateNextDisabled] = useState(false);
 	const [pageHash, updatePageHash] = useState("");
@@ -116,7 +117,6 @@ const PDFRenderer = ({user, file, updateDisplayFile, name}) => {
 	}
 
 	const getDocument = async () => {
-		console.log(`Dochash: ${pageHash}`);
 		/* download the document if a hash is set */
 		if (!hash) return;
 		// request file
@@ -127,36 +127,36 @@ const PDFRenderer = ({user, file, updateDisplayFile, name}) => {
 			// decode base64
 			const buffer = Buffer.from(content["file"], 'base64');
 			// create file object
-			const fl = new File([buffer], {type: 'application/json'});
+			const pdfFile = new File([buffer], {type: 'application/json'});
 			// add file to the document component
-			await updateDisplayFile(fl);
+			updateDisplayFile(pdfFile);
 		}
 	}
 	
-	const loadPageNums = async ({numPages}) => { 
+	const loadPageNums = ({numPages}) => { 
 		/* Set the document page number */
-		await updatePageAmt(numPages);
+		updatePageAmt(numPages);
 	}
 
-	const nextPage = async () => {
+	const nextPage = () => {
 		/* Flip to the next page in the document if one exists */
 		if (pageNum === pageAmt) return;
 		else if (pageNum === pageAmt-1)
-			await updateNextDisabled(true);
-		await updatePrevDisabled(false);
-		await updatePageNum(pageNum + 1);
+			updateNextDisabled(true);
+		updatePrevDisabled(false);
+		updatePageNum(pageNum + 1);
 	}
 
-	const prevPage = async () => {
+	const prevPage = () => {
 		/* Flip to the previous page of the document if one exists */
 		if (pageNum === 1) return;
 		else if (pageNum === 2)
-			await updatePrevDisabled(true);
-		await updateNextDisabled(false);
-		await updatePageNum(pageNum - 1);
+			updatePrevDisabled(true);
+		updateNextDisabled(false);
+		updatePageNum(pageNum - 1);
 	}
 
-	const download = async () => {
+	const download = () => {
 		/* Prompt the user to save the file to their drive */
 		let reader = new FileReader();
 		let link = document.createElement('a');
@@ -171,6 +171,7 @@ const PDFRenderer = ({user, file, updateDisplayFile, name}) => {
 			link.style.display = 'none';
 			// add link to the page
 			document.body.appendChild(link);
+			// wait for user interaction
 			link.click();
 			// remove link from the page
 			document.body.removeChild(link);
@@ -195,8 +196,4 @@ const PDFRenderer = ({user, file, updateDisplayFile, name}) => {
 		</div>
 		<Comments user={user} path={location}/>
 	</div></>);
-}
-
-export {
-	PDFRenderer
 }

@@ -44,6 +44,9 @@
 	border: 2px solid gray;
 	padding: 2%;
 	border-radius: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 #subbuttonwrapper {
@@ -157,6 +160,8 @@ textarea#comment-input {
 	height: 28vh;
 	resize: none;
 	font-size: 1.25vw;
+	border-radius: 7px;
+	border: 1px solid gray;
 }
 
 textarea#comment-input:focus {

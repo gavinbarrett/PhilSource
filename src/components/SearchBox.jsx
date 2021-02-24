@@ -72,14 +72,10 @@ const SearchInput = ({updateSearchResults}) => {
 	</div>);
 }
 
-const SearchBox = ({updateSearchResults}) => {
+export const SearchBox = ({updateSearchResults}) => {
 	return (<div id="searchwrapper">
 		<div id="searchbox">
 			<SearchInput updateSearchResults={updateSearchResults}/>
 		</div>
 	</div>);
-}
-
-export {
-	SearchBox
 }

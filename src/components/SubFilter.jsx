@@ -6,14 +6,11 @@ import './sass/SubFilter.scss';
 const Document = ({doc, changeFilename, updateHash}) => {
 	const history = useHistory();
 	const { title, author, user, tags, category, hash, file } = doc;
-
 	const loadFile = async () => {
-		// unzip compressed base64 file
-		await changeFilename(title);
-		//await updateHash(hash);
+		changeFilename(title);
+		// render the pdf page
 		history.push(`/pdfrenderer/${hash}`);
 	}
-
 	return (<div className='document' onClick={loadFile}>
 		{title}
 	</div>);
@@ -25,7 +22,7 @@ const NoDocuments = ({filter}) => {
 	</div>);
 }
 
-const SubFilter = ({filter, changeFilename, updateHash}) => {
+export const SubFilter = ({filter, changeFilename, updateHash}) => {
 	const [docs, updateDocs] = useState([]);
 	const [path, updatePath] = useState(useLocation());
 	
@@ -62,8 +59,4 @@ const SubFilter = ({filter, changeFilename, updateHash}) => {
 			}) : <NoDocuments filter={filter}/>}
 		</div>
 	</div>);
-}
-
-export {
-	SubFilter
 }

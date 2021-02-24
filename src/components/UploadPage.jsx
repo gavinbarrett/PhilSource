@@ -25,7 +25,7 @@ const CategorySelector = ({updateCategory}) => {
 	</select>);
 }
 
-const UploadPage = ({user, changeFilename, updateHash}) => {
+export const UploadPage = ({user, changeFilename, updateHash}) => {
 	const [title, updateTitle] = useState('');
 	const [author, updateAuthor] = useState('');
 	const [tags, updateTags] = useState('');
@@ -127,8 +127,4 @@ const UploadPage = ({user, changeFilename, updateHash}) => {
 		<input id="metatags" type="text" placeholder="put metadata tags here, separated by commas" maxlength="64"onChange={changeTags}/>
 		<input id="author" type="text" placeholder="put the author here" maxlength="64" onChange={changeAuthor}/><CategorySelector updateCategory={updateCategory}/><button id="submit" type="submit" onClick={upload}>Upload</button>
 	</div></div>);
-}
-
-export {
-	UploadPage
 }

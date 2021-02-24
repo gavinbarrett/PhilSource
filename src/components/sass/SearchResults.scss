@@ -6,9 +6,15 @@
 
 #resultswrapper {
 	width: 100vw;
+	height: 88vh;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-evenly;
 	align-items: center;
 	background: #3d5a80;
+}
+
+.post-results {
+	overflow-x: hidden;
+	overflow-y: scroll;
 }
