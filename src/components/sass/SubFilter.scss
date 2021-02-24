@@ -33,26 +33,13 @@
 	align-items: center;
 	font-family: 'Lato', sans-serif;
 	overflow-x: hidden;
+	transition: all 0.5s ease-in-out;
 }
 
 .document:hover {
 	cursor: pointer;
-	animation-name: animateDocument;
-	animation-duration: 0.5s;
-	animation-fill-mode: forwards;
-	animation-timing-function: ease-out;
-	transition: ease;
-}
-
-@keyframes animateDocument {
-	from {
-		width: 14vw;
-		height: 22vh;
-	}
-	to {
-		width: 15vw;
-		height: 32vh;
-	}
+	width: 15vw;
+	height: 32vh;
 }
 
 .nodocs {

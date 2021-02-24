@@ -64,13 +64,14 @@ exports.readProfileFromDisk = async (profile) => {
 	// FIXME: add input validation
 	/* read a file from disk if it exists */
 	const dir = `./data/profiles/`;
+	console.log(`Profile: "${profile}"`);
 	const fileRegex = new RegExp(`${profile}\.((png)|(jpg)|(jpeg))`);
 	return new Promise((resolve, reject) => {
 		fs.readdir(dir, (err, files) => {
 			console.log(`Files: ${files}`);
 			const file = files.filter(ff => { return ff.match(fileRegex) });
-			console.log(`File: ${file}`);
-			if (!file) resolve(null);
+			console.log(`File: "${file}"`);
+			if (!file || file === "") resolve(null);
 			const path = `./data/profiles/${file}`;
 			fs.access(path, fs.F_OK, err => {
 				if (err) {

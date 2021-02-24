@@ -7,6 +7,7 @@ const FeatureCard = ({featname, updateFilter}) => {
 	const path = featname["path"];
 	const history = useHistory();
 	const filterTexts = async () => {
+		console.log(`cat: ${Object.getOwnPropertyNames(category)}`);
 		// set filter
 		await updateFilter(category);
 		// render filter page

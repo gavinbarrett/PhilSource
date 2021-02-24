@@ -9,7 +9,7 @@ const CategorySelector = ({updateCategory}) => {
 		await updateCategory(event.target.value);
 	}
 	return (<select name='catselector' id='catselector' onChange={selectCategory}>
-		<option value='' selected></option>
+		<option value='Select a category' selected>Select a category</option>
 		<option value='Aesthetics'>Aesthetics</option>
 		<option value='Existentialism'>Existentialism</option>
 		<option value='Feminism'>Feminism</option>
@@ -61,7 +61,7 @@ const UploadPage = ({user, changeFilename, updateHash}) => {
 			} else if (author === '') {
 				updateError(`Please enter an author for the file.`);
 				resolve(false)
-			} else if (category === '') {
+			} else if (category === 'Select a category') {
 				updateError(`Please enter a category for the file.`);
 				resolve(false);
 			} else if (!title.match(alphaRegex)) {
@@ -93,20 +93,21 @@ const UploadPage = ({user, changeFilename, updateHash}) => {
 			// if user is not authenticated, redirect to signin page
 			if (resp.status != 200) history.push('/signin');
 			const r = await resp.json();
-			if (!r["status"]) return;
-			console.log(`Hash: ${r["status"]}`);
+			//if (!r["status"]) return;
+			//console.log(`Hash: ${r["status"]}`);
+			const hash = r["status"];
 			// store the hash of the current file
-			await updateHash(r["status"]);
+			//await updateHash(hash);
 			// change the name of the displayed file
 			await changeFilename(file.name);
 			// switch to the PDFRenderer page
-			history.push('/pdfrenderer');
+			history.push(`/pdfrenderer/${hash}`);
 		} else {
 			console.log('Cannot upload file.');
 		}
 	}
 
-	return (<><div id="uploadpagewrapper">
+	return (<div id="uploadpagewrapper">
 		<Dropzone id="dropzone" type="file" accept="application/pdf" onDrop={dropped}>
 			{({getRootProps, getInputProps, isDragActive, isDragReject, acceptedFiles}) => (
 			<div id="dropperwrapper">
@@ -120,15 +121,12 @@ const UploadPage = ({user, changeFilename, updateHash}) => {
 			</div>
 			)}
 		</Dropzone>
-		{error ? <div className='uploaderror'>{error}</div> : ''}
 		<div id="tags">
+		{error ? <div className='uploaderror'>{error}</div> : ''}
 		<input id="texttitle" type="text" placeholder="put your title here" maxlength="64" onChange={changeTitle}/>
 		<input id="metatags" type="text" placeholder="put metadata tags here, separated by commas" maxlength="64"onChange={changeTags}/>
-		<CategorySelector updateCategory={updateCategory}/>
-		<button id="submit" type="submit" onClick={upload}>Upload</button>
-		</div>
-		<input id="author" type="text" placeholder="put the author here" maxlength="64" onChange={changeAuthor}/>
-	</div></>);
+		<input id="author" type="text" placeholder="put the author here" maxlength="64" onChange={changeAuthor}/><CategorySelector updateCategory={updateCategory}/><button id="submit" type="submit" onClick={upload}>Upload</button>
+	</div></div>);
 }
 
 export {

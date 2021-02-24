@@ -26,8 +26,8 @@ const TextPost = ({title, user, tags, file, hash, changeFilename, updateHash}) =
 			// construct pdf file object
 			const pdf = new File([buffer], {type: 'application/json'});
 			await changeFilename(title);
-			await updateHash(hash);
-			history.push('/pdfrenderer');
+			//await updateHash(hash);
+			history.push(`/pdfrenderer/${hash}`);
 		}
 	}
 

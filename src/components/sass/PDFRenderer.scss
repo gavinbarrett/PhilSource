@@ -53,9 +53,19 @@
 }
 
 #subbutton {
-	width: 10vw;
+	width: 15vw;
+	height: 4vh;
 	font-family: 'Lato', sans-serif;
 	background: #4F5D75;
+	color: white;
+	border: 0;
+	border-radius: 7px;
+	font-size: 1vw;
+	margin: 2%;
+}
+
+#subbutton {
+	outline: none;
 }
 
 #originalpost {
@@ -140,4 +150,15 @@
 	justify-content: center;
 	align-items: center;
 	background: #e0fbfc;
+}
+
+textarea#comment-input {
+	width: 48vw;
+	height: 28vh;
+	resize: none;
+	font-size: 1.25vw;
+}
+
+textarea#comment-input:focus {
+	outline:none;
 }

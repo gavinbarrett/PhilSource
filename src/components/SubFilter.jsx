@@ -10,8 +10,8 @@ const Document = ({doc, changeFilename, updateHash}) => {
 	const loadFile = async () => {
 		// unzip compressed base64 file
 		await changeFilename(title);
-		await updateHash(hash);
-		history.push('/pdfrenderer');
+		//await updateHash(hash);
+		history.push(`/pdfrenderer/${hash}`);
 	}
 
 	return (<div className='document' onClick={loadFile}>
@@ -34,18 +34,28 @@ const SubFilter = ({filter, changeFilename, updateHash}) => {
 		filterTexts(filter);
 	}, []);
 
+	useEffect(() => {
+		console.log(`Docs: ${docs}`);
+	}, [docs]);
+
 	const filterTexts = async (filter) => {
-		const data = {"category" : path.pathname.split('/').pop(-1)};
+		console.log(`filter: ${filter}`);
+		const data = {"category" : filter};
 		const resp = await fetch('/filtertexts', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)});
 		const r = await resp.json();
-		console.log(`Response: ${Object.getOwnPropertyNames(r["docs"]["rows"][0])}`);
-		if (r.docs.rows.length === 0) await updateDocs(null);
-		await updateDocs(r["docs"]["rows"]);
+		console.log(`Filtering result: ${r}`);
+		console.log(`Response: ${Object.getOwnPropertyNames(r["docs"]["rows"])}`);
+		if (r) {
+			if (r.docs && r.docs.rows && r.docs.rows.length === 0) updateDocs(null);
+			// FIXME: fix update logic (r.g. if there's a docs value but no rows value)
+			updateDocs(r["docs"]["rows"]);
+		} else
+			updateDocs(null);
 	}
 
 	return (<div className='subfilterwrapper'>
 		<div className='documentbox'>
-			{(docs && docs[0] != undefined) ? docs.map((doc, index) => {
+			{docs ? docs.map((doc, index) => {
 				return (<div className='documentcase'>
 					<Document key={index} doc={doc} changeFilename={changeFilename} updateHash={updateHash}/>
 				</div>);

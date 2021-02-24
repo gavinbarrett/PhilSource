@@ -34,7 +34,7 @@ exports.signUserUp = async (req, res) => {
 		if (exists) {
 			console.log(`User exists: ${exists}`);
 			// FIXME: clean up this response so that users can't impersonate as the unavailable user
-			res.send(JSON.stringify({"user":"unavailable"}));
+			res.send(JSON.stringify({"user": null}));
 			return;
 		} else {
 			console.log(`User: ${user} does not exist.\nAdding user now.`);
@@ -53,7 +53,7 @@ exports.signUserUp = async (req, res) => {
 			res.send(JSON.stringify({"authed" : user}));
 		}
 	} catch (error) {
-		res.send(JSON.stringify({"user" : null}));
+		res.send(JSON.stringify({"authed" : null}));
 	}
 };
 
@@ -64,26 +64,37 @@ exports.signUserIn = async (req, res) => {
 	try {
 		// find user's hashed password in the database
 		const hash = await getHashedPass(user);
+		console.log(`Signin Hash: "${hash}"`);
 		// FIXME: check for profile photo hash; if one exists, read from disk with getProfileFromDisk
 		// hash given password and check against db hash
 		const hashed = await checkHashes(pass, hash);
+		console.log(`Signin Hashed: "${hashed}"`);
 		if (hashed) {
+			console.log(`Searching for user: "${user}"`);
 			// generate a unique session ID
 			const sessionID = await generateSessionID();
 			// set expiring session in the Redis cache
 			db.set(sessionID, user, 'EX', expiry);
 			const picture = await getProfilePicture(user);
+			console.log(`Picture: "${picture}"`);
 			// set the session id in the cookie
 			const clientData = { user: user, id: sessionID };
 			// secure the cookie from snooping, XSS, and CSRF; set lifetime to 60 minutes
 			const options = { maxAge: expiry * 1000, secure: true, httpOnly: true, sameSite: true };
 			res.cookie('sessionIDs', clientData, options);
-			picture ? res.send(JSON.stringify({"authed": user, "picture": picture})) : res(JSON.stringify({"authed": user, "picture": null}));
+			if (picture) {
+				console.log('Sending picture');
+				res.send(JSON.stringify({"authed": user, "picture": picture}));
+			} else {
+				console.log('Sending null');
+				console.log(`With user ${user}`);
+				res.send(JSON.stringify({"authed": user, "picture": null}));
+			}
 		// return failed login status
 		} else
-			res.send(JSON.stringify({"status": "failed"}));
+			res.send(JSON.stringify({"authed": null}));
 	} catch (err) {
-		res.send(JSON.stringify({"status": "failed"}));
+		res.send(JSON.stringify({"authed": null}));
 	}
 };
 
@@ -123,20 +134,23 @@ const getProfilePicture = async (user) => {
 		try {
 			const rows = await db.query(query, values);
 			if (rows.rows.length !== 0) {
+				console.log(rows.rows);
 				const hash = rows['rows'][0]['profile'];
-				console.log(hash);
-				try {
-					const image = await readProfileFromDisk(hash);
-					//console.log(`Image from disk: ${image}`);
-					if (image)
-						return image;
+				if (hash) {
+					try {
+						const image = await readProfileFromDisk(hash);
+						//console.log(`Image from disk: ${image}`);
+						if (image)
+							return image;
+						return null;
+						console.log(`Image hash: ${image}`);
+						return null;
+					} catch(error) {
+						console.log(`Error getting profile image.`);
+						return null;
+					}
+				} else
 					return null;
-					console.log(`Image hash: ${image}`);
-					return null;
-				} catch(error) {
-					console.log(`Error getting profile image.`);
-					return null;
-				}
 			}
 			return null;
 		} catch(error) {

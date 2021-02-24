@@ -1,11 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { createRef, useEffect, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
-import { EditorState, convertToRaw} from 'draft-js';
-import { Editor } from 'react-draft-wysiwyg';
-import { stateToHTML } from 'draft-js-export-html';
-import draftToHtml from 'draftjs-to-html';
-import htmlToDraft from 'html-to-draftjs';
 import './sass/PDFRenderer.scss';
 
 const NoComments = () => {
@@ -13,28 +8,35 @@ const NoComments = () => {
 	return (<div className="noComment">{"Be the first to comment!"}</div>);
 }
 
-const Comment = ({text, poster, time}) => {
-	const ref = useRef(null);
-	
-	useEffect(() => {
-		/* Set the inner html to our serialized comment */
-		ref["current"].innerHTML = text;
-	}, []);
-
-	return (<div className="commentcard">
-		<div className="poster">Posted by: {poster} at {time}</div>
-		<div ref={ref} className="postcontent"></div>
+const CommentBox = ({refer, updateComment}) => {
+	const changeComment = event => {
+		updateComment(event.target.value);
+	}
+	return (<div className='editor'>
+		<textarea ref={refer} id="comment-input" type='text' placeholder={"Comment on post..."} maxlength={200} onChange={changeComment}></textarea>
 	</div>);
 }
 
-const Comments = ({user, hash}) => {
+const Comment = ({text, poster, time}) => {
+	return (<div className="commentcard">
+		<div className="poster">Posted by: {poster} at {time}</div>
+		<div className="postcontent">
+			{text}
+		</div>
+	</div>);
+}
+
+const Comments = ({user, path}) => {
 	const [posts, updatePosts] = useState([]);
-	const [editState, updateEditState] = useState(EditorState.createEmpty());
+	const [comment, updateComment] = useState('');
 	const [maxLength, updateMaxLength] = useState(200);
+	const [hash, updateHash] = useState(path.pathname.split("/")[2]);
 	const history = useHistory();
+	const refer = createRef();
 
 	useEffect(() => {
 		/* Pull comments for the document from the comments table */
+		// FIXME: pass pulled hash into comments component
 		getComments(hash);
 	}, []);
 
@@ -42,37 +44,33 @@ const Comments = ({user, hash}) => {
 		/* Download the comments based on the hash */
 		const resp = await fetch(`/get_comments/?hash=${hash}`, {method: "GET"});
 		const result = await resp.json();
-		await updatePosts(result["posts"]);
+		console.log(`Ressy: ${Object.getOwnPropertyNames(result["posts"]["rows"])}`);
+		if (result && result['posts']['rows'].length !== 0)
+			updatePosts(result['posts']['rows']);
 	}
 	
 	const submitComment = async () => {
 		/* Comment on a document */
-		console.log(`Grabbing comments for ${hash}`);
-		console.log(`State: ${typeof editState.getCurrentContent()}`);
-		const commstate = stateToHTML(editState.getCurrentContent());
+		if (comment === "") return;
 		// create json object including user, time, content
-		const resp = await fetch('/comment', {method: 'POST', headers: {'Content-Type': 'application/json'}, credentials: 'same-origin', body: JSON.stringify({"user": `${user}`, "post": `${commstate}`, "hash": `${hash}`})});
+		const resp = await fetch('/comment', {method: 'POST', headers: {'Content-Type': 'application/json'}, credentials: 'same-origin', body: JSON.stringify({"user": `${user}`, "post": `${comment}`, "hash": `${hash}`})});
+		// reset comment box value to ""
+		refer.current.value = "";
 		if (resp.status != 200) history.push('/signin');
 		const data = await resp.json();
 		// load the new comment
-		await getComments(hash);
+		getComments(hash);
 	}
 
-	const checkDraftLength = async () => {
+	const overMaxLength = async () => {
 		/* If the comment length is equal to or greater than the maxLength, stop reading into editState */
-		if (draftToHtml(convertToRaw(editState.getCurrentContent())).length >= maxLength)
-			return 'handled';
+		if (comment.length >= maxLength)
+			return true;
+		return false;
 	}
 
 	return (<div id="comments">
-		<div className="editor">
-			<Editor editorState={editState} 
-			toolbarClassName="toolbarClassName"
-			wrapperClassName="wrapperClassName"
-			editorClassName="editorClassName"
-			onEditorStateChange={updateEditState}
-			handleBeforeInput={checkDraftLength}/>
-		</div>
+		<CommentBox refer={refer} updateComment={updateComment}/>
 		<div id="subbuttonwrapper">
 			<button id="subbutton" onClick={submitComment}>Comment</button>
 		</div>
@@ -84,20 +82,41 @@ const Comments = ({user, hash}) => {
 	</div>);
 }
 
-const PDFRenderer = ({user, file, updateDisplayFile, name, hash}) => {
+const PDFRenderer = ({user, file, updateDisplayFile, name}) => {
 	const [pageAmt, updatePageAmt] = useState(null);
 	const [pageNum, updatePageNum] = useState(1);
 	const [prevenabled, updatePrevDisabled] = useState(true);
 	const [nextenabled, updateNextDisabled] = useState(false);
+	const [pageHash, updatePageHash] = useState("");
+	const [location, updateLocation] = useState(useLocation());
 
 	useEffect(() => {
 		/* Downloads a document from the server. The PDFRenderer component is the sole 
 		component that downloads files and displays them. All other components just set
 		the hash of the file and render the PDFRenderer page, triggering this function. */
-		getDocument();
+		updateDocumentHash();
+		//getDocument();
 	}, []);
 
+	const updateDocumentHash = async () => {
+		const h = location.pathname.split("/")[2];
+		console.log(`h: ${h}`);
+		// request file
+		const resp = await fetch(`/get_text/?hash=${h}`, {method: 'GET'});
+		const content = await resp.json();
+		// check that a file exists
+		if (content && content["file"]) {
+			// decode base64
+			const buffer = Buffer.from(content["file"], 'base64');
+			// create file object
+			const fl = new File([buffer], {type: 'application/json'});
+			// add file to the document component
+			await updateDisplayFile(fl);
+		}
+	}
+
 	const getDocument = async () => {
+		console.log(`Dochash: ${pageHash}`);
 		/* download the document if a hash is set */
 		if (!hash) return;
 		// request file
@@ -174,7 +193,7 @@ const PDFRenderer = ({user, file, updateDisplayFile, name, hash}) => {
 				</Document>
 			</div>
 		</div>
-		<Comments user={user} hash={hash}/>
+		<Comments user={user} path={location}/>
 	</div></>);
 }
 

@@ -83,14 +83,16 @@
 	justify-content: center;
 	border-radius: 10px;
 	margin-bottom: 0;
+	transition: all 0.2s ease-in-out;
 }
 
 #uploadlink:hover {
 	cursor: pointer;
-	animation-name: highlightHeader;
-	animation-duration: 0.75s;
-	animation-fill-mode: forwards;
-	animation-timing-function: ease-out;
+	transform: translateY(-2px);
+	background: #4F5D75;
+	-webkit-box-shadow: 0 -2px 5px 5px #ffffff;
+	-moz-box-shadow: 0 -2px 5px 5px #ffffff;
+	box-shadow: 0px 4px 10px white;
 }
 
 #signinlink {
@@ -100,14 +102,16 @@
 	justify-content: center;
 	border-radius: 10px;
 	margin-bottom: 0;
+	transition: all 0.2s ease-in-out;
 }
 
 #signinlink:hover {
 	cursor: pointer;
-	animation-name: highlightHeader;
-	animation-duration: 0.75s;
-	animation-fill-mode: forwards;
-	animation-timing-function: ease-out;
+	transform: translateY(-2px);
+	background: #4F5D75;
+	-webkit-box-shadow: 0 -2px 5px 5px #ffffff;
+	-moz-box-shadow: 0 -2px 5px 5px #ffffff;
+	box-shadow: 0px 4px 10px white;
 }
 
 @keyframes highlightHeader {
@@ -115,11 +119,6 @@
 		background: #293241;
 	}
 	to {
-		transform: translateY(-5px);
-		background: #4F5D75;
-		-webkit-box-shadow: 0 -2px 5px 5px #ffffff;
-    	-moz-box-shadow: 0 -2px 5px 5px #ffffff;
-		box-shadow: 0px 4px 10px white;
 	}
 }
 

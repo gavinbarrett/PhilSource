@@ -52,10 +52,11 @@ const SearchInput = ({updateSearchResults}) => {
 		if (!await validInput(input)) return;
 		const resp = await fetch('/text_query', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify({"tag": input})});
 		let res = await resp.json();
+		console.log(`Resin: ${Object.getOwnPropertyNames(res["search_results"]["rows"])}`);
 		if (res.search_results.rows.length === 0) return;
-		console.log(`Filtered Documents: ${res.search_results.rowAsArray}`);
+		console.log(`Filtered Documents: ${res.search_results.rows}`);
 		// update search results
-		await updateSearchResults(res.search_results);
+		await updateSearchResults(res.search_results.rows);
 		// change page to search display page
 		history.push('/searchresults');
 	}

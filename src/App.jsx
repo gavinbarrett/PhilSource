@@ -21,7 +21,7 @@ import './components/sass/App.scss';
 const App = () => {
 	
 	const [user, updateUser] = useState(null);
-	const [hash, updateHash] = useState(null);
+	const [hash, updateHash] = useState('');
 	const [profile, updateProfile] = useState('avatar.jpg');
 	const [filter, updateFilter] = useState(null);
 	const [filename, changeFilename] = useState(null);
@@ -64,8 +64,8 @@ const App = () => {
 		<Route path='/forgot' render={() => <ForgotPassword/>}/>
 		<Route path='/upload' render={() => <UploadPage changeFilename={changeFilename} updateHash={updateHash}/>}/>
 		<Route path='/profile' render={() => <Profile user={user} profile={profile} updateProfile={updateProfile}/>}/>
-		<Route path='/pdfrenderer' render={() => <PDFRenderer user={user} file={displayFile} updateDisplayFile={updateDisplayFile} name={filename} hash={hash}/>}/>
-		<Route path='/searchresults' render={() => <SearchResults user={user} results={searchResults["search_results"]} changeFilename={changeFilename} updateHash={updateHash} updateSearchResults={updateSearchResults}/>}/>
+		<Route path={`/pdfrenderer/${hash}`} render={() => <PDFRenderer user={user} file={displayFile} updateDisplayFile={updateDisplayFile} name={filename}/>}/>
+		<Route path='/searchresults' render={() => <SearchResults user={user} results={searchResults} changeFilename={changeFilename} updateHash={updateHash} updateSearchResults={updateSearchResults}/>}/>
 		<Route path='/subfilter/*' render={() => <SubFilter filter={filter} changeFilename={changeFilename} updateHash={updateHash}/>}/>
 		<Route path='/contact' render={() => <Contact/>}/>/>
 		<Route path='/privacy' render={() => <PrivacyPolicy/>}/>

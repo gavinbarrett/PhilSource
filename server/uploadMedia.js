@@ -15,11 +15,15 @@ exports.commentOnPost = async (req, res) => {
 	// FIXME: add input validation with different regex that can parse datetime
 	/* comment on a post */
 	const { user, post, hash } = req.body;
-	const query = `insert into comments (username, hash, time, post) value ($1, $2, $3, $4)`
+	console.log(`Post: ${post}`);
+	const query = `insert into comments (username, hash, time, post) values ($1, $2, $3, $4)`
 	const values = [user, hash, moment().format('MMMM Do YYYY, h:mm:ss a'), post];
+	console.log(`Query: ${query}`);
 	console.log(`Values: ${values}`);
 	try {
 		const rows = await db.query(query, values);
+		console.log(`Rows: ${Object.getOwnPropertyNames(rows)}`);
+		console.log(`Deposited ${hash}`);
 		rows ? res.send(JSON.stringify({"status": "success"})) : res.send(JSON.stringify({"status": "failure"}));
 	} catch(error) {
 		res.send(JSON.stringify({"status": "failure"}));

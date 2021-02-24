@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npx webpack --config webpack.config.js",
-    "start": "nodemon server.js"
+    "server": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
@@ -14,18 +14,13 @@
     "bcrypt": "^5.0.0",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
-    "draft-js": "^0.11.7",
-    "draft-js-export-html": "^1.4.1",
-    "draftjs-to-html": "^0.9.1",
     "express": "^4.17.1",
-    "html-to-draftjs": "^1.5.0",
     "moment": "^2.29.1",
     "multer": "^1.4.2",
     "nodemailer": "^6.4.14",
     "pg": "^8.5.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
-    "react-draft-wysiwyg": "^1.14.5",
     "react-dropzone": "^11.2.0",
     "react-pdf": "^5.0.0",
     "react-router-dom": "^5.2.0",

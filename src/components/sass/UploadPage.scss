@@ -1,11 +1,5 @@
-#tags {
-	width: 70vw;
-	display: flex;
-	flex-direction: row;
-	justify-content: space-evenly;
-}
-
 #submit {
+	width: 20vw;
 	background: #3d5a80;
 	color: #e0fbfc;
 	border: 0;
@@ -25,6 +19,22 @@
 	justify-content: space-evenly;
 	align-items: center;
 	background: url('assets/phil.png');
+	@media only screen and (min-width: 670px) {
+		flex-direction: row;
+	}
+}
+
+#tags {
+	width: 100vw;
+	height: 50vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-items: center;
+	@media only screen and (min-width: 670px) {
+		width: 50vw;
+		height: 88vh;	
+	}
 }
 
 #dropzone {
@@ -40,13 +50,23 @@
 
 #dropperwrapper {
 	background: #E0FBFC;
-	border-radius: 10px;
+	width: 100vw;
+	height: 50vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	@media only screen and (min-width: 670px) {
+		width: 50vw;
+		height: 88vh;
+	}
 }
 
 #dropper {
-	width: 70vw;
-	height: 50vh;
+	transition: all 0.2s ease-in-out;
+	width: 40vw;
+	height: 64vh;
 	display: flex;
+	text-align: center;
 	justify-content: center;
 	align-items: center;
 	background-color: #e0fbfc;
@@ -60,21 +80,14 @@
 	color: #293241;
 }
 
-#dropper:hover {
-	cursor: pointer;
-	animation-name: changeUploader;
-	animation-duration: 0.5s;
-	animation-fill-mode: forwards;
-	animation-timing-function: ease-out;
+#dropper:focus {
+	outline: none;
 }
 
-@keyframes changeUploader {
-	from {
-		background-color: #e0fbfc;
-	}
-	to {
-		background-color: #cbc5d1;
-	}
+#dropper:hover {
+	cursor: pointer;
+	background: none;
+	background-color: #505D75;
 }
 
 .uploaderror {
@@ -89,4 +102,38 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+}
+
+#texttitle {
+	height: 5vh;
+	width: 45vw;
+	border: 0;
+	border-radius: 12px;
+	padding: 1%;
+	box-shadow: 0 0 15px 4px rgba(0,0,0,0.06);
+	font-size: 2vw;
+}
+
+#metatags {
+	height: 5vh;
+	width: 45vw;
+	border: 0;
+	border-radius: 12px;
+	padding: 1%;
+	box-shadow: 0 0 15px 4px rgba(0,0,0,0.06);
+	font-size: 2vw;
+}
+
+#author {
+	height: 5vh;
+	width: 45vw;
+	border: 0;
+	border-radius: 12px;
+	padding: 1%;
+	box-shadow: 0 0 15px 4px rgba(0,0,0,0.06);
+	font-size: 2vw;
+}
+
+#catselector {
+	width: 45vw;
 }

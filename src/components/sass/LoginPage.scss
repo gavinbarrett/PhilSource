@@ -1,5 +1,15 @@
 #username {
 	width: 40vw;
+	height: 5vh;
+	border: 0;
+	border-radius: 12px;
+	padding: 1%;
+	box-shadow: 0 0 15px 4px rgba(0,0,0,0.06);
+	font-size: 2vw;
+}
+
+#username:focus{
+	outline: none;
 }
 
 #password {
@@ -11,6 +21,10 @@
 	box-shadow: 0 0 15px 4px rgba(0,0,0,0.06);
 }
 
+#password:focus{
+	outline: none;
+}
+
 #passwordretype {
 	height: 5vh;
 	width: 40vw;
@@ -20,8 +34,16 @@
 	box-shadow: 0 0 15px 4px rgba(0,0,0,0.06);
 }
 
+#passwordretype:focus{
+	outline: none;
+}
+
 #emailer {
 	width: 40vw;
+}
+
+#emailer:focus{
+	outline: none;
 }
 
 #signupbutton {
@@ -30,6 +52,15 @@
 	border: 0;
 	border-radius: 10px;
 	font-size: 2vw;
+	transition: all 0.2s ease-in-out;
+}
+
+#signupbutton:hover {
+	background: #98c1d9;
+}
+
+#signupbutton:focus{
+	outline: none;
 }
 
 .logintext {
@@ -101,18 +132,11 @@
 	border: 0;
 	border-radius: 10px;
 	font-size: 2vw;
+	transition: all 0.2s ease-in-out;
 }
 
 #submit:hover {
-	animation-name: submitLogin;
-	animation-duration: 0.75s;
-	animation-fill-mode: forwards;
-	animation-timing-function: ease-out;
-}
-
-@keyframes submitLogin {
-	from { background: #3d5a80; }
-	to { background: #98c1d9; }
+	background: #98c1d9;
 }
 
 #signinselect {

@@ -34,7 +34,7 @@ const Footer = () => {
 			<div className="footerlinks">
 				<Link to={'/privacy'}>Privacy Policy</Link>
 			</div>
-			<div className="footerlinks">&copy; PhiloSource 2021</div>
+			<div className="footerlinks">PhiloSource &copy; 2021</div>
 			</div>
 		</div>
 	</footer>);

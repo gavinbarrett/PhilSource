@@ -67,7 +67,10 @@ const SignUpBox = ({updateUser}) => {
 			const resp = await fetch('/sign_up', {method: "POST", headers: {"Content-Type": "application/json"}, credentials: 'same-origin', body: JSON.stringify(data)});
 			const response = await resp.json();
 			console.log(`New user logged into session: ${response["authed"]}`);
+			
+			// FIXME: check authed
 			// update the logged in user's name
+			
 			updateUser(response["authed"]);
 			// update name of logged in 
 			history.push('/');
@@ -128,15 +131,25 @@ const SignInBox = ({updateUser, updateProfile}) => {
 			const data = {"user" : username, "pass" : password};
 			const resp = await fetch('/sign_in', {method: 'POST', headers: {"Content-Type": "application/json"}, credentials: 'same-origin', body: JSON.stringify(data)});
 			const response = await resp.json();
-			console.log(`User logged into session: ${response["authed"]}`);
-			const picture = response["picture"];
-			const url = 'data:image/png;base64,' + picture;
-			updateProfile(url);
-			updateUser(response["authed"]);
-			history.push('/');
+			console.log(response);
+			console.log(`Pic response: ${response["picture"]}`);
+			if (response && response["authed"]) {
+				if (response["picture"] !== "undefined") {
+					console.log(`User logged into session: ${response["authed"]}`);
+					const picture = response["picture"];
+					const url = 'data:image/png;base64,' + picture;
+					updateProfile(url);
+				}
+				updateUser(response["authed"]);
+				history.push('/');
+			} else {
+				console.log('Cannot log in.');
+			}
 		} else
 			console.log('Invalid input.');
 	}
+	
+	/*{"<div className='forgotlink' onClick={forgotPass}>Forgot Password</div>"}*/
 
 	return (<div className="loginbox">
 		{error ? <div className='error'>{error}</div> : ''}
@@ -145,8 +158,7 @@ const SignInBox = ({updateUser, updateProfile}) => {
 		<div className="logintext">Password</div>
 		<Password updatePassword={updatePassword}/>
 		<div className="forgotlinkclass">
-			{"<div className='forgotlink' onClick={forgotPass}>Forgot Password</div>"}
-		</div>}
+		</div>
 		<button id="submit" type="submit" onClick={signin}>Sign In</button>
 	</div>);
 }

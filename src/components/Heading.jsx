@@ -13,10 +13,10 @@ const ProfileDetail = ({user, updateUser, toggle, profile, updateProfile}) => {
 	const history = useHistory();
 
 	const signOut = async () => {
+		// log user out of auth cache
 		const resp = await fetch('/signout', {method: 'GET'});
-		// log user out
+		// log user out of ui
 		updateUser(null);
-		// FIXME: update user profile to defaul
 		updateProfile(null);
 		// return to home page
 		history.push('/');

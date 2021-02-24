@@ -16,17 +16,12 @@ body {
 	padding: 0;
 }
 
-input[type="text"] {
-	height: 5vh;
-	width: 55vw;
-	border: 0;
-	border-radius: 12px;
-	padding: 1%;
-	box-shadow: 0 0 15px 4px rgba(0,0,0,0.06);
-	font-size: 2vw;
+input:focus, textarea:focus {
+	outline: none;
 }
 
 a {
 	color: inherit;
 	text-decoration: inherit;
+	outline: none;
 }
