@@ -18,3 +18,13 @@
 	overflow-x: hidden;
 	overflow-y: scroll;
 }
+
+.result-length {
+	width: 60vw;
+	height: 7vw;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: white;
+	font-family: 'Lato', sans-serif;
+}

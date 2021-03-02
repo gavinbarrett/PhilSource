@@ -24,6 +24,7 @@ export const SearchResults = ({user, results, changeFilename, updateHash, update
 	return (<div id="resultswrapper">
 		<SearchBox updateSearchResults={updateSearchResults}/>
 		<div className="post-results">
+			{results ? <p className="result-length">{`${results.length} results found.`}</p> : <p className="result-length">{''}</p>}
 			{(results && results.length) ? results.map((res, index) => (
 				<TextPost key={index} title={res["title"]} user={res["user"]} tags={res["tags"]} file={res["file"]} hash={res["hash"]} changeFilename={changeFilename} updateHash={updateHash}/>
 			)) : <div id="nores">{"No results found"}</div>}

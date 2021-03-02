@@ -24,10 +24,18 @@
 
 .posttitle {
 	font-size: 3vw;
+	font-weight: bold;
 }
 
 .posttags {
 	font-size: 2vw;
+	padding-left: 2vw;
+	padding-top: 1vh;
+	padding-bottom: 1vh;
+	background: white;
+	border-radius: 7px;
+	width: 40vw;
+	overflow-x: hidden;
 }
 
 .text-details {
