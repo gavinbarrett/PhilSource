@@ -16,12 +16,12 @@ body {
 	padding: 0;
 }
 
-input:focus, textarea:focus {
-	outline: none;
-}
-
 a {
 	color: inherit;
 	text-decoration: inherit;
+}
+
+input:focus, textarea:focus, button:focus, a {
 	outline: none;
 }
+

@@ -2,12 +2,15 @@
 	width: 90vw;
 	height: 20vh;
 	display: flex;
-	flex-direction: column;
-	justify-content: center;
+	justify-content: space-between;
+	align-items: center;
 	font-family: 'Lato', sans-serif;
 	border-radius: 10px;
 	background: #98c1d9;
 	transition: all 0.2s ease-in-out;
+	margin: 1.25vw;
+	padding-left: 2vw;
+	padding-right: 2vw;
 }
 
 #postwrapper:hover {
@@ -19,10 +22,20 @@
 	outline: none;
 }
 
-#posttitle {
+.posttitle {
 	font-size: 3vw;
 }
 
-#posttags {
+.posttags {
 	font-size: 2vw;
+}
+
+.text-details {
+	display: flex;
+	flex-direction: column;
+}
+
+.upload-details {
+	display: flex;
+	flex-direction: column;
 }

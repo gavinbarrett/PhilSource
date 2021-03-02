@@ -1,4 +1,4 @@
-#searchbox {
+.searchbox {
 	height: 50%;
 	width: 70vw;
 	display: flex;
@@ -8,7 +8,7 @@
 	background: #293241;
 }
 
-#searchwrapper {
+.searchwrapper {
 	height: 48vh;
 	width: 100vw;
 	display: flex;
@@ -17,12 +17,12 @@
 	background-image: url('assets/phil.png');
 }
 
-#searchinput {
+.searchinput {
 	display: flex;
 	flex-direction: row;
 }
 
-#searchinputbox {
+.searchinputbox {
 	height: 5vh;
 	width: 55vw;
 	border: 0;
@@ -32,7 +32,7 @@
 	font-size: 2vw;
 }
 
-#searchinputbox:focus {
+.searchinputbox:focus {
 	outline: none;
 }
 

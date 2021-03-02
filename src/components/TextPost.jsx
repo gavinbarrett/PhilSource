@@ -18,20 +18,25 @@ export const TextPost = ({title, user, tags, file, hash, changeFilename, updateH
 		// call fetch and pull file with hash
 		const resp = await fetch(`/get_text/?hash=${digest}`, {method: 'GET'});
 		const result = await resp.json();
-		const f = result['file'];
-		if (f) {
+		const file = result['file'];
+		if (file) {
 			// read base64 into a buffer
-			const buffer = Buffer.from(f, 'base64');
+			const buffer = Buffer.from(file, 'base64');
 			// construct pdf file object
 			const pdf = new File([buffer], {type: 'application/json'});
-			await changeFilename(title);
+			changeFilename(title);
 			//await updateHash(hash);
 			history.push(`/pdfrenderer/${hash}`);
 		}
 	}
 
 	return (<div id="postwrapper" onClick={display}>
-		<div id="posttitle">{title}</div>
-		<div id="posttags">{tags}</div>
+		<div className="text-details">
+			<div className="posttitle">{title}</div>
+			<div className="posttags">{tags}</div>
+		</div>
+		<div className="upload-details">
+			<p>{`Uploaded by: ${user}`}</p>
+		</div>
 	</div>);
 }

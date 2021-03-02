@@ -50,19 +50,17 @@ const SearchInput = ({updateSearchResults}) => {
 	const filterSearch = async () => {
 		// check that input is valid
 		if (!await validInput(input)) return;
-		const resp = await fetch('/text_query', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify({"tag": input})});
-		let res = await resp.json();
-		console.log(`Resin: ${Object.getOwnPropertyNames(res["search_results"]["rows"])}`);
-		if (res.search_results.rows.length === 0) return;
-		console.log(`Filtered Documents: ${res.search_results.rows}`);
+		//const resp = await fetch('/text_query', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify({"tag": input})});
+		//let res = await resp.json();
+		//if (res.search_results.rows.length === 0) return;
 		// update search results
-		await updateSearchResults(res.search_results.rows);
+		//await updateSearchResults(res.search_results.rows);
 		// change page to search display page
-		history.push('/searchresults');
+		history.push(`/searchresults/${input}`);
 	}
 
-	return (<div id="searchinput">
-		<input id="searchinputbox" list="suggs" type="text" placeholder="search for titles and metadata tags of texts here" onChange={filterInput}/>
+	return (<div className="searchinput">
+		<input className="searchinputbox" list="suggs" type="text" placeholder="search for titles and metadata tags of texts here" onChange={filterInput}/>
 		<datalist id="suggs">
 			{suggestions.map((sug, index) => {
 				return <option key={index} value={sug}/>
@@ -73,8 +71,8 @@ const SearchInput = ({updateSearchResults}) => {
 }
 
 export const SearchBox = ({updateSearchResults}) => {
-	return (<div id="searchwrapper">
-		<div id="searchbox">
+	return (<div className="searchwrapper">
+		<div className="searchbox">
 			<SearchInput updateSearchResults={updateSearchResults}/>
 		</div>
 	</div>);
