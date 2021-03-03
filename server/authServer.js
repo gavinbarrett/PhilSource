@@ -39,18 +39,23 @@ exports.signUserUp = async (req, res) => {
 		} else {
 			console.log(`User: ${user} does not exist.\nAdding user now.`);
 			const result = await addUser(user, pass, email);
-			console.log(`${user} added.`);
-			// send back user and token
-			const sessionID = await generateSessionID();
-			db.set(sessionID, user, 'EX', expiry);
-			const clientData = {
-				user: user,
-				id: sessionID
-			};
-			// set session ID in the cookie header
-			res.cookie('sessionIDs', clientData, { maxAge: expiry * 1000, secure: true, httpOnly: true, sameSite: true });
-			//
-			res.send(JSON.stringify({"authed" : user}));
+			console.log(`Result: ${result}`);
+			if (!result) {
+				res.send(JSON.stringify({"authed": null}));
+			} else {
+				console.log(`${user} added.`);
+				// send back user and token
+				const sessionID = await generateSessionID();
+				db.set(sessionID, user, 'EX', expiry);
+				const clientData = {
+					user: user,
+					id: sessionID
+				};
+				// set session ID in the cookie header
+				res.cookie('sessionIDs', clientData, { maxAge: expiry * 1000, secure: true, httpOnly: true, sameSite: true });
+				//
+				res.send(JSON.stringify({"authed" : user}));
+			}
 		}
 	} catch (error) {
 		res.send(JSON.stringify({"authed" : null}));

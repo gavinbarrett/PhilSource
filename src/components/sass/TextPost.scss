@@ -1,6 +1,6 @@
 #postwrapper {
 	width: 90vw;
-	height: 20vh;
+	height: 18vh;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -25,6 +25,7 @@
 .posttitle {
 	font-size: 3vw;
 	font-weight: bold;
+	overflow: hidden;
 }
 
 .posttags {
@@ -35,7 +36,8 @@
 	background: white;
 	border-radius: 7px;
 	width: 40vw;
-	overflow-x: hidden;
+	height: 5vh;
+	overflow: hidden;
 }
 
 .text-details {

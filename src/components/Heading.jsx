@@ -15,10 +15,9 @@ const ProfileDetail = ({user, updateUser, toggle, profile, updateProfile}) => {
 	const signOut = async () => {
 		// log user out of auth cache
 		const resp = await fetch('/signout', {method: 'GET'});
-		// log user out of ui
+		// log user out of ui and return to homepage
 		updateUser(null);
 		updateProfile(null);
-		// return to home page
 		history.push('/');
 	}
 
@@ -37,7 +36,9 @@ const ProfileCard = ({user, updateUser, profile, updateProfile}) => {
 		button ? updateButton(0) : updateButton(1);
 	}
 	return (<div id="profilecard" onMouseEnter={() => toggle()}>
-		{button ? <ProfileDetail user={user} updateUser={updateUser} toggle={toggle} profile={profile} updateProfile={updateProfile}/> : user}
+		<ProfileDetail user={user} updateUser={updateUser} toggle={toggle} profile={profile} updateProfile={updateProfile}/>
+		{user}
+		{/*{button ? <ProfileDetail user={user} updateUser={updateUser} toggle={toggle} profile={profile} updateProfile={updateProfile}/> : user}*/}
 	</div>);
 }
 
