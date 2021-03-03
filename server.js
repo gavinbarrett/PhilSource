@@ -1,3 +1,4 @@
+require('dotenv').config();
 const fs = require('fs');
 const multer = require('multer');
 const express = require('express');
@@ -8,7 +9,6 @@ const { commentOnPost, filterTexts, getPostComments, textQuery, uploadProfile, u
 const { getDocFromDisk, getProfileFromDisk } = require('./server/diskUtilities.js');
 const { forgotPassword } = require('./server/passwordRecovery.js');
 const db = require('./server/databaseFunctions.js');
-require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
