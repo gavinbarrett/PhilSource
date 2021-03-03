@@ -3,10 +3,10 @@ const { Pool } = require('pg');
 
 // establish PSQL client connection
 const pool = new Pool({
-	user: 'postgres',
-	host: 'localhost',
-	database: 'philosource',
-	password: '',
+	user: process.env.DB_USER,
+	host: process.env.DB_HOST,
+	database: process.env.DB_NAME,
+	password: process.env.DB_PASS,
 	port: 5432
 });
 
