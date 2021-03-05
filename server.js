@@ -13,6 +13,8 @@ const db = require('./server/databaseFunctions.js');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// turn off X-Powered-By header
+app.disable('x-powered-by');
 // serve from the dist directory
 app.use(express.static(__dirname + '/dist'));
 // allow json consumption
@@ -27,7 +29,9 @@ app.use(cookieParser(process.env.SERVER_SECRET));
 const upload = multer({ storage: multer.memoryStorage() });
 
 // serve landing page
-app.get('/', (req, res) => res.render('index'));
+app.get('/', (req, res) => {
+	res.render('index');
+});
 // serve other unauthed content
 app.get('/get_text', getDocFromDisk);
 app.get('/get_profile', getProfileFromDisk);
