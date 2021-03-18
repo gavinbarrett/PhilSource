@@ -90,6 +90,7 @@ export const UploadPage = ({user, changeFilename, updateHash}) => {
 			formData.append('category', category);
 			formData.append('textfile', file);
 			const resp = await fetch('/upload', {method: 'PUT',  body: formData});
+			console.log(`Status: ${resp.status}`);
 			// if user is not authenticated, redirect to signin page
 			if (resp.status != 200) history.push('/signin');
 			const r = await resp.json();

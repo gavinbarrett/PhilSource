@@ -17,6 +17,7 @@ exports.authUser = async (req, res, next) => {
 	if (sessionID == null || sessionID == undefined) return res.sendStatus(401);
 	// check Redis cache for sessionID
 	const keys = db.exists(sessionID);
+	console.log(`Reauthing with keys: ${keys}`);
 	// if sessionID isn't in the cache, send user to re-authenticate
 	if (!keys) return res.sendStatus(401);
 	// if sessionID is in the cache, user is authed and can access authorized functions
@@ -124,7 +125,6 @@ exports.retrieveSession = async (req, res) => {
 			res.send(JSON.stringify({"retrieved": null, "profile": null}));
 		else {
 			const picture = await getProfilePicture(user);
-			//console.log(`Picture retrieved: ${picture}`);
 			res.send(JSON.stringify({"retrieved": user, "profile": picture}));
 		}
 	} else
@@ -144,14 +144,12 @@ const getProfilePicture = async (user) => {
 				if (hash) {
 					try {
 						const image = await readProfileFromDisk(hash);
-						//console.log(`Image from disk: ${image}`);
 						if (image)
 							return image;
 						return null;
 						console.log(`Image hash: ${image}`);
 						return null;
 					} catch(error) {
-						console.log(`Error getting profile image.`);
 						return null;
 					}
 				} else
@@ -159,7 +157,6 @@ const getProfilePicture = async (user) => {
 			}
 			return null;
 		} catch(error) {
-			console.log(`Error getting profile picture: ${error}`);
 			return null;
 		}
 	}
