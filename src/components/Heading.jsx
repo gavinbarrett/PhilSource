@@ -36,9 +36,9 @@ const ProfileCard = ({user, updateUser, profile, updateProfile}) => {
 		button ? updateButton(0) : updateButton(1);
 	}
 	return (<div id="profilecard" onMouseEnter={() => toggle()}>
-		<ProfileDetail user={user} updateUser={updateUser} toggle={toggle} profile={profile} updateProfile={updateProfile}/>
-		{user}
-		{/*{button ? <ProfileDetail user={user} updateUser={updateUser} toggle={toggle} profile={profile} updateProfile={updateProfile}/> : user}*/}
+		{/*<ProfileDetail user={user} updateUser={updateUser} toggle={toggle} profile={profile} updateProfile={updateProfile}/>
+		{user}*/}
+		{button ? <ProfileDetail user={user} updateUser={updateUser} toggle={toggle} profile={profile} updateProfile={updateProfile}/> : user}
 	</div>);
 }
 
@@ -54,12 +54,12 @@ const Links = ({user, updateUser, profile, updateProfile}) => {
 
 const UploadLink = () => {
 	// Link to upload page
-	return (<Link id='uploadlink' to='/upload'>Upload</Link>);
+	return <Link id='uploadlink' to='/upload'>Upload</Link>;
 }
 
 const SignInLink = () => {
 	// render sign in page
-	return (<Link id='signinlink' to='/signin'>Sign In</Link>);
+	return <Link id='signinlink' to='/signin'>Sign In</Link>;
 }
 
 export const Heading = ({user, updateUser, profile, updateProfile}) => {
