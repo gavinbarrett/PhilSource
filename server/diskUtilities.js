@@ -68,23 +68,25 @@ exports.readProfileFromDisk = async (profile) => {
 	const fileRegex = new RegExp(`${profile}\.(png|jpg|jpeg)`);
 	return new Promise((resolve, reject) => {
 		fs.readdir(dir, (err, files) => {
-			if (!files) resolve(null);
-			const file = files.filter(ff => { return ff.match(fileRegex) });
-			if (!file || file === "") resolve(null);
-			const path = `./data/profiles/${file}`;
-			fs.access(path, fs.F_OK, err => {
-				if (err) {
-					console.log(`Error accessing file: ${err}`);
-					resolve(null);
-				}
-				fs.readFile(path, 'base64', (err, data) => {
+			if (!files || err) resolve(null);
+			else {
+				const file = files.filter(ff => { return ff.match(fileRegex) });
+				if (!file || file === "") resolve(null);
+				const path = `./data/profiles/${file}`;
+				fs.access(path, fs.F_OK, err => {
 					if (err) {
-						console.log(`Error reading file: ${err}`);
+						console.log(`Error accessing file: ${err}`);
 						resolve(null);
 					}
-					resolve(data);
+					fs.readFile(path, 'base64', (err, data) => {
+						if (err) {
+							console.log(`Error reading file: ${err}`);
+							resolve(null);
+						}
+						resolve(data);
+					});
 				});
-			});
+			}
 		});
 	});
 }
