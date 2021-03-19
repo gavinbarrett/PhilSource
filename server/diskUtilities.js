@@ -69,7 +69,7 @@ exports.readProfileFromDisk = async (profile) => {
 	return new Promise((resolve, reject) => {
 		fs.readdir(dir, (err, files) => {
 			console.log(`files: ${files}`);
-			if (err || files === undefined) resolve(null);
+			if (err || typeof files === "undefined") resolve(null);
 			const file = files.filter(ff => { return ff.match(fileRegex) });
 			if (!file || file === "") resolve(null);
 			const path = `./data/profiles/${file}`;
