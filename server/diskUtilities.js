@@ -65,10 +65,10 @@ exports.readProfileFromDisk = async (profile) => {
 	/* read a file from disk if it exists */
 	const dir = `./data/profiles/`;
 	console.log(`Profile: "${profile}"`);
-	const fileRegex = new RegExp(`${profile}\.((png)|(jpg)|(jpeg))`);
+	const fileRegex = new RegExp(`${profile}\.(png|jpg|jpeg)`);
 	return new Promise((resolve, reject) => {
 		fs.readdir(dir, (err, files) => {
-			if (err || typeof files === "undefined" || files === "undefined") resolve(null);
+			if (!files) resolve(null);
 			const file = files.filter(ff => { return ff.match(fileRegex) });
 			if (!file || file === "") resolve(null);
 			const path = `./data/profiles/${file}`;
