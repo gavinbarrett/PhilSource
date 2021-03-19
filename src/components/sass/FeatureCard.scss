@@ -10,113 +10,234 @@
 	font-size: 2vw;
 	font-family: 'Lato', sans-serif;
 	border-radius: 7px;	
-	background-size: 25vw 25vh;
+	transition: all 0.35s ease-in-out;
 }
 
 .featurecard:hover {
+	filter: brightness(130%);
 	cursor: pointer;
-	animation-name: brightenCard;
-	animation-duration: 0.5s;
-	animation-fill-mode: forwards;
-	animation-timing-function: ease-out;
 }
 
-@keyframes brightenCard {
-	from { filter: brightness(100%); }
-	to { filter: brightness(130%); }
+.feature-image {
+	width: 100%;
+	height: auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.feature-image > * {
+	background-size: contain;
+	background-repeat: no-repeat;
+	width: 100%;
+	height: auto;
 }
 
 .feminism {
-	background: url(assets/feminism.jpg);
-	background-size: 25vw 25vh;
+	height: 100%;
+	background: url(assets/feminismAR.jpg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .science {
-	background: url(assets/science.jpg);
-	background-size: 25vw 25vh;
+	height: 100%;
+	background: url(assets/scienceAR.jpg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .ethics {
-	background: url(assets/ethics.jpg);
-	background-size: 25vw 25vh;
+	height: 100%;
+	background: url(assets/ethicsAR.jpg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .existentialism {
-	background: url(assets/wanderer.jpg);
-	background-size: 25vw 25vh;
+	height: 100%;
+	background: url(assets/existentialismAR.jpg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .metaphysics {
+	height: 100%;
 	background: url(assets/metaphysics.jpg);
-	background-size: 25vw 25vh;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .mind {
-	background: url(assets/philofmind.jpg);
-	background-size: 25vw 25vh;
+	height: 100%;
+	background: url(assets/philofmindAR.jpg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .aesthetics {
-	background: url(assets/aesthetics.jpg);
-	background-size: 25vw 25vh;
+	height: 100%;
+	background: url(assets/aestheticsAR.jpg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .gidealism {
-	background: url(assets/germanidealism.jpg);
-	background-size: 25vw 25vh;
+	height: 100%;
+	background: url(assets/germanidealismAR.jpg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .greek {
-	background: url(assets/greek.jpg);
-	background-size: 25vw 25vh;
+	height: 100%;
+	background: url(assets/greekAR.jpg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .islamic {
-	background: url(assets/islamic.jpg);
-	background-size: 25vw 25vh;
+	height: 100%;
+	background: url(assets/islamicAR.jpg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .religion {
-	background: url(assets/religion.png);
-	background-size: 25vw 25vh;
+	height: 100%;
+	background: url(assets/religionAR.jpg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .logic {
-	background: url(assets/logic.jpg);
-	background-size: 25vw 25vh;
+	height: 100%;
+	background: url(assets/logicAR.jpg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .modern {
-	background: url(assets/modern.jpg);
-	background-size: 25vw 32vh;
+	height: 100%;
+	background: url(assets/modernAR.jpg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .law {
+	height: 100%;
 	background: url(assets/law.jpg);
-	background-size: 25vw 25vh;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .math {
-	background: url(assets/math.jpg);
-	background-size: 25vw 25vh;
+	height: 100%;
+	background: url(assets/mathAR.jpg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .marxism {
-	background: url(assets/marxism.jpg);
-	background-size: 25vw 25vh;
+	height: 100%;
+	background: url(assets/marxismAR.jpg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .political {
-	background: url(assets/socrates.jpg);
-	background-size: 25vw 25vh;
+	height: 100%;
+	background: url(assets/law.jpg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .postmodernism {
-	background: url(assets/postmodernism.jpg);
-	background-size: 25vw 28vh;
+	height: 100%;
+	background: url(assets/postmodernismAR.jpg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .skepticism {
+	height: 100%;
 	background: url(assets/skepticism.jpg);
-	background-size: 25vw 25vh;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }

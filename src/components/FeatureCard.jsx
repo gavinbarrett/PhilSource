@@ -12,7 +12,9 @@ export const FeatureCard = ({featname, updateFilter}) => {
 		// render filter page
 		history.push(`/subfilter/${category}`);
 	}
-	return (<div id={`${category}`} className={`featurecard ${path}`} onClick={filterTexts}>
-		{category}
+	return (<div className={`featurecard`} onClick={filterTexts}>
+		<div className={`feature-image ${path}`}>
+			{category}
+		</div>
 	</div>);
 }

@@ -7,7 +7,7 @@ export const Features = ({updateFilter}) => {
 	const [state, changeState] = useState(0);
 
 	const default_feats = [
-			{"category": "Metaphysics", "path": "metaphysics"},
+			{"category": "Greek Philosophy", "path": "greek"},
 			{"category": "Philosophy of Science", "path": "science"},
 			{"category": "Existentialism", "path": "existentialism"}
 	];

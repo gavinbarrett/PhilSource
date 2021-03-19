@@ -3,7 +3,6 @@ footer {
 	height: 15vh;
 	background: #293241;
 	color: #e0fbfc;
-	font-size: 1vw;
 	font-family: 'Lato', sans-serif;
 	display: flex;
 	justify-content: flex-end;
@@ -21,7 +20,7 @@ footer {
 
 .footerheads {
 	font-family: 'Bebas Neue', cursive;
-	font-size: 1.5vw;
+	font-size: 1rem;
 }
 
 .footerlinkbox {
@@ -30,6 +29,7 @@ footer {
 }
 
 .footerlinks {
+	font-size: 1rem;
 	transition: all 0.15s ease-in-out;
 }
 
