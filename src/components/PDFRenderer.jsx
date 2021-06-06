@@ -44,7 +44,6 @@ const Comments = ({user, path}) => {
 		/* Download the comments based on the hash */
 		const resp = await fetch(`/get_comments/?hash=${hash}`, {method: "GET"});
 		const result = await resp.json();
-		console.log(`Ressy: ${Object.getOwnPropertyNames(result["posts"]["rows"])}`);
 		if (result && result['posts']['rows'].length !== 0)
 			updatePosts(result['posts']['rows']);
 	}
@@ -109,10 +108,12 @@ export const PDFRenderer = ({user, name}) => {
 		if (content && content["file"]) {
 			// decode base64
 			const buffer = Buffer.from(content["file"], 'base64');
+			console.log(`Buffer: ${buffer}`);
 			// create file object
-			const fl = new File([buffer], {type: 'application/json'});
+			const fl = new File([buffer], {type: 'application/pdf'});
+			console.log(`FL: ${fl}`);
 			// add file to the document component
-			await updateDisplayFile(fl);
+			updateDisplayFile(fl);
 		}
 	}
 
@@ -127,7 +128,8 @@ export const PDFRenderer = ({user, name}) => {
 			// decode base64
 			const buffer = Buffer.from(content["file"], 'base64');
 			// create file object
-			const pdfFile = new File([buffer], {type: 'application/json'});
+			//const pdfFile = new File([buffer], {type: 'application/json'});
+			const pdfFile = new Blob(buffer, {type: 'application/json'});
 			// add file to the document component
 			updateDisplayFile(pdfFile);
 		}
@@ -159,15 +161,12 @@ export const PDFRenderer = ({user, name}) => {
 	const download = () => {
 		/* Prompt the user to save the file to their drive */
 		let reader = new FileReader();
-		let link = document.createElement('a');
-		console.log(file);
-		console.log(Object.keys(file));
-		const f = new Blob(file["data"], {"type": "application/pdf"});
-		reader.readAsDataURL(f);
-		reader.onloadend = () => {
-			const x = reader.result;
-			link.setAttribute('href', x);
-			link.setAttribute('download', name);
+		const link = document.createElement('a');
+		reader.readAsDataURL(file);
+		reader.onload = () => {
+			const ref = reader.result;
+			link.setAttribute('href', ref);
+			link.setAttribute('download', `${name}.pdf`);
 			link.style.display = 'none';
 			// add link to the page
 			document.body.appendChild(link);
