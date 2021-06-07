@@ -40,19 +40,19 @@ export const SubFilter = ({filter, changeFilename, updateHash}) => {
 		const data = {"category" : filter};
 		const resp = await fetch('/filtertexts', {method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)});
 		const r = await resp.json();
-		console.log(`Filtering result: ${r}`);
-		console.log(`Response: ${Object.getOwnPropertyNames(r["docs"]["rows"])}`);
 		if (r) {
-			if (r.docs && r.docs.rows && r.docs.rows.length === 0) updateDocs(null);
-			// FIXME: fix update logic (r.g. if there's a docs value but no rows value)
-			updateDocs(r["docs"]["rows"]);
+			if (r.docs && r.docs.rows && r.docs.rows.length === 0) {
+				updateDocs(null);
+			} else {
+				updateDocs(r["docs"]["rows"]);
+			}
 		} else
 			updateDocs(null);
 	}
 
 	return (<div className='subfilterwrapper'>
 		<div className='documentbox'>
-			{docs ? docs.map((doc, index) => {
+			{docs && docs.length ? docs.map((doc, index) => {
 				return (<div className='documentcase'>
 					<Document key={index} doc={doc} changeFilename={changeFilename} updateHash={updateHash}/>
 				</div>);

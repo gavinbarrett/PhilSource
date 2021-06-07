@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-exports. getDocFromDisk = async (req, res) => {
+exports.getDocFromDisk = async (req, res) => {
 	/* return the base64 representation of a file on disk */
 	const hash = req.query['hash'];
 	const resp = await readDocFromDisk(hash);
